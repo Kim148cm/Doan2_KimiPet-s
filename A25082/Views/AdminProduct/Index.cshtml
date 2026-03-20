@@ -1,0 +1,632 @@
+﻿@model List<A25082.Models.SanPhamKemChongNang>
+@{
+    ViewBag.Title = "Quản lý Sản Phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></script>
+
+<div class="container-fluid mt-4">
+    <h5 class="mb-0">
+        <i class="fa-solid fa-layer-group class-icons"></i> QUẢN LÝ DANH MỤC THÔNG TIN SẢN PHẨM
+    </h5>
+
+    <div class="card shadow-sm p-4 mt-4">
+        <input type="hidden" id="productId" value="0" />
+
+        <div class="mb-3">
+            <label for="productName" class="form-label fw-bold">Tên sản phẩm:</label>
+            <input type="text" id="productName" class="form-control" placeholder="Nhập tên sản phẩm" />
+        </div>
+        <div class="mb-3">
+            <label for="productDescription" class="form-label fw-bold">Mô tả:</label>
+            <textarea id="productDescription" class="form-control" placeholder="Nhập mô tả sản phẩm" rows="3"></textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label for="productPrice" class="form-label fw-bold">Giá:</label>
+                    <input type="text" id="productPrice" class="form-control" placeholder="Nhập giá sản phẩm" oninput="formatCurrency(this)" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label for="productDisprice" class="form-label fw-bold">Giá giảm:</label>
+                    <input type="text" id="productDisprice" class="form-control" placeholder="Nhập giá giảm nếu có" oninput="formatCurrency(this)" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="mb-3">
+                    <label for="productStock" class="form-label fw-bold">Số lượng:</label>
+                    <input type="number" id="productStock" class="form-control" placeholder="Nhập số lượng" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="productCategory" class="form-label fw-bold">Danh mục:</label>
+                    <select id="productCategory" class="form-select">
+                        <option value="">Chọn danh mục</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.MaLoai">@category.TenLoai</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="">Không có danh mục</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-success" onclick="saveProduct()">
+                <i class="fas fa-save"></i> Lưu thông tin
+            </button>
+            <button class="btn btn-secondary" onclick="resetForm()">
+                <i class="fas fa-times"></i> Hủy bỏ
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-5">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">DANH SÁCH THÔNG TIN SẢN PHẨM</h5>
+            <span class="badge bg-light text-dark">Tổng: @Model.Count sản phẩm</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 15%">Tên sản phẩm</th>
+                            <th style="width: 25%">Mô tả</th>
+                            <th style="width: 10%">Giá</th>
+                            <th style="width: 10%">Giá giảm</th>
+                            <th style="width: 8%">Số lượng</th>
+                            <th style="width: 15%">Danh mục</th>
+                            <th style="width: 12%">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="fas fa-inbox" style="font-size: 2rem; color: #ccc;"></i>
+                                    <p class="mt-2 text-muted">Chưa có sản phẩm nào</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var product in Model)
+                            {
+                                var description = product.MoTa ?? "";
+                                var displayDescription = description.Length > 50 ? description.Substring(0, 50) + "..." : description;
+
+                                <tr class="align-middle">
+                                    <td class="text-center"><strong>@product.MaKem</strong></td>
+                                    <td class="product-name">
+                                        <span class="text-truncate d-block"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="top"
+                                              title="@product.TenKem">
+                                            @product.TenKem
+                                        </span>
+                                    </td>
+                                    <td class="product-description">
+                                        <span class="text-truncate d-block"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="top"
+                                              title="@description">
+                                            @displayDescription
+                                        </span>
+                                    </td>
+                                    <td class="text-center text-success fw-bold">@product.GiaGoc.ToString("N0") VNĐ</td>
+                                    <td class="text-center text-danger fw-bold">@product.GiaGiam.ToString("N0") VNĐ</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">@product.SoLuongTon</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (product.LoaiKemChongNang != null)
+                                        {
+                                            <span class="badge bg-secondary">@product.LoaiKemChongNang.TenLoai</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Chưa gán</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- ✅ SỬA LỖI: Bỏ data-product, chỉ lưu ID -->
+                                        <button class="btn btn-warning btn-sm me-1"
+                                                onclick="editProduct(@product.MaKem)"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="Chỉnh sửa sản phẩm">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </button>
+                                        <button class="btn btn-danger btn-sm"
+                                                onclick="deleteProduct(@product.MaKem)"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="Xóa sản phẩm">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+        --dark-color: #343a40;
+    }
+
+    .class-icons {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+    }
+
+    .container-fluid {
+        max-width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+    }
+
+    .card-header {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .table-responsive {
+        border-radius: 0 0 8px 8px;
+    }
+
+    .table {
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+    .product-name,
+    .product-description {
+        max-width: 250px;
+    }
+
+    .tooltip-inner {
+        max-width: 350px;
+        text-align: left;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 13px;
+        word-wrap: break-word;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        border-color: #d39e00;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge {
+        padding: 0.4rem 0.6rem;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .table tbody td[colspan] {
+        padding: 40px 20px;
+    }
+
+    media (max-width: 1200px) {
+        .table {
+            font-size: 0.9rem;
+        }
+
+        .product-name,
+        .product-description {
+            max-width: 200px;
+        }
+
+        .btn-sm {
+            padding: 0.3rem 0.55rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    media (max-width: 992px) {
+        .product-name,
+        .product-description {
+            max-width: 150px;
+        }
+
+        .table {
+            font-size: 0.85rem;
+        }
+
+        h5 {
+            font-size: 1.1rem;
+        }
+    }
+
+    media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .card {
+            margin-bottom: 15px;
+        }
+
+        .table {
+            font-size: 0.8rem;
+        }
+
+        .product-name,
+        .product-description {
+            max-width: 100px;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+        }
+
+        th, td {
+            padding: 8px 4px !important;
+        }
+    }
+
+    media print {
+        .btn, .card-header {
+            display: none;
+        }
+
+        .table {
+            border-collapse: collapse;
+        }
+    }
+</style>
+
+<script>
+    // Khởi tạo Bootstrap Tooltip
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                delay: { show: 200, hide: 100 }
+            });
+        });
+    });
+
+    function saveProduct() {
+        var id = $('#productId').val();
+        var name = $('#productName').val().trim();
+        var description = $('#productDescription').val().trim();
+        var price = $('#productPrice').val().replace(/[^0-9]/g, '');
+        var disprice = $('#productDisprice').val().replace(/[^0-9]/g, '');
+        var stock = $('#productStock').val().trim();
+        var categoryId = $('#productCategory').val();
+
+        if (!name || !price || !stock || !categoryId) {
+            Swal.fire("Lỗi!", "Vui lòng nhập đầy đủ thông tin sản phẩm!", "error");
+            return;
+        }
+
+        $.ajax({
+            url: '/AdminProduct/SaveProduct',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                Id: parseInt(id),
+                Name: name,
+                Description: description,
+                Price: parseInt(price),
+                Disprice: parseInt(disprice),
+                Stock: parseInt(stock),
+                CategoryId: parseInt(categoryId)
+            }),
+            beforeSend: function () {
+                Swal.fire({
+                    title: "Đang xử lý...",
+                    text: "Vui lòng đợi...",
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            },
+            success: function (res) {
+                Swal.fire({
+                    title: res.success ? "Thành công!" : "Thất bại!",
+                    text: res.message,
+                    icon: res.success ? "success" : "error",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    if (res.success) {
+                        resetForm();
+                        location.reload();
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire("Lỗi!", "Lỗi kết nối: " + error, "error");
+            }
+        });
+    }
+
+    function deleteProduct(id) {
+        Swal.fire({
+            title: "Xác nhận xóa?",
+            text: "Bạn có chắc chắn muốn xóa sản phẩm này không?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Xóa",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/AdminProduct/DeleteProduct',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: parseInt(id) }),
+                    success: function (res) {
+                        Swal.fire({
+                            title: res.success ? "Thành công!" : "Thất bại!",
+                            text: res.message,
+                            icon: res.success ? "success" : "error",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            if (res.success) location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // ✅ SỬA LỖI: Gọi API để lấy dữ liệu thay vì parse từ HTML
+    function editProduct(id) {
+        $.ajax({
+            url: '/AdminProduct/GetProduct',
+            type: 'GET',
+            data: { id: id },
+            success: function (res) {
+                if (!res.success) {
+                    Swal.fire("Lỗi!", res.message, "error");
+                    return;
+                }
+
+                var product = res.data;
+
+                Swal.fire({
+                    title: 'Chỉnh sửa sản phẩm',
+                    html: `
+                        <div class="mb-3 text-start">
+                            <label for="editProductName" class="form-label fw-bold">Tên sản phẩm:</label>
+                            <input type="text" id="editProductName" class="form-control" value="${escapeHtml(product.name)}">
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="editProductDescription" class="form-label fw-bold">Mô tả:</label>
+                            <textarea id="editProductDescription" class="form-control" rows="3">${escapeHtml(product.description)}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 text-start">
+                                    <label for="editProductPrice" class="form-label fw-bold">Giá:</label>
+                                    <input type="number" id="editProductPrice" class="form-control" value="${product.price}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 text-start">
+                                    <label for="editProductDisprice" class="form-label fw-bold">Giá giảm:</label>
+                                    <input type="number" id="editProductDisprice" class="form-control" value="${product.disprice}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 text-start">
+                                    <label for="editProductStock" class="form-label fw-bold">Số lượng tồn kho:</label>
+                                    <input type="number" id="editProductStock" class="form-control" value="${product.stock}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 text-start">
+                                    <label for="editProductCategory" class="form-label fw-bold">Danh mục:</label>
+                                    <select id="editProductCategory" class="form-select">
+                                        <option value="">Chọn danh mục</option>
+                                        ${$('#productCategory').html()}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>`,
+                    didOpen: () => {
+                        $('#editProductCategory').val(product.categoryId);
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Cập nhật',
+                    cancelButtonText: 'Hủy',
+                    width: '500px',
+                    preConfirm: () => {
+                        const newName = $('#editProductName').val().trim();
+                        const newDescription = $('#editProductDescription').val().trim();
+                        const newPrice = $('#editProductPrice').val();
+                        const newDisprice = $('#editProductDisprice').val();
+                        const newStock = $('#editProductStock').val();
+                        const newCategoryId = $('#editProductCategory').val();
+
+                        if (!newName || !newPrice || !newStock || !newCategoryId) {
+                            Swal.showValidationMessage("Vui lòng nhập đầy đủ thông tin!");
+                            return false;
+                        }
+
+                        return {
+                            Id: product.id,
+                            Name: newName,
+                            Description: newDescription,
+                            Price: parseInt(newPrice),
+                            Disprice: parseInt(newDisprice),
+                            Stock: parseInt(newStock),
+                            CategoryId: parseInt(newCategoryId)
+                        };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/AdminProduct/SaveProduct',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(result.value),
+                            beforeSend: () => {
+                                Swal.fire({
+                                    title: "Đang cập nhật...",
+                                    text: "Vui lòng đợi...",
+                                    allowOutsideClick: false,
+                                    showConfirmButton: false,
+                                    didOpen: () => Swal.showLoading()
+                                });
+                            },
+                            success: (res) => {
+                                Swal.fire({
+                                    title: res.success ? "Thành công!" : "Thất bại!",
+                                    text: res.message,
+                                    icon: res.success ? "success" : "error",
+                                    confirmButtonText: "OK"
+                                }).then(() => {
+                                    if (res.success) location.reload();
+                                });
+                            },
+                            error: (xhr, status, error) => {
+                                Swal.fire("Lỗi!", "Lỗi kết nối: " + error, "error");
+                            }
+                        });
+                    }
+                });
+            },
+            error: function () {
+                Swal.fire("Lỗi!", "Không thể lấy thông tin sản phẩm!", "error");
+            }
+        });
+    }
+
+    function resetForm() {
+        $('#productId').val("0");
+        $('#productName').val("");
+        $('#productDescription').val("");
+        $('#productPrice').val("");
+        $('#productDisprice').val("");
+        $('#productStock').val("");
+        $('#productCategory').val("");
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatCurrency(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        let number = parseInt(value, 10);
+        if (isNaN(number)) {
+            input.value = '';
+            return;
+        }
+        input.value = number.toLocaleString('vi-VN') + ' VNĐ';
+    }
+</script>

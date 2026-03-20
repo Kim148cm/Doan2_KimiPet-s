@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewBag.Title = "AllDiscountProducts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<A25082.Models.SanPhamKemChongNang>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<section class="body_top_pr">
+    <div class="body_title_top">
+        <h4 class="title_h_top" style="text-transform:uppercase;">Các loại đang có giảm giá</h4>
+        <p class="title_p_top">(@Model.Count() sản phẩm)</p>
+    </div>
+
+    <div class="bg_filter_pr d-flex" style="gap:1rem;">
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="title_sort_pr">Sắp xếp : </h6>
+            <select id="sortBy" class="link_filter_pr">
+                <option value="">Giảm giá nhiều nhất</option>
+                <option value="PriceAsc">Giá: Tăng dần</option>
+                <option value="PriceDesc">Giá: Giảm dần</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row row_pr_sale" id="product-list">
+        @Html.Partial("_DiscountProductPartial", Model)
+    </div>
+</section>
+
+<style>
+    .flash-tag {
+        background-color: mediumseagreen;
+    }
+
+    .flash-sale-button {
+        background-color: mediumseagreen;
+    }
+
+    .current-price {
+        color: forestgreen;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $("#sortBy").change(function () {
+            var sortOrder = $(this).val();
+            $.ajax({
+                url: '@Url.Action("AllDiscountProducts", "SanPham")',
+                type: 'GET',
+                data: { sortOrder: sortOrder },
+                success: function (response) {
+                    $("#product-list").html($(response).find("#product-list").html());
+                },
+                error: function () {
+                    alert("Lỗi khi tải sản phẩm.");
+                }
+            });
+        });
+    });
+</script>
+

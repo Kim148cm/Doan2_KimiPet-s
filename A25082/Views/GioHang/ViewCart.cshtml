@@ -1,0 +1,541 @@
+﻿﻿﻿@model List<A25082.Models.GioHang>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+@{
+    decimal tongTienHang = Model.Sum(x => x.GiaGoc * x.SoLuong);
+    decimal voucherDiscount = Session["VoucherDiscount"] != null ? Convert.ToDecimal(Session["VoucherDiscount"]) : 0;
+    decimal tamTinh = tongTienHang - voucherDiscount;
+    decimal phiVanChuyen = 3000;
+    decimal tongThanhToan = tamTinh + phiVanChuyen;
+}
+
+<section class="body_part_one_cart">
+    <div class="body_two_icon_one">
+        <a href="@Url.Action("Index", "Home", new { area = "" })" style="text-decoration:none;"><i class="fa-solid fa-house"></i> Trang chủ</a>
+        <span style="font-size: 13px;">|</span>
+        <p><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</p>
+        <span style="font-size: 13px;">|</span>
+        <a href="@Url.Action("IndexHistory", "PayMent", new { area = "" })" style="text-decoration:none;color:black;"><i class="fa-solid fa-clock"></i> Xem lịch sử mua hàng</a>
+    </div>
+</section>
+
+
+<section class="body_part_two_cart body-big-screen">
+    <div class="body_all_cart">
+        <div class="row row-md">
+            <div class="col-xl-7 col-md-one">
+                @if (Model != null && Model.Any() && tongThanhToan > 0)
+                {
+                    <div class="body_two_title_cart">
+                        <h4 class="title_h_cart">Giỏ hàng của bạn</h4>
+                        <p class="title_sm_cart">(Có <strong>@Model.Count()</strong> sản phẩm trong giỏ hàng)</p>
+                    </div>
+                }
+                <div class="body_pr_cart">
+
+                    @if (Model != null && Model.Any() && tongThanhToan > 0)
+                    {
+                        <div class="body_small_pr_cart">
+                            @foreach (var item in Model)
+                            {
+                                <div class="row row_body_pr" style="margin-top:1rem;"
+                                     data-productid="@item.MaKem"
+                                     data-stock="@item.SanPhamKemChongNang?.Stock ?? 0"
+                                     data-quantity="@item.SoLuong">
+
+                                    <div class="col-md-3 col-xl-2">
+                                        <div class="body_img_cart">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@Url.Content(item.ImageUrl)" alt="Image of @item.TenKem" />
+                                            }
+                                            else if (item.SanPhamKemChongNang != null && item.SanPhamKemChongNang.AnhKemChongNangs != null && item.SanPhamKemChongNang.AnhKemChongNangs.Any())
+                                            {
+                                                <img src="@Url.Content(item.SanPhamKemChongNang.AnhKemChongNangs.FirstOrDefault()?.ImageUrl ?? "~/images/default-image.jpg")" alt="Image of @item.TenKem" />
+                                            }
+                                            else
+                                            {
+                                                <img src="@Url.Content("~/images/default-image.jpg")" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-xl-6">
+
+                                        <h5 class="title_sm_pr_cart"> @(item.TenKem ?? "Tên sản phẩm không có")</h5>
+
+                                        <div class="body_size_color">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_size"
+                                               class="btn-remove" data-productid="@item.MaKem">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3 col-xl-2">
+
+                                        <div class="body_edit_ql">
+                                            <a href="" class="btn-increase" data-productid="@item.MaKem"><i class="fa-solid fa-plus"></i></a>
+                                            <a href="" style="color:black;text-decoration:none;">@item.SoLuong</a>
+                                            <a href="" class="btn-decrease" data-productid="@item.MaKem"><i class="fa-solid fa-minus"></i></a>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3 col-xl-2">
+                                        <div class="body_price_pr">
+                                            <p class="price_main_pr">@($"{(item.GiaGoc * item.SoLuong):N0} đ")</p>
+                                            <p class="price_sale_pr">@item.GiaGoc.ToString("N0")đ</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="text-align:center;font-size:16px;padding:1rem;border:1px solid #e5e5e5;">Giỏ hàng của bạn đang trống.</p>
+                    }
+
+                </div>
+
+                <!--------->
+                <div class="body_title_left_pay">
+                    <p class="title_left_pays" style="color: red;font-weight: bold;margin-top: 2rem;">
+                        - Do nhu cầu mua thức ăn và phụ kiện cho thú cưng tăng cao vào một số thời điểm (dịp lễ, khuyến mãi), thời gian giao hàng có thể chậm hơn dự kiến. Mong quý khách thông cảm.
+                    </p>
+
+                    <p class="title_left_pays">
+                        (*) Vui lòng kiểm tra kỹ sản phẩm thức ăn và phụ kiện thú cưng (bao bì, tem niêm phong, hạn sử dụng đối với thức ăn) trước khi nhận hàng để đảm bảo chất lượng. Trường hợp không kiểm tra, SHOP rất tiếc không thể hỗ trợ đổi/trả.
+                    </p>
+
+                    <p class="title_left_pays">
+                        (*) Khách hàng có nhu cầu xuất hóa đơn VAT vui lòng liên hệ với SHOP qua Fanpage Facebook ngay sau khi đặt hàng. Thời gian hỗ trợ xuất hóa đơn trong vòng 30 phút kể từ lúc đặt hàng.
+                    </p>
+
+                    <p class="title_left_pays">
+                        (*) Sản phẩm thức ăn và phụ kiện cho thú cưng có thể được lưu trữ tại nhiều kho khác nhau, vì vậy đơn hàng của Quý khách có thể được giao thành nhiều lần. Mong quý khách thông cảm.
+                    </p>
+
+                    <p class="title_left_pays">
+                        (*) Khu vực nội thành: thời gian giao hàng dự kiến từ 1 – 3 ngày (trường hợp kho ở tỉnh khác, thời gian giao có thể kéo dài 3 – 4 ngày).
+                    </p>
+
+                    <p class="title_left_pays">
+                        (*) Khu vực ngoại thành và các tỉnh/thành phố khác: thời gian giao hàng dự kiến từ 3 – 5 ngày.
+                    </p>
+                </div>
+
+
+
+
+
+                <div class="body_pr_left_pay">
+                    <h4 class="title_h_pr_pay" style="padding-bottom:2rem;">Sản phẩm hay được mua cùng</h4>
+
+
+                    @Html.Action("CategoryProductLike", "SanPham")
+
+                </div>
+
+
+            </div>
+            <div class="col-xl-5 col-md-two">
+
+                <div class="title_f_pay">
+                    <p class="title_pr_right_cart"><u><a href="" style="color: black;font-weight: bold;">Đăng nhập</a></u> để tích điểm và hưởng ưu đãi hạng thành viên từ Kimipet's</p>
+                </div>
+
+                <div class="body_cart_info_right">
+
+
+                    @if (Model != null && Model.Any() && tongThanhToan > 0)
+                    {
+                        <div class="body_right_pay_cart">
+                            <h6 class="title_h_cart" style="font-size: 18px;">TÓM TẮT ĐƠN HÀNG</h6>
+
+                            <div class="body_small_top_pay">
+                                <div class="part_sm_pay_right">
+                                    <p class="title_pr_right_cart">Tổng tiền hàng : </p>
+                                    <p class="title_pr_right_cart">@tongTienHang.ToString("N0")₫</p>
+                                </div>                            
+                            </div>
+
+                            <div class="body_two_pay_right">
+                                <div class="part_sm_pay_right">
+                                    <p class="title_pr_right_cart">Tạm tính: </p>
+                                    <p class="title_pr_right_cart">@tamTinh.ToString("N0")₫</p>
+                                </div>
+
+                                <div class="part_sm_pay_right">
+                                    <p class="title_pr_right_cart">Phí vận chuyển : </p>
+                                    <p class="title_pr_right_cart">@phiVanChuyen.ToString("N0")₫</p>
+                                </div>
+
+                                <div class="part_sm_pay_right">
+                                    <p class="title_pr_right_cart">Giảm giá vận chuyển : </p>
+                                    <p class="title_pr_right_cart">0đ</p>
+                                </div>
+
+                                <div class="part_sm_pay_right">
+                                    <p class="title_pay_right_cart">Tổng tiền:</p>
+                                    <p class="title_pay_right_cart">@tongThanhToan.ToString("N0")₫</p>
+                                </div>
+                                <div class="body_all_btn_pay">
+                                    <div class="btn_pay_cart">
+
+                                        <a href="@Url.Action("Index", "PayMent", new { totalAmount = tongThanhToan })" class="btn_pay_right" id="btnPlaceOrder" style="text-decoration:none;">
+                                            Tiến hành đặt hàng
+                                        </a>
+                                    </div>
+
+                                    <a href="@Url.Action("Index", "Home")" class="btn_pay_add_right" style="text-decoration:none;">Mua thêm sản phẩm</a>
+
+                                    <p class="dis_title_right" style="margin-top: 1rem;">* Chi tiêu tích lũy được ghi nhận vào tài khoản của bạn khi đơn hàng thành công. Vui lòng đăng nhập để được tích lũy.</p>
+                                    <p class="dis_title_right">* Từ ngày 01/01/2026, giá sản phẩm sẽ thay đổi theo quy định điều chỉnh thuế VAT của nhà nước (từ 10% xuống 8%). Mong quý khách hàng thông cảm!</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                 
+                    <div class="body_check_pay">
+
+                        <div class="part_check_pay" style="margin-top: 1rem;">
+                            <span><i class="fa-solid fa-circle-check"></i></span>
+                            <div class="all_title_check">
+                                <h5 class="title_h_check">MIỄN PHÍ GIAO HÀNG TOÀN QUỐC</h5>
+                                <p class="dis_check">(Cho hoá đơn từ 300.000đ)</p>
+                            </div>
+                        </div>
+                        <div class="part_check_pay">
+                            <span><i class="fa-solid fa-circle-check"></i></span>
+                            <div class="all_title_check">
+                                <h5 class="title_h_check">ĐỔI TRẢ DỄ DÀNG</h5>
+                                <p class="dis_check">(Đổi trả ngay khi sản phẩm kem có hư hại)</p>
+                            </div>
+                        </div>
+                        <div class="part_check_pay">
+                            <span><i class="fa-solid fa-circle-check"></i></span>
+                            <div class="all_title_check">
+                                <h5 class="title_h_check">TỔNG ĐÀI BÁN HÀNG 1122 1122</h5>
+                                <p class="dis_check">(Miễn phí từ 8:00 - 21:00 mỗi ngày)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<!-------------------------------------------------------------------------------------------------------------------------------------------->
+<!-- Modal Voucher ------------------------------------------------------------------------------------------------------------------------------>
+<div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">CHỌN VOUCHER</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Body -->
+            <div class="modal-body">
+                <!-- Input nhập voucher -->
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="voucherCode" placeholder="Nhập Mã Ưu Đãi">
+                    <button class="btn btn-dark" id="applyVoucher">Áp Dụng</button>
+                </div>
+
+                <!-- DANH SÁCH VOUCHER -->
+                <h6 class="text-uppercase fw-bold">Voucher Có Sẵn</h6>
+                <div class="body_all_vouchers" style="height:480px;overflow-y:scroll;overflow-x:hidden;">
+                    <div id="voucherList"></div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark w-100" id="confirmVoucher">ĐỒNG Ý</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh sửa thông tin sản phẩm  ------------------------------------------------------------------------------------------------------------------------------>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <img id="editProductImage" src="" alt="Ảnh sản phẩm" class="img-fluid" />
+                        </div>
+                        <div class="col-xl-6">
+                            <!------>
+                            <input type="hidden" id="editProductId" />
+                            <p id="nameProducts" class="title_sm_pr_cart"></p>
+                            <div class="body_sale_modal">
+                                <p class="title_modals">FLASH SALE</p>
+                            </div>
+
+                            <div class="body_price_modal">
+                                <p class="price_main_pr" style="font-weight: 400; color: red;" id="editDisPrice"></p>
+                                <p class="price_sale_pr" style="text-decoration: line-through; color: #aaa;font-weight: 400;" id="editProductPrice"></p>
+                            </div>
+
+                            <label class="form-label" style="padding:0px;">Màu sắc : </label>
+                            <div class="color_options_one">
+
+                                <div id="editColorOptions" style="display:flex;flex-wrap:wrap"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Kích thước</label>
+                                <div id="editSizeOptions" style="display:flex;flex-wrap:wrap;gap:1rem;"></div>
+                            </div>
+                            <!------>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveChanges">Cập nhật thay đổi</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--------------------------------------------------------------------------------------------------------------------------------->
+<style>
+    .btn_pay_right {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: white;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(86, 171, 47, 0.4);
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+        .btn_pay_right:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.6);
+        }
+    .btn_pay_add_right {
+        border-radius: 50px;
+    }
+    .btn-remove {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 27px;
+        height: 27px;
+        background: linear-gradient(135deg, #ff6b6b, #ff3d3d); /* gradient đỏ */
+        color: white;
+        border-radius: 50%;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        font-size: 12px;
+    }
+
+        .btn-remove:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 18px rgba(255, 0, 0, 0.5);
+            color: #fff;
+            background: linear-gradient(135deg, #ff3d3d, #ff6b6b);
+        }
+    .image_card_sm {
+        width: 100%;
+        height: 200px;
+    }
+
+        .image_card_sm img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .body_small_pr_cart {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 1rem;
+        height: 540px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#btnPlaceOrder').click(function (e) {
+        e.preventDefault(); // Ngăn redirect tạm thời
+
+        var outOfStockProducts = [];
+
+        $('.row_body_pr').each(function () {
+            var productName = $(this).find('.title_sm_pr_cart').text().trim();
+            var quantity = parseInt($(this).data('quantity'));
+            var stock = parseInt($(this).data('stock'));
+
+            if (quantity > stock) {
+                outOfStockProducts.push(productName);
+            }
+        });
+
+        if (outOfStockProducts.length > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Sản phẩm hết hàng!',
+                html: 'Các sản phẩm sau không đủ số lượng trong kho:<br><strong>' + outOfStockProducts.join(', ') + '</strong>',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            // Redirect đến ConfirmOrder nếu đủ hàng
+            window.location.href = $(this).attr('href');
+        }
+    });
+
+    // Code xóa sản phẩm trong giỏ hàng ---------------------------------------------------------------------------------------
+
+  $(document).ready(function () {
+    $(".btn-remove").click(function () {
+        var productId = $(this).data("productid");
+        var color = $(this).data("color");
+        var size = $(this).data("size");
+
+        Swal.fire({
+            title: "Bạn có chắc chắn?",
+            text: "Sản phẩm sẽ bị xóa khỏi giỏ hàng!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Xóa",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("RemoveFromCart", "GioHang")',
+                    type: 'POST',
+                    data: { productId: productId, color: color, size: size },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Xóa thành công!",
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                location.reload(); // Reload trang để cập nhật giỏ hàng
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi!",
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Lỗi!",
+                            text: "Đã xảy ra lỗi khi xóa sản phẩm!"
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
+
+
+
+    // Code thực hiện giảm giá khi sử dụng voucher -----------------------------------------------------------------------------------
+
+
+     $(document).ready(function () {
+        $(".btn-increase, .btn-decrease").click(function () {
+            var isIncrease = $(this).hasClass("btn-increase");
+            var productId = $(this).data("productid");
+            var color = $(this).data("color");
+            var size = $(this).data("size");
+
+            $.ajax({
+                url: '@Url.Action("UpdateQuantity", "GioHang")',
+                type: 'POST',
+                data: { productId: productId, color: color, size: size, increase: isIncrease },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi khi không thể giảm số lượng
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi cập nhật số lượng!");
+                }
+            });
+        });
+     });
+
+
+     // Code chỉnh sửa thông tin sản phẩm trong giỏ hàng --------------------------------------------------------------------------------------
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+
+
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    function updateCartTotalQuantity() {
+        $.ajax({
+            url: '/GioHang/GetCartTotalQuantity',
+            type: 'GET',
+            success: function (response) {
+                $('#cartTotalQuantity').text(response.totalQuantity);
+            }
+        });
+    }
+
+    // Gọi hàm sau khi thêm vào giỏ hàng
+    $(".btn-add-to-cart").click(function () {
+        updateCartTotalQuantity();
+    });
+
+</script>

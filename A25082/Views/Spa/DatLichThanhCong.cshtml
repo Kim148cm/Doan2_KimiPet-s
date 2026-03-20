@@ -1,0 +1,329 @@
+﻿@model WebCafe.Models.DatLichSpa
+@{
+    ViewBag.Title = "Đặt Lịch Thành Công | Kimipet's";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --green: #1a7a3c;
+        --border: #e0e0e0;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #888;
+        --bg: #f5f5f5;
+        --white: #fff;
+        --font: 'Nunito', sans-serif;
+    }
+
+    body {
+        background: var(--bg);
+    }
+
+    .sc-page {
+        min-height: 80vh;
+        padding: 48px 20px 64px;
+        font-family: var(--font);
+        background: var(--bg);
+    }
+
+    .sc-wrap {
+        max-width: 540px;
+        margin: 0 auto;
+    }
+
+    /* ── Card ── */
+    .sc-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    /* Top stripe */
+    .sc-stripe {
+        height: 4px;
+        background: var(--green);
+    }
+
+    .sc-body {
+        padding: 36px 36px 28px;
+    }
+
+    /* Heading */
+    .sc-heading {
+        margin-bottom: 28px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .sc-heading h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0 0 5px;
+            letter-spacing: -.2px;
+        }
+
+        .sc-heading p {
+            font-size: 13.5px;
+            color: var(--text3);
+            margin: 0;
+        }
+
+    /* Ref number */
+    .sc-ref {
+        display: inline-block;
+        background: #f0f0f0;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text2);
+        letter-spacing: .5px;
+        margin-top: 8px;
+    }
+
+        .sc-ref span {
+            color: var(--green);
+        }
+
+    /* Detail table */
+    .sc-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        font-size: 13.5px;
+    }
+
+        .sc-table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+            .sc-table tr:last-child {
+                border: none;
+            }
+
+        .sc-table td {
+            padding: 10px 0;
+            vertical-align: top;
+        }
+
+            .sc-table td:first-child {
+                color: var(--text3);
+                font-weight: 600;
+                width: 140px;
+            }
+
+            .sc-table td:last-child {
+                color: var(--text);
+                font-weight: 700;
+            }
+
+        .sc-table .price-val {
+            color: var(--green);
+            font-size: 15px;
+        }
+
+    /* Status row */
+    .sc-status-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sc-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f59e0b;
+        flex-shrink: 0;
+    }
+
+    .sc-status-txt {
+        font-size: 13.5px;
+        color: var(--text2);
+        font-weight: 600;
+    }
+
+    /* Notice */
+    .sc-notice {
+        background: #fafafa;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--green);
+        border-radius: 3px;
+        padding: 14px 16px;
+        font-size: 12.5px;
+        color: var(--text2);
+        line-height: 1.7;
+        margin-bottom: 28px;
+    }
+
+    /* Actions */
+    .sc-actions {
+        display: flex;
+        gap: 10px;
+        padding-top: 4px;
+    }
+
+    .sc-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border-radius: 3px;
+        font-size: 13.5px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .15s;
+        font-family: var(--font);
+        border: none;
+        cursor: pointer;
+    }
+
+    .sc-btn-primary {
+        background: var(--green);
+        color: #fff;
+    }
+
+        .sc-btn-primary:hover {
+            background: #145f2e;
+            color: #fff;
+        }
+
+    .sc-btn-secondary {
+        background: var(--white);
+        color: var(--text2);
+        border: 1px solid var(--border);
+    }
+
+        .sc-btn-secondary:hover {
+            border-color: #aaa;
+            color: var(--text);
+        }
+
+    @@media (max-width: 500px) {
+        .sc-body {
+            padding: 24px 20px 20px;
+        }
+
+        .sc-actions {
+            flex-direction: column;
+        }
+
+        .sc-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="sc-page">
+    <div class="sc-wrap">
+        <div class="sc-card">
+            <div class="sc-stripe"></div>
+            <div class="sc-body">
+
+                <div class="sc-heading">
+                    <h1>Lịch hẹn đã được đặt</h1>
+                    <p>Chúng tôi sẽ xác nhận trong vòng 30 phút.</p>
+                    <div class="sc-ref">Mã lịch hẹn &nbsp;<span>#@Model.MaLich</span></div>
+                </div>
+
+                <table class="sc-table">
+                    <tr>
+                        <td>Thú cưng</td>
+                        <td>
+                            @Model.TenThuCung
+                        @if (Model.LoaiThuCung != null)
+                        {
+                            <span style="font-weight:400;color:var(--text3);"> &mdash; @Model.LoaiThuCung.TenLoaiThu</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dịch vụ</td>
+                    <td>@(Model.DichVuSpa != null ? Model.DichVuSpa.TenDichVu : "—")</td>
+                </tr>
+                <tr>
+                    <td>Ngày hẹn</td>
+                    <td>@Model.NgayHen.ToString("dddd, dd/MM/yyyy")</td>
+                </tr>
+                <tr>
+                    <td>Giờ hẹn</td>
+                    <td>@Model.GioHen.ToString(@"hh\:mm")</td>
+                </tr>
+                <tr>
+                    <td>Chi phí</td>
+                    <td class="price-val">
+                        @(Model.DichVuSpa != null ? Model.DichVuSpa.GiaTien.ToString("N0") + "đ" : "—")
+                    </td>
+                </tr>
+                <tr>
+                    <td>Trạng thái</td>
+                    <td>
+                        <div class="sc-status-row">
+                            <div class="sc-dot"></div>
+                            <span class="sc-status-txt">Chờ xác nhận</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Liên hệ</td>
+                    <td>@Model.Email &nbsp;&middot;&nbsp; @Model.SoDienThoai</td>
+                </tr>
+            </table>
+
+            <div class="sc-notice">
+                Email xác nhận đã được gửi đến <strong>@Model.Email</strong>.<br>
+                Vui lòng mang theo phiếu tiêm phòng và đến trước giờ hẹn 5–10 phút.<br>
+                Cần hỗ trợ? Gọi <strong style="color:var(--green);">039 4627 246</strong>
+                hoặc vào <a href="@Url.Action("LichSuDatLich","Spa")" style="color:var(--green);font-weight:700;">lịch sử đặt lịch</a> để hủy.
+            </div>
+
+            <div class="sc-actions">
+                <a href="@Url.Action("LichSuDatLich","Spa")" class="sc-btn sc-btn-primary">
+                    Xem lịch của tôi
+                </a>
+                <a href="@Url.Action("DatLich","Spa")" class="sc-btn sc-btn-secondary">
+                    Đặt lịch mới
+                </a>
+                <a href="@Url.Action("Index","Home")" class="sc-btn sc-btn-secondary">
+                    Trang chủ
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+@section ScriptsProducts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+@if (TempData["BookingSuccess"] != null && (bool)TempData["BookingSuccess"])
+{
+    <text>
+    window.addEventListener('load', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Đặt lịch thành công',
+            html: '<div style="font-family:Nunito,sans-serif;font-size:14px;text-align:left;line-height:2;">' +
+                  'Mã lịch: <b>#@TempData["BookingId"]</b><br>' +
+                  'Thú cưng: <b>@Html.Raw(TempData["PetName"]?.ToString())</b><br>' +
+                  'Dịch vụ: <b>@Html.Raw(TempData["ServiceName"]?.ToString())</b><br>' +
+                  'Ngày hẹn: <b>@TempData["NgayHen"]</b> lúc <b>@TempData["GioHen"]</b>' +
+                  '</div>',
+            confirmButtonText: 'Đã hiểu',
+            confirmButtonColor: '#1a7a3c',
+            width: 420,
+            timer: 7000,
+            timerProgressBar: true
+        });
+    });
+    </text>
+}
+    </script>
+}

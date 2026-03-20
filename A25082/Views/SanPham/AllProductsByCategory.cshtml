@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "AllProductsByCategory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<A25082.Models.SanPhamKemChongNang>
+
+<section class="body_top_pr">
+    <div class="body_title_top">
+        <h4 class="title_h_top" style="text-transform:uppercase;">
+            @ViewBag.CategoryName
+        </h4>
+        <p class="title_p_top">(@Model.Count() sản phẩm)</p>
+    </div>
+
+    <div class="body_pr_top">
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-6 col-sm-6 col-xl-3 col-md-3">
+                    <div class="product-card" style="margin-top:3rem;">
+                        <span class="flash-tag">MỚI</span>
+
+                        <a href='/SanPham/PageDeTailsProduct/@product.MaKem'>
+                            <div class="image-container image_xs">
+                                @if (product.AnhKemChongNangs?.Any() == true)
+                                {
+                                    var primaryImageUrl = product.AnhKemChongNangs.First().ImageUrl; // hoặc DuongDanAnh nếu model đặt vậy
+                                    var hoverImageUrl = product.AnhKemChongNangs.ElementAtOrDefault(1)?.ImageUrl;
+
+                                    if (!string.IsNullOrEmpty(primaryImageUrl))
+                                    {
+                                        <img src="@Url.Content(primaryImageUrl)" alt="@product.TenKem" class="primary-image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/Assets/image/default-image.jpg" alt="Default Image" class="primary-image" />
+                                    }
+
+                                    if (!string.IsNullOrEmpty(hoverImageUrl))
+                                    {
+                                        <img src="@Url.Content(hoverImageUrl)" alt="@product.TenKem - Hover" class="hover-image" />
+                                    }
+                                }
+                                else
+                                {
+                                    <img src="/Assets/image/default-image.jpg" alt="Default Image" class="primary-image" />
+                                }
+                            </div>
+                        </a>
+
+                        <h3 class="title_pr_four">@product.TenKem</h3>
+                        <div class="price_pr_four">
+                            @if (product.GiaGiam > 0)
+                            {
+                                <span class="current-price">@product.GiaGoc.ToString("N0")đ</span>
+                                <span class="original-price" style="text-decoration: line-through; color: gray;">@product.GiaGiam.ToString("N0")đ</span>
+                            }
+                            else
+                            {
+                                <span class="current-price">@product.GiaGoc.ToString("N0")đ</span>
+                            }
+                        </div>
+
+                        <button class="flash-sale-button">MUA GIÁ FLASH SALE</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .flash-tag {
+        background-color: mediumseagreen;
+    }
+
+    .flash-sale-button {
+        background-color: mediumseagreen;
+    }
+
+    .current-price {
+        color: forestgreen;
+    }
+</style>

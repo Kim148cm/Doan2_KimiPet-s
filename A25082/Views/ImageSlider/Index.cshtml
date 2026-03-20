@@ -1,0 +1,308 @@
+﻿@model IEnumerable<A25082.Models.Slider>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+<div class="fullscreen-background" id="fullscreen-bg">
+    <div class="fullscreen-text" id="fullscreen-text"></div>
+</div>
+
+<div class="slider-container">
+    <button class="nav-btn left" id="nav-left" aria-label="Scroll Left">
+        <i data-lucide="chevron-left"></i>
+    </button>
+
+    <div class="card-track" id="card-track">
+        <!-- Cards will be injected here -->
+    </div>
+
+    <button class="nav-btn right" id="nav-right" aria-label="Scroll Right">
+        <i data-lucide="chevron-right"></i>
+    </button>
+</div>
+
+<script>
+    const sliderData = [
+        @foreach (var item in Model)
+        {
+            @: { image: "@Url.Content(item.ImageUrl)", text: "" },
+        }
+    ];
+
+    const cardTrack = document.getElementById("card-track");
+    const fullscreenBg = document.getElementById("fullscreen-bg");
+    const fullscreenText = document.getElementById("fullscreen-text");
+    let activeIndex = 0;
+    let cards = [];
+
+    // Tạo card từ dữ liệu
+    sliderData.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.style.animationDelay = `${index * 0.1}s`;
+
+        const img = document.createElement("img");
+        img.src = item.image;
+
+        const text = document.createElement("div");
+        text.className = "card-text";
+        text.innerText = item.text;
+
+        card.appendChild(img);
+        card.appendChild(text);
+        cardTrack.appendChild(card);
+        cards.push(card);
+
+        // Click chọn card
+        card.addEventListener("click", () => {
+            activeIndex = index;
+            updateActiveCard();
+            scrollToCard(index);
+            resetAutoSlide();
+        });
+    });
+
+    function updateActiveCard() {
+        cards.forEach((card, i) => {
+            card.classList.toggle("active", i === activeIndex);
+        });
+
+        fullscreenBg.style.backgroundImage = `url(${sliderData[activeIndex].image})`;
+        fullscreenText.innerText = sliderData[activeIndex].text;
+    }
+
+    function scrollToCard(index) {
+        const cardWidth = cards[0].offsetWidth + 16;
+        const scrollX = cardWidth * index;
+        cardTrack.scrollTo({ left: scrollX, behavior: "smooth" });
+    }
+
+    // Nút trái/phải
+    document.getElementById("nav-left").addEventListener("click", () => {
+        prevSlide();
+        resetAutoSlide();
+    });
+
+    document.getElementById("nav-right").addEventListener("click", () => {
+        nextSlide();
+        resetAutoSlide();
+    });
+
+    function prevSlide() {
+        activeIndex = (activeIndex - 1 + sliderData.length) % sliderData.length;
+        updateActiveCard();
+        scrollToCard(activeIndex);
+    }
+
+    function nextSlide() {
+        activeIndex = (activeIndex + 1) % sliderData.length;
+        updateActiveCard();
+        scrollToCard(activeIndex);
+    }
+
+    // --- TỰ ĐỘNG SLIDE ---
+    let autoSlide = setInterval(nextSlide, 3000);
+
+    function resetAutoSlide() {
+        clearInterval(autoSlide);
+        autoSlide = setInterval(nextSlide, 3000);
+    }
+
+    // --- DRAG / SWIPE ---
+    let isDragging = false;
+    let startX, scrollLeft;
+
+    cardTrack.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startX = e.pageX - cardTrack.offsetLeft;
+        scrollLeft = cardTrack.scrollLeft;
+        cardTrack.style.cursor = "grabbing";
+    });
+
+    cardTrack.addEventListener("mouseleave", () => {
+        isDragging = false;
+        cardTrack.style.cursor = "grab";
+    });
+
+    cardTrack.addEventListener("mouseup", (e) => {
+        isDragging = false;
+        cardTrack.style.cursor = "grab";
+
+        // xác định kéo sang trái/phải
+        const moveX = e.pageX - cardTrack.offsetLeft - startX;
+        if (moveX > 50) {
+            prevSlide();
+        } else if (moveX < -50) {
+            nextSlide();
+        }
+        resetAutoSlide();
+    });
+
+    cardTrack.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - cardTrack.offsetLeft;
+        const walk = (x - startX);
+        cardTrack.scrollLeft = scrollLeft - walk;
+    });
+
+    // Hỗ trợ cảm ứng
+    cardTrack.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        startX = e.touches[0].pageX - cardTrack.offsetLeft;
+        scrollLeft = cardTrack.scrollLeft;
+    });
+
+    cardTrack.addEventListener("touchend", (e) => {
+        isDragging = false;
+        const moveX = e.changedTouches[0].pageX - cardTrack.offsetLeft - startX;
+        if (moveX > 50) {
+            prevSlide();
+        } else if (moveX < -50) {
+            nextSlide();
+        }
+        resetAutoSlide();
+    });
+
+    cardTrack.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - cardTrack.offsetLeft;
+        const walk = (x - startX);
+        cardTrack.scrollLeft = scrollLeft - walk;
+    });
+
+    // Khởi tạo
+    updateActiveCard();
+
+    // Load icons
+    lucide.createIcons();
+</script>
+
+<style>
+
+
+    body {
+     
+     
+        overflow-x: hidden;
+      
+    }
+
+    .fullscreen-background {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+        transition: background 0.8s ease;
+        display: flex;
+        align-items: center;
+        justify-content: normal;
+        text-align: center;
+        padding: 2rem;
+        white-space: nowrap;
+        padding-left: 100px;
+    }
+
+        .fullscreen-background:after {
+            content: "";
+            background: linear-gradient(2deg, black -21%, transparent);
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+    .fullscreen-text {
+        z-index: 2;
+        font-size: 4.5rem;
+        color: white;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        max-width: 700px;
+        line-height: 1.4;
+    }
+
+    .slider-container {
+        position: absolute; /* nằm trong .fullscreen-background */
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 2; /* nằm trên nền */
+    }
+
+
+    .card-track {
+        display: flex;
+        gap: 1rem;
+        overflow-x: hidden;
+        max-width: 80vw;
+        transition: transform 0.5s ease;
+    }
+
+    .card {
+        flex: 0 0 auto;
+        width: 200px;
+        height: 130px;
+        background-color: #222;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        transform: scale(1);
+        transition: all 0.4s ease;
+        opacity: 0;
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .card-text {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0.5rem;
+        background: rgba(0, 0, 0, 0.6);
+        font-size: 1rem;
+    }
+
+    .card.active {
+        transform: scale(1.1);
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+        z-index: 1;
+    }
+
+        .card.active img {
+            transition: all 0.3s ease;
+            transform: scale(1.5);
+        }
+
+        .card.active .card-text {
+            display: none;
+        }
+
+    .nav-btn {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+        .nav-btn:hover {
+            transform: scale(1.2);
+        }
+
+</style>

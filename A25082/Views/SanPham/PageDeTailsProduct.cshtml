@@ -1,0 +1,1043 @@
+﻿@{
+    ViewBag.Title = "PageDeTailsProduct";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model A25082.Models.SanPhamKemChongNang
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+@section ScriptsProduct{
+    <script src="~/Assets/js/Detail.js"></script>
+}
+@section ScriptDetails{
+    <script src="~/Assets/js/LikeProduct.js"></script>
+}
+@section Wish{
+    <script src="~/Assets/js/wishlist.js"></script>
+}
+
+@{
+    var imageCount = Model.AnhKemChongNangs?.Count ?? 0;
+    var isSingleImage = imageCount <= 1;
+}
+
+<style>
+    /* ── Reset / Base ──────────────────────────────── */
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --black: #1a1a1a;
+        --dark: #333333;
+        --mid: #777777;
+        --light: #aaaaaa;
+        --border: #e5e5e5;
+        --bg: #f7f7f7;
+        --white: #ffffff;
+        --red: #e53935;
+        --font: 'Nunito', 'Segoe UI', -apple-system, sans-serif;
+    }
+
+    /* ── Images ────────────────────────────────────── */
+    .body_image_detail.single-image {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+        .body_image_detail.single-image img {
+            max-width: 88%;
+            height: auto;
+            object-fit: contain;
+            background: var(--bg);
+        }
+
+    .body_img_left img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        background: var(--bg);
+        transition: transform 0.3s ease;
+    }
+
+        .body_img_left img:hover {
+            transform: scale(1.02);
+        }
+
+    /* ── Info panel ────────────────────────────────── */
+    .body_left_Detail {
+        font-family: var(--font);
+    }
+
+    .body_all_info_left {
+        padding-top: 2rem;
+    }
+
+    /* Product name */
+    .title_detail_pr_left {
+        font-family: var(--font);
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--black);
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+        background: none;
+        -webkit-text-fill-color: var(--black);
+        text-shadow: none;
+    }
+
+        .title_detail_pr_left::after {
+            display: none;
+        }
+
+    /* Quick rating */
+    .pd-quick-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 1.1rem;
+    }
+
+    .pd-stars-mini {
+        display: inline-flex;
+        gap: 2px;
+    }
+
+        .pd-stars-mini .s {
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+            .pd-stars-mini .s.on {
+                color: #f5c518;
+            }
+
+    .pd-rating-count {
+        font-size: 12px;
+        color: var(--light);
+    }
+
+    /* Price block */
+    .title_price_detail {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .title_price_detail p {
+            display: none; /* ẩn label "Giá bán :" */
+        }
+
+    .current_price_new {
+        font-size: 1.7rem !important;
+        font-weight: 700 !important;
+        color: var(--green) !important;
+        background: none !important;
+        -webkit-text-fill-color: var(--green) !important;
+        text-shadow: none !important;
+        letter-spacing: -0.5px;
+    }
+
+    .original-price {
+        font-size: 1rem !important;
+        color: var(--light) !important;
+        text-decoration: line-through;
+    }
+
+    .price-badge-off {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        background: #fef2f2;
+        color: var(--red);
+        padding: 3px 9px;
+        border-radius: 4px;
+        vertical-align: middle;
+    }
+
+    /* ── Quantity selector ─────────────────────────── */
+    .qty-block {
+        margin-bottom: 1.25rem;
+    }
+
+    .qty-block-label {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .qty-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .qty-control {
+        display: inline-flex;
+        align-items: center;
+        border: 1.5px solid var(--green);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .qty-btn {
+        width: 42px;
+        height: 42px;
+        border: none;
+        background: var(--white);
+        font-size: 20px;
+        font-weight: 300;
+        color: var(--green);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s, color 0.15s;
+        user-select: none;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+        .qty-btn:hover {
+            background: var(--green);
+            color: var(--white);
+        }
+
+        .qty-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+            .qty-btn:disabled:hover {
+                background: var(--white);
+                color: var(--green);
+            }
+
+    .qty-num {
+        width: 54px;
+        height: 42px;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        border-left: 1.5px solid var(--green);
+        border-right: 1.5px solid var(--green);
+        outline: none;
+        background: var(--green-lt);
+        color: var(--black);
+        -moz-appearance: textfield;
+    }
+
+        .qty-num::-webkit-inner-spin-button,
+        .qty-num::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+
+    .qty-stock-note {
+        font-size: 12px;
+        color: var(--light);
+    }
+
+    /* ── Buttons ───────────────────────────────────── */
+    .body_buy_cart {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 0;
+        margin-bottom: 1.25rem;
+    }
+    /* "Mua ngay" — nền đen */
+    .btn_add_left {
+        height: 48px;
+        padding: 0 28px;
+        background: var(--green) !important;
+        color: var(--white) !important;
+        border: none !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(26,122,60,0.25) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: background 0.2s !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn_add_left:hover {
+            opacity: 0.88 !important;
+            transform: translateY(-1px) !important;
+            background: var(--green) !important;
+        }
+    /* Wishlist button */
+    .sp-wish {
+        width: 48px !important;
+        height: 48px !important;
+        border: 1.5px solid var(--border) !important;
+        border-radius: 8px !important;
+        background: var(--white) !important;
+        font-size: 16px !important;
+        cursor: pointer;
+        color: var(--mid) !important;
+        transition: border-color 0.2s, color 0.2s !important;
+        margin-top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .sp-wish:hover {
+            border-color: var(--red) !important;
+            color: var(--red) !important;
+        }
+
+    /* ── Policy rows ───────────────────────────────── */
+    .pd-policy-block {
+        border-top: 1px solid var(--border);
+        padding-top: 1.1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .pd-policy-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .pd-policy-row .lbl {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--black);
+        }
+
+        .pd-policy-row .val {
+            color: var(--light);
+        }
+
+    /* Hide old policy elements */
+    .title_left_sm {
+        display: none;
+    }
+
+    .body_left_title_sm {
+        display: none;
+    }
+
+    /* ── Description tab ───────────────────────────── */
+    .body_two_detail_title .row {
+        border-bottom: 1px solid var(--border);
+    }
+
+    .title_two_detail {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--mid);
+        cursor: pointer;
+        padding-bottom: 8px;
+        transition: color 0.2s;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+    }
+
+        .title_two_detail.active {
+            color: var(--green);
+            border-bottom: 2px solid var(--green);
+        }
+
+    .left_title_dt {
+        font-size: 14px;
+        color: var(--dark);
+        line-height: 1.8;
+        margin-top: 1rem;
+    }
+
+    /* ── Review section ────────────────────────────── */
+    .review-section {
+        margin: 3.5rem 0 2rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid var(--border);
+        font-family: var(--font);
+    }
+
+    .review-heading {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        color: var(--black);
+        margin-bottom: 2rem;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--green);
+        display: inline-block;
+    }
+
+    /* Summary */
+    .review-summary {
+        display: flex;
+        align-items: flex-start;
+        gap: 3rem;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .rs-score {
+        text-align: center;
+        min-width: 80px;
+    }
+
+    .rs-big {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--green);
+        line-height: 1;
+    }
+
+    .rs-stars-row {
+        display: flex;
+        justify-content: center;
+        gap: 3px;
+        margin: 6px 0 4px;
+    }
+
+        .rs-stars-row .s {
+            font-size: 13px;
+            color: var(--border);
+        }
+
+            .rs-stars-row .s.on {
+                color: #f5c518;
+            }
+
+    .rs-count {
+        font-size: 11px;
+        color: var(--light);
+    }
+
+    .rs-bars {
+        flex: 1;
+    }
+
+    .rs-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .rs-bar-lbl {
+        font-size: 12px;
+        color: var(--mid);
+        width: 20px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .rs-bar-track {
+        flex: 1;
+        height: 4px;
+        background: var(--border);
+    }
+
+    .rs-bar-fill {
+        height: 100%;
+        background: var(--green);
+    }
+
+    .rs-bar-pct {
+        font-size: 11px;
+        color: var(--light);
+        width: 30px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    /* Write review form */
+    .write-box {
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--green);
+        border-radius: 0 0 8px 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        background: var(--green-lt);
+    }
+
+    .write-box-lbl {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--green);
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .star-picker {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+        .star-picker input {
+            display: none;
+        }
+
+        .star-picker label {
+            font-size: 1.6rem;
+            color: var(--border);
+            cursor: pointer;
+            transition: color 0.1s;
+            line-height: 1;
+        }
+
+            .star-picker label:hover,
+            .star-picker label:hover ~ label,
+            .star-picker input:checked ~ label {
+                color: #f5c518;
+            }
+
+    .star-fb {
+        font-size: 12px;
+        color: var(--mid);
+        min-height: 18px;
+        margin-bottom: 10px;
+    }
+
+    .review-ta {
+        width: 100%;
+        border: 1px solid var(--border);
+        padding: 11px 12px;
+        font-size: 13px;
+        font-family: var(--font);
+        resize: vertical;
+        min-height: 80px;
+        outline: none;
+        color: var(--dark);
+        transition: border-color 0.15s;
+    }
+
+        .review-ta:focus {
+            border-color: var(--black);
+        }
+
+    .btn-submit-review {
+        margin-top: 10px;
+        height: 42px;
+        padding: 0 28px;
+        background: var(--green);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        box-shadow: 0 3px 10px rgba(26,122,60,0.2);
+    }
+
+        .btn-submit-review:hover {
+            opacity: 0.88;
+        }
+
+    /* Review cards */
+    .review-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rv-card {
+        padding: 1.25rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .rv-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .rv-author {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--black);
+    }
+
+    .rv-card-stars {
+        display: inline-flex;
+        gap: 2px;
+        margin-left: 8px;
+    }
+
+        .rv-card-stars .s {
+            font-size: 12px;
+            color: var(--border);
+        }
+
+            .rv-card-stars .s.on {
+                color: #f5c518;
+            }
+
+    .rv-date {
+        font-size: 11px;
+        color: var(--light);
+    }
+
+    .rv-text {
+        font-size: 13px;
+        color: var(--dark);
+        line-height: 1.7;
+        margin: 5px 0;
+    }
+
+    .rv-verified {
+        font-size: 11px;
+        color: var(--light);
+    }
+
+    /* Related section title */
+    .title_ele_six {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--black) !important;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<!-- ══════════════════════════════════════════════ -->
+<section class="body_part_one_detail">
+    <div class="body_all_one">
+        <div class="row row_detal">
+
+            <!-- Images -->
+            <div class="col-xl-8">
+                <div class="body_image_detail @(isSingleImage ? "single-image" : "")">
+                    <div class="row row_detail_big">
+                        @if (imageCount > 0)
+                        {
+                            foreach (var image in Model.AnhKemChongNangs)
+                            {
+                                <div class="@(isSingleImage ? "col-12" : "col-lg-6 col-xl-6")">
+                                    <div class="body_img_left" style="margin-top:1rem;">
+                                        <img src="@Url.Content(image.ImageUrl)" alt="@Model.TenKem">
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="body_img_left" style="margin-top:1rem;">
+                                    <img src="@Url.Content("~/images/default-image.jpg")" alt="Default Image">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="col-xl-4 body_left_Detail">
+                <div class="body_all_info_left">
+
+                    <h5 class="title_detail_pr_left">@Model.TenKem</h5>
+
+                    <!-- Quick rating -->
+                    <div class="pd-quick-rating">
+                        <div class="pd-stars-mini">
+                            <span class="s on">★</span><span class="s on">★</span>
+                            <span class="s on">★</span><span class="s on">★</span>
+                            <span class="s">★</span>
+                        </div>
+                        <span class="pd-rating-count">4.2 · 24 đánh giá</span>
+                    </div>
+
+                    <!-- Price -->
+                    @{
+                        // Normalize: nếu giá < 1000 thì nhân 1000 (đồng bộ với AllProductsByCategoryPET)
+                        decimal giaGoc = Model.GiaGoc < 1000 ? Model.GiaGoc * 1000 : Model.GiaGoc;
+                        decimal giaGiam = Model.GiaGiam < 1000 ? Model.GiaGiam * 1000 : Model.GiaGiam;
+
+                        // Chỉ hiển thị sale khi GiaGiam hợp lệ: nhỏ hơn GiaGoc và % giảm trong khoảng 1-70%
+                        bool hasSalePrice = giaGiam > 0 && giaGiam < giaGoc;
+                        int salePct = 0;
+                        if (hasSalePrice && giaGoc > 0)
+                        {
+                            salePct = (int)Math.Round((1.0 - (double)giaGiam / (double)giaGoc) * 100);
+                            if (salePct <= 0 || salePct > 70) { hasSalePrice = false; salePct = 0; }
+                        }
+                        decimal displayPrice = hasSalePrice ? giaGiam : giaGoc;
+                    }
+                    <div class="title_price_detail">
+                        <p></p>
+                        <span class="current_price_new">@displayPrice.ToString("N0")đ</span>
+                        @if (hasSalePrice)
+                        {
+                            <span class="original-price">@giaGoc.ToString("N0")đ</span>
+                            <span class="price-badge-off">-@salePct%</span>
+                        }
+                    </div>
+
+                    <!-- ── Quantity selector (NEW) ── -->
+                    <div class="qty-block">
+                        <div class="qty-block-label">Số lượng</div>
+                        <div class="qty-row">
+                            <div class="qty-control">
+                                <button class="qty-btn" id="btnDec" type="button" onclick="qtyChange(-1)">−</button>
+                                <input class="qty-num" type="number" id="qtyInput" value="1" min="1" max="@Model.SoLuongTon" readonly>
+                                <button class="qty-btn" id="btnInc" type="button" onclick="qtyChange(1)">+</button>
+                            </div>
+                            <span class="qty-stock-note">Còn @Model.SoLuongTon sản phẩm</span>
+                        </div>
+                    </div>
+
+                    <!-- ── Giữ nguyên hidden inputs gốc ── -->
+                    <input type="hidden" id="productId" value="@Model.MaKem" />
+                    <input type="hidden" id="selectedColor" value="" />
+                    <input type="hidden" id="selectedSize" value="" />
+                    <input type="hidden" id="maxStock" value="@Model.SoLuongTon" />
+
+                    <!-- ── Giữ nguyên nút gốc (Detail.js dùng class/id này) ── -->
+                    <div class="body_buy_cart">
+                        <button class="btn_add_left">Mua ngay</button>
+                        <button class="sp-wish"
+                                data-wl-id="@Model.MaKem"
+                                onclick="wlToggle(this, @Model.MaKem)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Policy (thay thế 3 block cũ) -->
+                <div class="pd-policy-block">
+                    <div class="pd-policy-row">
+                        <span class="lbl">Miễn phí giao hàng</span>
+                        <span class="val">Đơn từ 300.000đ</span>
+                    </div>
+                    <div class="pd-policy-row">
+                        <span class="lbl">Đổi trả</span>
+                        <span class="val">Ngay sau khi nhận nếu có lỗi</span>
+                    </div>
+                    <div class="pd-policy-row">
+                        <span class="lbl">Tổng đài</span>
+                        <span class="val">1122 3344 · 8:00 – 21:00</span>
+                    </div>
+                </div>
+
+                <!-- Description tab -->
+                <div class="body_two_detail_title">
+                    <div class="row row_detail_title">
+                        <div class="col-xl-6">
+                            <h6 class="title_two_detail active" data-tab="description">Mô tả sản phẩm</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="body_two_detail_content">
+                    <div class="content" id="description">
+                        <p class="left_title_dt">@Model.MoTa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Review section ── -->
+    <div class="body_all_one">
+        <div class="review-section">
+            <h2 class="review-heading">Đánh giá từ khách hàng</h2>
+
+            <!-- Summary -->
+            <div class="review-summary">
+                <div class="rs-score">
+                    <div class="rs-big">4.2</div>
+                    <div class="rs-stars-row">
+                        <span class="s on">★</span><span class="s on">★</span>
+                        <span class="s on">★</span><span class="s on">★</span>
+                        <span class="s">★</span>
+                    </div>
+                    <div class="rs-count">24 đánh giá</div>
+                </div>
+                <div class="rs-bars">
+                    @{
+                        var bars = new[] {
+                            new { l="5", p=65 }, new { l="4", p=20 },
+                            new { l="3", p=10 }, new { l="2", p=3  }, new { l="1", p=2 }
+                        };
+                    }
+                    @foreach (var b in bars)
+                    {
+                        <div class="rs-bar-row">
+                            <span class="rs-bar-lbl">@b.l</span>
+                            <div class="rs-bar-track"><div class="rs-bar-fill" style="width:@b.p%"></div></div>
+                            <span class="rs-bar-pct">@b.p%</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+         
+
+            <!-- Review list -->
+            <div class="review-list" id="reviewList">
+                <div class="rv-card">
+                    <div class="rv-top">
+                        <div>
+                            <span class="rv-author">Nguyễn Thị Lan</span>
+                            <div class="rv-card-stars">
+                                <span class="s on">★</span><span class="s on">★</span>
+                                <span class="s on">★</span><span class="s on">★</span><span class="s on">★</span>
+                            </div>
+                        </div>
+                        <span class="rv-date">10/03/2026</span>
+                    </div>
+                    <p class="rv-text">Sản phẩm tốt, dùng cho chó thấy hiệu quả rõ rệt. Lông bóng mượt hơn, mùi thơm lâu.</p>
+                    <span class="rv-verified">Đã mua hàng</span>
+                </div>
+                <div class="rv-card">
+                    <div class="rv-top">
+                        <div>
+                            <span class="rv-author">Trần Văn Minh</span>
+                            <div class="rv-card-stars">
+                                <span class="s on">★</span><span class="s on">★</span>
+                                <span class="s on">★</span><span class="s on">★</span><span class="s">★</span>
+                            </div>
+                        </div>
+                        <span class="rv-date">08/03/2026</span>
+                    </div>
+                    <p class="rv-text">Chất lượng ổn, giao hàng nhanh. Mèo nhà không bị kích ứng. Trừ một sao vì bao bì hơi đơn giản.</p>
+                    <span class="rv-verified">Đã mua hàng</span>
+                </div>
+                <div class="rv-card">
+                    <div class="rv-top">
+                        <div>
+                            <span class="rv-author">Phạm Quỳnh Anh</span>
+                            <div class="rv-card-stars">
+                                <span class="s on">★</span><span class="s on">★</span>
+                                <span class="s on">★</span><span class="s on">★</span><span class="s on">★</span>
+                            </div>
+                        </div>
+                        <span class="rv-date">05/03/2026</span>
+                    </div>
+                    <p class="rv-text">Mua lần 2 rồi, không bao giờ thất vọng. Shop tư vấn nhiệt tình, sản phẩm đúng mô tả.</p>
+                    <span class="rv-verified">Đã mua hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related -->
+    <div class="body_next_detail">
+        <section class="body_all_six">
+            <div class="body_title_all" style="padding-bottom:2rem;">
+                <h4 class="title_ele_six">Có thể bạn sẽ thích</h4>
+            </div>
+            @Html.Action("ProductHot", "SanPham")
+        </section>
+    </div>
+</section>
+
+<!-- ── Mobile bottom nav (giữ nguyên structure gốc) ── -->
+<div class="body_bottom_nav">
+    <div class="bottom-action">
+        <h5 class="title_detail_pr_left" style="font-size:12px;">@Model.TenKem</h5>
+        <div class="body_bottom_color_price">
+            <div class="price_pr_one">
+                <span class="current_price_new" style="font-size:14px!important;">@displayPrice.ToString("N0")đ</span>
+                @if (hasSalePrice)
+                {
+                    <span class="original-price">@giaGoc.ToString("N0")đ</span>
+                }
+            </div>
+        </div>
+
+        <!-- Mobile qty -->
+        <div class="qty-row" style="margin:6px 0;">
+            <div class="qty-control" style="transform:scale(.85);transform-origin:left;">
+                <button class="qty-btn" onclick="qtyChangeMobile(-1)" type="button">−</button>
+                <input class="qty-num" type="number" id="mobileQtyInput" value="1" min="1" max="@Model.SoLuongTon" readonly>
+                <button class="qty-btn" onclick="qtyChangeMobile(1)" type="button">+</button>
+            </div>
+        </div>
+
+        <input type="hidden" id="mobileProductId" value="@Model.MaKem" />
+        <input type="hidden" id="mobileSelectedColor" value="" />
+        <input type="hidden" id="mobileSelectedSize" value="" />
+
+        <!-- Giữ nguyên class nút gốc để Detail.js hoạt động -->
+        <div class="body_btn_one">
+            <button class="btn_add_left">Thêm giỏ hàng</button>
+            <button class="btn_buy_trending">Mua set trending</button>
+        </div>
+        <div class="body_buy_cart">
+            <button class="btn_buy_left">Mua ngay</button>
+        </div>
+        <button class="sp-wish"
+                data-wl-id="@Model.MaKem"
+                onclick="wlToggle(this, @Model.MaKem)">
+            <i class="fa-regular fa-heart"></i>
+        </button>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SCRIPTS — chỉ thêm logic qty, không đụng cart -->
+<!-- ════════════════════════════════════════════ -->
+<script>
+    /* ── Quantity ──────────────────────────────── */
+    var MAX_STOCK = parseInt(document.getElementById('maxStock').value) || 99;
+
+    function qtyChange(delta) {
+        var input = document.getElementById('qtyInput');
+        var val = Math.min(Math.max((parseInt(input.value) || 1) + delta, 1), MAX_STOCK);
+        input.value = val;
+        document.getElementById('btnDec').disabled = (val <= 1);
+        document.getElementById('btnInc').disabled = (val >= MAX_STOCK);
+    }
+
+    function qtyChangeMobile(delta) {
+        var input = document.getElementById('mobileQtyInput');
+        input.value = Math.min(Math.max((parseInt(input.value) || 1) + delta, 1), MAX_STOCK);
+    }
+
+    // Init: disable nút − lúc mặc định = 1
+    document.getElementById('btnDec').disabled = true;
+
+    /* ── Star picker feedback ─────────────────── */
+    var starLabels = {
+        '1': 'Rất tệ', '2': 'Không hài lòng',
+        '3': 'Tạm được', '4': 'Rất tốt', '5': 'Xuất sắc'
+    };
+    document.querySelectorAll('#starPicker input').forEach(function (r) {
+        r.addEventListener('change', function () {
+            document.getElementById('starFb').textContent = starLabels[this.value] || '';
+        });
+    });
+
+    /* ── Submit review ────────────────────────── */
+    function starsHtml(n) {
+        var h = '';
+        for (var i = 1; i <= 5; i++)
+            h += '<span class="s' + (i <= n ? ' on' : '') + '">★</span>';
+        return h;
+    }
+
+    function submitReview(productId) {
+        var sel = document.querySelector('#starPicker input:checked');
+        var comment = document.getElementById('reviewComment').value.trim();
+
+        if (!sel) {
+            Swal.fire({ icon: 'warning', title: 'Vui lòng chọn số sao.', showConfirmButton: false, timer: 1400 });
+            return;
+        }
+        if (!comment) {
+            Swal.fire({ icon: 'warning', title: 'Vui lòng nhập nhận xét.', showConfirmButton: false, timer: 1400 });
+            return;
+        }
+
+        var stars = parseInt(sel.value);
+        var today = new Date().toLocaleDateString('vi-VN');
+
+        $.ajax({
+            url: '/DanhGia/GuiDanhGia',
+            type: 'POST',
+            data: { maKem: productId, diem: stars, binhLuan: comment },
+            complete: function () {
+                var card = '<div class="rv-card" style="animation:fadeIn .3s ease">'
+                    + '<div class="rv-top"><div>'
+                    + '<span class="rv-author">Bạn</span>'
+                    + '<div class="rv-card-stars">' + starsHtml(stars) + '</div>'
+                    + '</div><span class="rv-date">' + today + '</span></div>'
+                    + '<p class="rv-text">' + comment + '</p>'
+                    + '<span class="rv-verified">Vừa đánh giá</span></div>';
+
+                document.getElementById('reviewList').insertAdjacentHTML('afterbegin', card);
+                sel.checked = false;
+                document.getElementById('reviewComment').value = '';
+                document.getElementById('starFb').textContent = '';
+
+                Swal.fire({
+                    title: 'Cảm ơn đánh giá của bạn',
+                    icon: 'success', showConfirmButton: false,
+                    timer: 1800, toast: true, position: 'top-end'
+                });
+            }
+        });
+    }
+
+    /* ── Gắn số lượng từ qtyInput vào nút "Mua ngay" (Detail.js dùng btn_add_left) ── */
+    // Detail.js gọi AddToCart với quantity cứng = 1.
+    // Đoạn này override: trước khi Detail.js bắt sự kiện click, ta cập nhật
+    // hidden input hoặc patch lại AJAX call bằng cách wrap $.ajax gốc.
+    $(document).ready(function () {
+
+        // Patch $.ajax để tự động inject quantity đúng vào mọi request AddToCart
+        var _ajax = $.ajax;
+        $.ajax = function (settings) {
+            if (settings && settings.url && settings.url.indexOf('AddToCart') !== -1) {
+                var qty = parseInt($('#qtyInput').val()) || 1;
+                if (settings.data) {
+                    if (typeof settings.data === 'string') {
+                        // dạng query string: "productId=1&color=&size=&quantity=1"
+                        settings.data = settings.data.replace(/quantity=\d+/, 'quantity=' + qty);
+                        // nếu không có quantity thì thêm vào
+                        if (settings.data.indexOf('quantity=') === -1) {
+                            settings.data += '&quantity=' + qty;
+                        }
+                    } else if (typeof settings.data === 'object') {
+                        settings.data.quantity = qty;
+                    }
+                }
+            }
+            return _ajax.call(this, settings);
+        };
+
+    });
+
+    /* ── Tab (giữ nguyên gốc) ─────────────────── */
+    $(document).ready(function () {
+        $(".title_two_detail").click(function () {
+            $(".title_two_detail").removeClass("active");
+            $(".content").hide();
+            $(this).addClass("active");
+            $("#" + $(this).data("tab")).show();
+        });
+
+        function setupTabs(tabSelector, contentSelector) {
+            $(tabSelector).click(function () {
+                $(contentSelector).hide();
+                $(this).addClass("active");
+                $("#" + $(this).data("tab")).show();
+            });
+        }
+        setupTabs(".title_two_detail", ".content");
+        setupTabs(".title_next_detail", ".next_title");
+    });
+</script>

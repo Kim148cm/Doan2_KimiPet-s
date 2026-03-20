@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Đổi mật khẩu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+@if (TempData["SweetAlertError"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: @Html.Raw(System.Web.Helpers.Json.Encode(TempData["SweetAlertError"])),
+            confirmButtonText: 'OK'
+        });
+    </script>
+}
+
+
+<section class="body_design_login" style="margin-top:3rem;">
+    <div class="body_all_login">
+        <div class="body_element_login">
+            <h4 class="title_sm_login">Đổi mật khẩu</h4>
+            <p class="title_small_login">Quay lại tiếp tục <a href="@Url.Action("Index", "DangNhapNguoiDung", new { area = "" })" class="link_login" style="text-decoration:none;font-weight:bold;">Đăng Nhập</a></p>
+
+            @using (Html.BeginForm("DoiMatKhau", "DangNhapNguoiDung", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="body_input_login">
+                    <input type="email" name="Email" placeholder="Nhập Email..." class="input_main_login" required>
+                </div>
+
+                <div class="body_input_login">
+                    <input type="password" name="OldPassword" placeholder="Mật khẩu cũ gần đây..." class="input_main_login" required>
+                </div>
+
+                <div class="body_input_login">
+                    <input type="password" name="NewPassword" placeholder="Mật khẩu mới..." class="input_main_login" required>
+                </div>
+
+                <div class="body_input_login">
+                    <input type="password" name="ConfirmPassword" placeholder="Xác nhận mật khẩu mới..." class="input_main_login" required>
+                </div>
+
+                <button type="submit" class="btn_login">Đổi mật khẩu</button>
+               
+            }
+        </div>
+    </div>
+</section>
+<style>
+    /* Container login */
+    .body_design_login {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 20vh;
+    }
+
+    .body_all_login {
+        background: white;
+        padding: 40px 35px;
+        border-radius: 15px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        max-width: 400px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+        .body_all_login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+        }
+
+    /* Title */
+    .title_sm_login {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .title_small_login {
+        font-size: 14px;
+        color: #555;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    /* Link đăng ký */
+    .link_register {
+        color: #e74c3c;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+        .link_register:hover {
+            color: #c0392b;
+        }
+
+    /* Inputs */
+    .input_main_login {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 50px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .input_main_login:focus {
+            border-color: #56ab2f;
+            box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+            outline: none;
+        }
+
+    /* Button đăng nhập */
+    .btn_login {
+        width: 100%;
+        padding: 12px 0;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        font-size: 16px;
+        color: #fff;
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(86, 171, 47, 0.4);
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .btn_login:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.6);
+        }
+</style>

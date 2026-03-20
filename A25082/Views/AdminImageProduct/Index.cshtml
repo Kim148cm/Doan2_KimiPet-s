@@ -1,0 +1,252 @@
+﻿
+@model IEnumerable<A25082.Models.AnhKemChongNang>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container mt-4">
+    <h5 class="mb-0"><i class="fas fa-images class-icons"></i> QUẢN LÝ DANH MỤC HÌNH ẢNH SẢN PHẨM</h5>
+
+    <!-- Form Thêm / Sửa Hình Ảnh -->
+    <div class="card p-4 shadow" style="margin-top:1rem;">
+        <input type="hidden" id="productImageId" value="0">
+        <div class="mb-3">
+            <label class="form-label">Sản phẩm:</label>
+            <select id="productId" class="form-select">
+                @if (ViewBag.Products != null)
+                {
+                    foreach (var product in ViewBag.Products)
+                    {
+                        <option value="@product.Value">@product.Text</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Chọn Hình Ảnh:</label>
+            <input type="file" id="imageFile" class="form-control" accept="image/*">
+        </div>
+
+
+        <!-- Ảnh xem trước -->
+        <img id="previewImage" src="" alt="Xem trước hình ảnh" class="img-thumbnail mt-2" style="max-width: 200px; display: none;">
+
+        <div class="mb-3">
+            <label class="form-label">Danh Mục Hình Ảnh:</label>
+            <select id="imageCategoryId" class="form-select">
+                @if (ViewBag.ImageCategories != null)
+                {
+                    foreach (var category in ViewBag.ImageCategories)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                }
+            </select>
+        </div>
+       
+        <div class="d-flex gap-2">
+
+            <button class="btn btn-success" onclick="saveProductImage()"><i class="fas fa-save"></i> Lưu thông tin</button>
+            <button class="btn btn-secondary" onclick="resetImageProduct()"><i class="fas fa-times"></i> Hủy bỏ</button>
+        </div>
+    </div>
+
+    <!-- Danh sách Hình Ảnh -->
+    <table class="table table-bordered table-striped mt-4 shadow">
+        <thead class="table-dark">
+            <tr>
+                <th>Hình Ảnh</th>
+                <th>Sản Phẩm</th>
+                <th>Danh Mục</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody id="productImagesTable">
+            @foreach (var item in Model)
+            {
+                <tr data-id="@item.MaAnhKem">
+                    <td><img src="@item.ImageUrl" class="img-thumbnail" style="width: 100px;"></td>
+                    <td>@(item.SanPhamKemChongNang != null ? item.SanPhamKemChongNang.TenKem : "Không có sản phẩm")</td>
+                    <td>@item.LoaiAnh.TenLoaiAnh</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editProductImage(@item.MaAnhKem, '@item.ImageUrl', @item.MaKem, @item.MaLoaiAnh)"> <i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProductImage(@item.MaAnhKem)"> <i class="fas fa-trash-alt"></i> Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .class-icons {
+        background-color: forestgreen;
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function saveProductImage() {
+        var id = $("#productImageId").val();
+        var productId = $("#productId").val();
+        var imageCategoryId = $("#imageCategoryId").val();
+        var productColorId = $("#productColorId").val() || null;
+        var imageFile = $("#imageFile")[0].files[0]; // Lấy file ảnh
+        var imageUrl = $("#imageUrl").val() || null; // Lấy URL ảnh (nếu có)
+
+        if (!imageFile && !imageUrl) {
+            Swal.fire("Lỗi!", "Vui lòng chọn ảnh hoặc nhập URL!", "error");
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append("Id", id);
+        formData.append("ProductId", productId);
+        formData.append("ImageCategoryId", imageCategoryId);
+        formData.append("ProductColorId", productColorId);
+
+        if (imageFile) {
+            formData.append("ImageFile", imageFile);
+        } else {
+            formData.append("ImageUrl", imageUrl);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/AdminImageProduct/SaveProductImage",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire("Thành công!", "Lưu hình ảnh thành công!", "success").then(() => location.reload());
+                } else {
+                    Swal.fire("Lỗi!", res.message, "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Lỗi!", "Có lỗi xảy ra, vui lòng thử lại!", "error");
+            }
+        });
+    }
+
+
+    function editProductImage(id, imageUrl, productId, imageCategoryId, productColorId) {
+        $("#productImageId").val(id);
+        $("#productId").val(productId);
+        $("#imageCategoryId").val(imageCategoryId);
+        $("#productColorId").val(productColorId);
+
+        // Hiển thị ảnh xem trước
+        const preview = $("#previewImage");
+        if (imageUrl) {
+            preview.attr("src", imageUrl).show();
+        } else {
+            preview.hide();
+        }
+    }
+
+
+    function deleteProductImage(id) {
+        Swal.fire({
+            title: "Bạn có chắc không?",
+            text: "Hình ảnh sẽ bị xóa vĩnh viễn!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Xóa",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post("/AdminImageProduct/DeleteProductImage", { id: id })
+                    .done(function (res) {
+                        if (res.success) {
+                            Swal.fire("Đã xóa!", "Hình ảnh đã được xóa.", "success")
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire("Lỗi!", res.message, "error");
+                        }
+                    })
+                    .fail(function () {
+                        Swal.fire("Lỗi!", "Không thể kết nối đến máy chủ!", "error");
+                    });
+            }
+        });
+    }
+
+
+    function resetForm() {
+        $("#productImageId").val("0");
+        $("#imageUrl").val("");
+    }
+
+
+
+
+    document.getElementById("imageFile").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("previewImage");
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+                document.getElementById("imageUrl").value = ""; // Xóa URL nếu chọn file
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById("imageUrl").addEventListener("input", function () {
+        const url = this.value;
+        const preview = document.getElementById("previewImage");
+
+        if (url) {
+            preview.src = url;
+            preview.style.display = "block";
+            document.getElementById("imageFile").value = ""; // Xóa file nếu nhập URL
+        } else {
+            preview.style.display = "none";
+        }
+    });
+
+    function resetImageProduct() {
+
+        var id = $("#productImageId").val();
+        var productId = $("#productId").val();
+        $("#imageCategoryId").val($("#imageCategoryId option:first").val());
+
+        var productColorId = $("#productColorId").val() || null;
+        var imageFile = $("#imageFile")[0].files[0]; // Lấy file ảnh
+        var imageUrl = $("#imageUrl").val() || null; // Lấy URL ảnh (nếu có)
+
+
+        $("#productImageId").val("0");
+        $("#imageUrl").val("");
+        $("#productId").val("");
+        $("#productColorId").val("");
+        $("#imageFile").val("");
+        $("#imageCategoryId").val($("#imageCategoryId option:first").val());
+
+        $("#previewImage").hide();
+
+        Swal.fire({
+            title: "Đã đặt lại!",
+            text: "Trường nhập và File ảnh đã được đặt lại.",
+            icon: "info",
+            confirmButtonText: "OK"
+        });
+    }
+
+</script>
+
+

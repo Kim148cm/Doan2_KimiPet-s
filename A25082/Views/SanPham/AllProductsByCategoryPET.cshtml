@@ -1,0 +1,1051 @@
+﻿@model List<A25082.Models.SanPhamKemChongNang>
+@using A25082.Models
+@{
+    ViewBag.Title = (ViewBag.CategoryName ?? "Sản phẩm") + " | Kimipet's";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var allCategories = ViewBag.AllCategories as List<LoaiKemChongNang> ?? new List<LoaiKemChongNang>();
+    int currentCatId = ViewBag.CurrentCategoryId ?? 0;
+    string currentSort = ViewBag.SortOrder ?? "";
+    string catName = ViewBag.CategoryName ?? "Sản phẩm";
+    int total = Model?.Count ?? 0;
+}
+@section Wish{
+    <script src="~/Assets/js/wishlist.js"></script>
+}
+<style>
+    /* ── Variables ── */
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --border: #e5e5e5;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #999;
+        --white: #fff;
+        --bg: #f7f7f7;
+        --radius: 10px;
+        --font: 'Nunito', sans-serif;
+    }
+
+    /* ── Page shell ── */
+    .sp-wrap {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 28px 24px 60px;
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        font-family: var(--font);
+    }
+
+    /* ════════════════════════════════
+       BREADCRUMB + PAGE TITLE
+    ════════════════════════════════ */
+    .sp-head {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 18px 24px 0;
+        font-family: var(--font);
+    }
+
+    .sp-bc {
+        font-size: 12.5px;
+        color: var(--text3);
+        margin-bottom: 6px;
+    }
+
+        .sp-bc a {
+            color: var(--text3);
+            text-decoration: none;
+        }
+
+            .sp-bc a:hover {
+                color: var(--green);
+            }
+
+        .sp-bc span {
+            margin: 0 6px;
+        }
+
+    .sp-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
+    .sp-sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sp-widget {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .sp-widget-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        user-select: none;
+        background: #fafafa;
+    }
+
+        .sp-widget-title i {
+            font-size: 10px;
+            color: var(--text3);
+            transition: transform .25s;
+        }
+
+        .sp-widget-title.closed i {
+            transform: rotate(-90deg);
+        }
+
+    /* Category list */
+    .sp-cat-list {
+        padding: 6px 0;
+    }
+
+    .sp-cat-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 16px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text2);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all .15s;
+    }
+
+        .sp-cat-link:hover {
+            background: var(--green-lt);
+            color: var(--green);
+            border-left-color: var(--green);
+        }
+
+        .sp-cat-link.active {
+            background: var(--green-lt);
+            color: var(--green);
+            font-weight: 800;
+            border-left-color: var(--green);
+        }
+
+        .sp-cat-link i {
+            font-size: 13px;
+            color: var(--text3);
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sp-cat-link:hover i,
+        .sp-cat-link.active i {
+            color: var(--green);
+        }
+
+    .sp-cat-count {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text3);
+        background: var(--bg);
+        padding: 1px 7px;
+        border-radius: 20px;
+    }
+
+    .sp-cat-link.active .sp-cat-count {
+        background: var(--green-md);
+        color: var(--green);
+    }
+
+    /* Price filter */
+    .sp-price-body {
+        padding: 14px 16px;
+    }
+
+    .sp-price-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .sp-price-input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-family: var(--font);
+        color: var(--text);
+        outline: none;
+        background: var(--bg);
+        transition: border-color .2s;
+    }
+
+        .sp-price-input:focus {
+            border-color: var(--green);
+            background: var(--white);
+        }
+
+    .sp-price-sep {
+        color: var(--text3);
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .sp-price-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .sp-chip {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 4px 11px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text2);
+        cursor: pointer;
+        background: var(--white);
+        transition: all .15s;
+        font-family: var(--font);
+    }
+
+        .sp-chip:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-lt);
+        }
+
+    .sp-btn-apply {
+        width: 100%;
+        background: var(--green);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: opacity .2s;
+    }
+
+        .sp-btn-apply:hover {
+            opacity: .88;
+        }
+
+    /* Sort links */
+    .sp-sort-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 16px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text2);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all .15s;
+    }
+
+        .sp-sort-link:hover {
+            background: var(--green-lt);
+            color: var(--green);
+            border-left-color: var(--green);
+        }
+
+        .sp-sort-link.active {
+            background: var(--green-lt);
+            color: var(--green);
+            font-weight: 800;
+            border-left-color: var(--green);
+        }
+
+        .sp-sort-link i {
+            font-size: 13px;
+            width: 16px;
+            text-align: center;
+            color: var(--text3);
+        }
+
+        .sp-sort-link:hover i, .sp-sort-link.active i {
+            color: var(--green);
+        }
+
+    /* ════════════════════════════════
+       MAIN
+    ════════════════════════════════ */
+    .sp-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Toolbar */
+    .sp-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 16px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .sp-toolbar-lbl {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-right: 4px;
+    }
+
+    .sp-sort-pill {
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text2);
+        background: var(--white);
+        text-decoration: none;
+        transition: all .15s;
+        font-family: var(--font);
+    }
+
+        .sp-sort-pill:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .sp-sort-pill.active {
+            background: var(--green);
+            color: var(--white);
+            border-color: var(--green);
+        }
+
+    .sp-count {
+        margin-left: auto;
+        font-size: 12.5px;
+        color: var(--text3);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .sp-count strong {
+            color: var(--text);
+        }
+
+    /* Mobile filter btn */
+    .sp-filter-btn {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text2);
+        cursor: pointer;
+        font-family: var(--font);
+    }
+
+    /* ════════════════════════════════
+       PRODUCT GRID
+    ════════════════════════════════ */
+    .sp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(208px, 1fr));
+        gap: 16px;
+    }
+
+    /* ── Card ── */
+    .sp-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow .22s, transform .22s;
+        position: relative;
+    }
+
+        .sp-card:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,.1);
+            transform: translateY(-3px);
+        }
+
+    /* Image */
+    .sp-card-img {
+        position: relative;
+        padding-top: 100%;
+        overflow: hidden;
+        background: var(--bg);
+    }
+
+        .sp-card-img img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+
+    .sp-card:hover .sp-card-img img {
+        transform: scale(1.04);
+    }
+
+    /* Badge */
+    .sp-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 10.5px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 4px;
+        z-index: 2;
+        letter-spacing: .3px;
+    }
+
+        .sp-badge.sale {
+            background: #e53935;
+            color: #fff;
+        }
+
+        .sp-badge.new {
+            background: var(--green);
+            color: #fff;
+        }
+
+    /* Sold out */
+    .sp-sold {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+    }
+
+        .sp-sold span {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 4px;
+        }
+
+    /* Wishlist */
+    .sp-wish {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: var(--text3);
+        cursor: pointer;
+        z-index: 2;
+        transition: all .18s;
+        box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+
+        .sp-wish:hover {
+            color: #e53935;
+            border-color: #e53935;
+        }
+
+        .sp-wish.active {
+            color: #e53935;
+            border-color: #e53935;
+        }
+
+    /* Card body */
+    .sp-card-body {
+        padding: 12px 14px 14px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .sp-card-cat {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--green);
+    }
+
+    .sp-card-name {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.4;
+        text-decoration: none;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+
+        .sp-card-name:hover {
+            color: var(--green);
+        }
+
+    .sp-stars {
+        display: flex;
+        gap: 2px;
+        font-size: 11px;
+        color: #f5c518;
+    }
+
+    .sp-prices {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+    }
+
+    .sp-price-main {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--green);
+    }
+
+    .sp-price-orig {
+        font-size: 12px;
+        color: var(--text3);
+        text-decoration: line-through;
+    }
+
+    .sp-price-save {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #e53935;
+        background: #fef2f2;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .sp-btn-cart {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        background: var(--green);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: opacity .18s;
+        margin-top: 8px;
+    }
+
+        .sp-btn-cart:hover {
+            opacity: .88;
+        }
+
+        .sp-btn-cart:disabled {
+            background: #e5e5e5;
+            color: var(--text3);
+            cursor: not-allowed;
+            opacity: 1;
+        }
+
+    /* ── Empty ── */
+    .sp-empty {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text3);
+        font-family: var(--font);
+    }
+
+        .sp-empty i {
+            font-size: 48px;
+            opacity: .2;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .sp-empty h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+
+        .sp-empty p {
+            font-size: 13.5px;
+        }
+
+    .sp-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 18px;
+        background: var(--green);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+        transition: opacity .18s;
+        font-family: var(--font);
+    }
+
+        .sp-empty-btn:hover {
+            opacity: .88;
+            color: #fff;
+        }
+
+    /* ── Mobile drawer ── */
+    .sp-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.4);
+        z-index: 8000;
+    }
+
+        .sp-overlay.on {
+            display: block;
+        }
+
+    .sp-drawer {
+        position: fixed;
+        top: 0;
+        left: -290px;
+        width: 272px;
+        height: 100%;
+        background: var(--white);
+        z-index: 8001;
+        overflow-y: auto;
+        transition: left .28s ease;
+        box-shadow: 4px 0 20px rgba(0,0,0,.12);
+    }
+
+        .sp-drawer.on {
+            left: 0;
+        }
+
+    .sp-drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--text);
+        background: var(--bg);
+    }
+
+    .sp-drawer-x {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: var(--text3);
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+    }
+
+    /* ── Responsive ── */
+    @@media (max-width: 900px) {
+        .sp-sidebar {
+            display: none;
+        }
+
+        .sp-filter-btn {
+            display: flex;
+        }
+
+        .sp-wrap {
+            padding: 16px;
+            gap: 0;
+        }
+
+        .sp-head {
+            padding: 14px 16px 0;
+        }
+
+        .sp-grid {
+            grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+            gap: 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .sp-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+    }
+</style>
+
+@* ─── PAGE HEADER ─── *@
+<div class="sp-head">
+    <div class="sp-bc">
+        <a href="@Url.Action("Index","Home")">Trang chủ</a>
+        <span>›</span>
+        <a href="@Url.Action("AllProduct","SanPham")">Sản phẩm</a>
+        <span>›</span>
+        @catName
+    </div>
+    <h1 class="sp-title">@catName</h1>
+</div>
+
+@* ─── BODY ─── *@
+<div class="sp-wrap">
+
+    @* ══ SIDEBAR ══ *@
+    <aside class="sp-sidebar" id="spSidebar">
+
+        @* Loại sản phẩm *@
+        <div class="sp-widget">
+            <div class="sp-widget-title" onclick="spToggle(this)">
+                Loại sản phẩm <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="sp-cat-list">
+                <a href="@Url.Action("AllProduct","SanPham")"
+                   class="sp-cat-link @(currentCatId == 0 ? "active" : "")">
+                    <i class="fa-solid fa-border-all"></i>
+                    Tất cả
+                </a>
+                @foreach (var c in allCategories)
+                {
+                    <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=c.MaLoai})"
+                       class="sp-cat-link @(c.MaLoai == currentCatId ? "active" : "")">
+                        <i class="fa-solid fa-paw"></i>
+                        @c.TenLoai
+
+                    </a>
+                }
+            </div>
+        </div>
+
+        @* Khoảng giá *@
+        <div class="sp-widget">
+            <div class="sp-widget-title" onclick="spToggle(this)">
+                Khoảng giá <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="sp-price-body">
+                <div class="sp-price-row">
+                    <input class="sp-price-input" id="minD" type="number"
+                           placeholder="Từ (đ)" min="0" step="10000"
+                           value="@(ViewBag.MinPrice != null ? ViewBag.MinPrice.ToString() : "")" />
+                    <span class="sp-price-sep">—</span>
+                    <input class="sp-price-input" id="maxD" type="number"
+                           placeholder="Đến (đ)" min="0" step="10000"
+                           value="@(ViewBag.MaxPrice != null ? ViewBag.MaxPrice.ToString() : "")" />
+                </div>
+                <div class="sp-price-chips">
+                    <span class="sp-chip" onclick="spSetPrice('D',0,100000)">Dưới 100K</span>
+                    <span class="sp-chip" onclick="spSetPrice('D',100000,300000)">100–300K</span>
+                    <span class="sp-chip" onclick="spSetPrice('D',300000,500000)">300–500K</span>
+                    <span class="sp-chip" onclick="spSetPrice('D',500000,null)">Trên 500K</span>
+                </div>
+                <button class="sp-btn-apply" onclick="spApplyPrice('D')">Áp dụng</button>
+            </div>
+        </div>
+
+        @* Sắp xếp *@
+        <div class="sp-widget">
+            <div class="sp-widget-title" onclick="spToggle(this)">
+                Sắp xếp <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="sp-cat-list">
+                <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId})"
+                   class="sp-sort-link @(currentSort == "" ? "active" : "")">
+                    <i class="fa-solid fa-clock"></i> Mới nhất
+                </a>
+                <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceAsc"})"
+                   class="sp-sort-link @(currentSort == "PriceAsc" ? "active" : "")">
+                    <i class="fa-solid fa-arrow-up-wide-short"></i> Giá thấp → cao
+                </a>
+                <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceDesc"})"
+                   class="sp-sort-link @(currentSort == "PriceDesc" ? "active" : "")">
+                    <i class="fa-solid fa-arrow-down-wide-short"></i> Giá cao → thấp
+                </a>
+            </div>
+        </div>
+
+    </aside>
+
+    @* ══ MAIN ══ *@
+    <main class="sp-main">
+
+        @* Toolbar *@
+        <div class="sp-toolbar">
+            <button class="sp-filter-btn" onclick="spOpenDrawer()">
+                <i class="fa-solid fa-sliders"></i> Lọc
+            </button>
+            <span class="sp-toolbar-lbl">Sắp xếp:</span>
+            <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId})"
+               class="sp-sort-pill @(currentSort == "" ? "active" : "")">Mới nhất</a>
+            <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceAsc"})"
+               class="sp-sort-pill @(currentSort == "PriceAsc" ? "active" : "")">Giá thấp</a>
+            <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceDesc"})"
+               class="sp-sort-pill @(currentSort == "PriceDesc" ? "active" : "")">Giá cao</a>
+            <span class="sp-count">Tìm thấy <strong>@total</strong> sản phẩm</span>
+        </div>
+
+        @* Grid *@
+        @if (Model != null && Model.Any())
+        {
+            <div class="sp-grid">
+                @foreach (var p in Model)
+                {
+                    decimal giaGoc = p.GiaGoc < 1000 ? p.GiaGoc * 1000 : p.GiaGoc;
+                    decimal giaGiam = p.GiaGiam < 1000 ? p.GiaGiam * 1000 : p.GiaGiam;
+                    bool hasSale = giaGiam > 0 && giaGiam < giaGoc;
+                    int pct = 0;
+                    if (hasSale && giaGoc > 0)
+                    {
+                        pct = (int)Math.Round((1.0 - (double)giaGiam / (double)giaGoc) * 100);
+                        if (pct <= 0 || pct > 70) { hasSale = false; pct = 0; }
+                    }
+                    decimal price = hasSale ? giaGiam : giaGoc;
+                    string img = p.AnhKemChongNangs != null && p.AnhKemChongNangs.Any()
+                                      ? p.AnhKemChongNangs.First().ImageUrl
+                                      : "/Assets/img/no-image.png";
+                    bool sold = p.SoLuongTon <= 0;
+                    string url = "/SanPham/PageDeTailsProduct/" + p.MaKem;
+
+                    <div class="sp-card">
+                        <div class="sp-card-img">
+                            <a href="@url">
+                                <img src="@img" alt="@p.TenKem" loading="lazy" />
+                            </a>
+
+                            @if (sold)
+                            {
+                                <div class="sp-sold"><span>Hết hàng</span></div>
+                            }
+
+                            @if (hasSale)
+                            {
+                                <span class="sp-badge sale">-@pct%</span>
+                            }
+                            else if (p.MaKem % 5 == 0)
+                            {
+                                <span class="sp-badge new">Mới</span>
+                            }
+
+                        </div>
+
+                        <div class="sp-card-body">
+                            @if (p.LoaiKemChongNang != null)
+                            {
+                                <div class="sp-card-cat">@p.LoaiKemChongNang.TenLoai</div>
+                            }
+
+                            <a href="@url" class="sp-card-name">@p.TenKem</a>
+
+                            <div class="sp-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+
+                            <div class="sp-prices">
+                                <span class="sp-price-main">@price.ToString("N0")đ</span>
+                                @if (hasSale)
+                                {
+                                    <span class="sp-price-orig">@giaGoc.ToString("N0")đ</span>
+                                    <span class="sp-price-save">-@((giaGoc - giaGiam).ToString("N0"))đ</span>
+                                }
+                            </div>
+
+                            @if (!sold)
+                            {
+                               
+                            }
+                            else
+                            {
+                                <button class="sp-btn-cart" disabled>Hết hàng</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="sp-empty">
+                <i class="fa-solid fa-box-open"></i>
+                <h3>Chưa có sản phẩm nào</h3>
+                <p>Danh mục đang được cập nhật, vui lòng quay lại sau.</p>
+                <a href="@Url.Action("AllProduct","SanPham")" class="sp-empty-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Xem tất cả sản phẩm
+                </a>
+            </div>
+        }
+
+    </main>
+</div>
+
+@* ══ MOBILE DRAWER ══ *@
+<div class="sp-overlay" id="spOverlay" onclick="spCloseDrawer()"></div>
+<div class="sp-drawer" id="spDrawer">
+    <div class="sp-drawer-head">
+        <span>Lọc sản phẩm</span>
+        <button class="sp-drawer-x" onclick="spCloseDrawer()">&times;</button>
+    </div>
+
+    <div style="padding:12px 0;">
+        <div style="padding:0 16px 8px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#999;">Loại sản phẩm</div>
+        <a href="@Url.Action("AllProduct","SanPham")" class="sp-cat-link @(currentCatId==0?"active":"")">
+            <i class="fa-solid fa-border-all"></i> Tất cả
+        </a>
+        @foreach (var c in allCategories)
+        {
+            <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=c.MaLoai})"
+               class="sp-cat-link @(c.MaLoai==currentCatId?"active":"")">
+                <i class="fa-solid fa-paw"></i>
+                @c.TenLoai
+
+            </a>
+        }
+    </div>
+
+    <div style="height:1px;background:#e5e5e5;margin:4px 16px;"></div>
+
+    <div class="sp-price-body" style="padding-top:16px;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#999;margin-bottom:12px;">Khoảng giá</div>
+        <div class="sp-price-row">
+            <input class="sp-price-input" id="minM" type="number" placeholder="Từ (đ)" min="0" step="10000"
+                   value="@(ViewBag.MinPrice!=null?ViewBag.MinPrice.ToString():"")" />
+            <span class="sp-price-sep">—</span>
+            <input class="sp-price-input" id="maxM" type="number" placeholder="Đến (đ)" min="0" step="10000"
+                   value="@(ViewBag.MaxPrice!=null?ViewBag.MaxPrice.ToString():"")" />
+        </div>
+        <div class="sp-price-chips">
+            <span class="sp-chip" onclick="spSetPrice('M',0,100000)">Dưới 100K</span>
+            <span class="sp-chip" onclick="spSetPrice('M',100000,300000)">100–300K</span>
+            <span class="sp-chip" onclick="spSetPrice('M',300000,500000)">300–500K</span>
+            <span class="sp-chip" onclick="spSetPrice('M',500000,null)">Trên 500K</span>
+        </div>
+        <button class="sp-btn-apply" onclick="spApplyPrice('M')">Áp dụng bộ lọc</button>
+    </div>
+
+    <div style="height:1px;background:#e5e5e5;margin:16px 16px 4px;"></div>
+
+    <div style="padding:4px 0 12px;">
+        <div style="padding:8px 16px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#999;">Sắp xếp</div>
+        <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId})"
+           class="sp-sort-link @(currentSort==""?"active":"")">
+            <i class="fa-solid fa-clock"></i> Mới nhất
+        </a>
+        <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceAsc"})"
+           class="sp-sort-link @(currentSort=="PriceAsc"?"active":"")">
+            <i class="fa-solid fa-arrow-up-wide-short"></i> Giá thấp → cao
+        </a>
+        <a href="@Url.Action("AllProductsByCategoryPET","SanPham",new{categoryId=currentCatId,sortOrder="PriceDesc"})"
+           class="sp-sort-link @(currentSort=="PriceDesc"?"active":"")">
+            <i class="fa-solid fa-arrow-down-wide-short"></i> Giá cao → thấp
+        </a>
+    </div>
+</div>
+
+@section ScriptsProducts {
+    <script>
+var SP_CAT  = @currentCatId;
+var SP_SORT = '@Html.Raw(currentSort)';
+
+function spToggle(h) {
+    h.classList.toggle('closed');
+    var b = h.nextElementSibling;
+    if (b) b.style.display = (b.style.display === 'none') ? '' : 'none';
+}
+
+function spSetPrice(m, mn, mx) {
+    document.getElementById('min' + m).value = mn != null ? mn : '';
+    document.getElementById('max' + m).value = mx != null ? mx : '';
+}
+
+function spApplyPrice(m) {
+    var mn  = document.getElementById('min' + m).value;
+    var mx  = document.getElementById('max' + m).value;
+    var url = '/SanPham/AllProductsByCategoryPET?categoryId=' + SP_CAT;
+    if (SP_SORT) url += '&sortOrder=' + SP_SORT;
+    if (mn)      url += '&minPrice='  + mn;
+    if (mx)      url += '&maxPrice='  + mx;
+    window.location = url;
+}
+
+function spWish(btn, id) {
+    btn.classList.toggle('active');
+    btn.querySelector('i').className = btn.classList.contains('active')
+        ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+}
+
+function spOpenDrawer() {
+    document.getElementById('spDrawer').classList.add('on');
+    document.getElementById('spOverlay').classList.add('on');
+    document.body.style.overflow = 'hidden';
+}
+function spCloseDrawer() {
+    document.getElementById('spDrawer').classList.remove('on');
+    document.getElementById('spOverlay').classList.remove('on');
+    document.body.style.overflow = '';
+}
+    </script>
+}

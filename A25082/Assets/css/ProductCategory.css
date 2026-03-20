@@ -1,0 +1,92 @@
+﻿/* Gradient cho tab active và hover */
+.category-tabs .nav-link {
+    font-weight: 600;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+    /* Hover gradient animation */
+    .category-tabs .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        /* Gradient xanh lá cho hover */
+        background: linear-gradient(120deg, #a8e063, #56ab2f);
+        transition: all 0.4s ease;
+        z-index: -1;
+    }
+
+    .category-tabs .nav-link:hover::before {
+        left: 0;
+    }
+
+    .category-tabs .nav-link:hover {
+        color: #fff;
+    }
+
+    /* Active tab gradient */
+    .category-tabs .nav-link.active {
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+/* View all button gradient + hover effect */
+.view-all-btn .btn-view-all {
+    background: linear-gradient(135deg, #56ab2f, #a8e063);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    .view-all-btn .btn-view-all:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+/* Product card animation */
+#category-products .product-card {
+    opacity: 0;
+    transform: scale(0.9) rotate(-3deg);
+    animation: popIn 0.6s forwards;
+}
+
+/* Keyframes animation */
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Stagger animation cho nhiều sản phẩm */
+#category-products .product-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+#category-products .product-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+#category-products .product-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+#category-products .product-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+#category-products .product-card:nth-child(5) {
+    animation-delay: 0.25s;
+}

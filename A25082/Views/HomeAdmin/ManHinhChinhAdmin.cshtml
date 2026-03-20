@@ -1,0 +1,475 @@
+﻿@{
+    ViewBag.Title = "ManHinhChinhAdmin";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section ScriptManHinhChinh{
+    <script src="~/Admin/Assets/js/JavaScript.js"></script>
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "@TempData["SuccessMessage"]",
+                showConfirmButton: false,
+                timer: 2500
+            });
+        });
+    </script>
+}
+
+<!------------------------------------------------------------------------------------------------------------------------------>
+<div class="container-fluid py-4">
+    <div class="row">
+
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Doanh thu hôm nay</p>
+                                <h5 id="todayRevenue" class="font-weight-bolder">
+                                    Đang tải...
+                                </h5>
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">+0%</span>
+                                    hôm qua
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Tổng người mua</p>
+                                <h5 id="totalBuyers" class="font-weight-bolder">
+                                    Đang tải...
+                                </h5>
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">+0%</span>
+                                    Trong tuần
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Khách hàng mới</p>
+                                <h5 id="newUsersCount" class="font-weight-bolder">
+                                    Đang tải...
+                                </h5>
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">+0%</span>
+                                    Trong tuần
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Sản phẩm giảm</p>
+                                <h5 id="discountedProductsCount" class="font-weight-bolder">
+                                    Đang tải...
+                                </h5>
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">+0%</span> Trong tháng
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!------------------------------------------------------------------------------------------------------------------------------>
+    <div class="row mt-4">
+        <!---------------------Box left ----------------------------->
+        <div class="col-lg-7 mb-lg-0 mb-4">
+            <div class="card z-index-2 h-100">
+                <div class="card-header pb-0 pt-3 bg-transparent">
+                    <h6 class="text-capitalize">Biểu đồ thống kê doanh thu trong năm 2025</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="chart">
+                        <canvas id="chart-line" class="chart-canvas" height="350"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!---------------------Box right ----------------------------->
+        <div class="col-lg-5">
+            <h5 id="orderTitle" class="text-dark mx-1" style="border:1px solid #e5e5e5;border-radius:10px;padding:1rem;font-size:15px;">Đơn hàng đang chờ xác nhận (0)</h5>
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper" id="orderSlider">
+                    <!-- Dữ liệu đơn hàng sẽ được render vào đây -->
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!------------- BẢNG THÔNG TIN CÁC ĐƠN ĐÃ XÁC NHẬN HÔM NAY ---------------->
+
+    <div class="container" style="margin-top:2rem;">
+        <h5 class="mb-3"><i class="fa-solid fa-cart-shopping class-icons"></i> DANH SÁCH HÓA ĐƠN ĐÃ XÁC NHẬN HÔM NAY</h5>
+        <div class="table-container">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Khách hàng</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
+                        <th>Ngày tạo</th>
+                        <th>Sản phẩm</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentTableBody">
+                    <tr>
+                        <td colspan="8" class="text-center">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-------------------------------------  FOOTER ---------------------------------------------------->
+    <footer class="footer pt-3  ">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-lg-between">
+                <div class="col-lg-6 mb-lg-0 mb-4">
+                    <div class="copyright text-center text-sm text-muted text-lg-start">
+                        ©
+                        <script>
+                            document.write(new Date().getFullYear())
+                        </script>,
+                        KIMIPET - Hệ thống quản lý cửa hàng thú cưng
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<style>
+    .class-icons {
+        background-color: forestgreen;
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+    }
+
+    .box_count {
+        background-color: red;
+        padding: 10px;
+        border-radius: 19px;
+        width: 150px;
+        text-align: center;
+    }
+
+    .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+        margin-top: 2rem;
+    }
+
+    .table {
+        table-layout: auto;
+        width: 100%;
+    }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            word-wrap: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table td:nth-child(8) {
+            max-width: 300px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+</style>
+
+<!-- Swiper JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    // ==================== HÀM REFRESH DỮ LIỆU ====================
+
+    function refreshTodayRevenue() {
+        $.ajax({
+            url: "/HomeAdmin/GetTodayRevenue",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    let formattedRevenue = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(response.totalRevenue);
+                    $("#todayRevenue").text(formattedRevenue);
+                } else {
+                    $("#todayRevenue").text("Không có dữ liệu");
+                }
+            },
+            error: function () {
+                $("#todayRevenue").text("Lỗi tải dữ liệu");
+            }
+        });
+    }
+
+    function refreshTodayBuyers() {
+        $.ajax({
+            url: "/HomeAdmin/GetTodayBuyersCount",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    $("#totalBuyers").text(response.totalBuyers.toLocaleString());
+                } else {
+                    $("#totalBuyers").text("Không có dữ liệu");
+                }
+            },
+            error: function () {
+                $("#totalBuyers").text("Lỗi tải dữ liệu");
+            }
+        });
+    }
+
+    function refreshNewUsers() {
+        $.ajax({
+            url: "/HomeAdmin/GetNewUsersCount",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    $("#newUsersCount").text("+" + response.newUsers.toLocaleString());
+                } else {
+                    $("#newUsersCount").text("Không có dữ liệu");
+                }
+            },
+            error: function () {
+                $("#newUsersCount").text("Lỗi tải dữ liệu");
+            }
+        });
+    }
+
+    function refreshDiscountedProducts() {
+        $.ajax({
+            url: "/HomeAdmin/GetDiscountedProductsCount",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    $("#discountedProductsCount").text(response.discounted.toLocaleString());
+                } else {
+                    $("#discountedProductsCount").text("Không có dữ liệu");
+                }
+            },
+            error: function () {
+                $("#discountedProductsCount").text("Lỗi tải dữ liệu");
+            }
+        });
+    }
+
+    function refreshPendingOrders() {
+        const sliderContainer = document.getElementById("orderSlider");
+        const orderTitle = document.getElementById("orderTitle");
+
+        fetch("/HomeAdmin/GetPendingOrders")
+            .then(response => response.json())
+            .then(result => {
+                const data = result.data || [];
+
+                orderTitle.textContent = `ĐƠN HÀNG CHỜ XÁC NHẬN : (${data.length})`;
+
+                if (data.length === 0) {
+                    sliderContainer.innerHTML = "<div class='swiper-slide text-center p-3'>Không có đơn hàng nào</div>";
+                    return;
+                }
+
+                sliderContainer.innerHTML = "";
+                data.forEach(order => {
+                    const slide = `
+                    <div class="swiper-slide">
+                        <div class="card m-2 p-3 shadow-sm">
+                            <h6 class="text-white box_count"><strong>Đơn hàng #${order.PaymentId}</strong></h6>
+                            <p><strong>Khách hàng:</strong> ${order.FullName}</p>
+                            <p><strong>SĐT:</strong> ${order.PhoneNumber}</p>
+                            <p><strong>Sản phẩm:</strong> ${order.ProductNames}</p>
+                            <p><strong>Tổng tiền:</strong> ${order.TotalAmount.toLocaleString()} VNĐ</p>
+                            <p><strong>Ngày đặt:</strong> ${new Date(order.CreatedAt).toLocaleDateString()}</p>
+                            <p class="text-warning"><strong>Trạng thái:</strong> ${order.Status}</p>
+                        </div>
+                    </div>
+                `;
+                    sliderContainer.innerHTML += slide;
+                });
+
+                new Swiper(".mySwiper", {
+                    slidesPerView: 1,
+                    spaceBetween: 10,
+                    pagination: { el: ".swiper-pagination", clickable: true },
+                    autoplay: { delay: 3000, disableOnInteraction: false },
+                });
+            })
+            .catch(err => console.error("Lỗi khi tải đơn hàng:", err));
+    }
+
+    function refreshConfirmedPaymentsTable() {
+        const tableBody = $("#paymentTableBody");
+        $.ajax({
+            url: "/HomeAdmin/GetConfirmedPaymentsToday",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    let rows = "";
+                    $.each(response.data, function (i, payment) {
+                        rows += `<tr>
+                        <td>${payment.PaymentId}</td>
+                        <td>${payment.FullName}</td>
+                        <td>${payment.Email}</td>
+                        <td>${payment.PhoneNumber}</td>
+                        <td>${payment.TotalAmount.toLocaleString()} VNĐ</td>
+                        <td>${payment.PaymentMethod}</td>
+                        <td>${new Date(payment.CreatedAt).toLocaleString()}</td>
+                        <td>${payment.ProductNames}</td>
+                    </tr>`;
+                    });
+                    if (rows === "") {
+                        rows = '<tr><td colspan="8" class="text-center">Không có hóa đơn nào</td></tr>';
+                    }
+                    tableBody.html(rows);
+                } else {
+                    tableBody.html('<tr><td colspan="8" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>');
+                }
+            },
+            error: function () {
+                tableBody.html('<tr><td colspan="8" class="text-center text-danger">Lỗi kết nối</td></tr>');
+            }
+        });
+    }
+
+    // Hàm refresh toàn bộ dashboard
+    function refreshAllDashboardData() {
+        console.log("Refreshing all dashboard data...");
+        refreshTodayRevenue();
+        refreshTodayBuyers();
+        refreshNewUsers();
+        refreshDiscountedProducts();
+        refreshPendingOrders();
+        refreshConfirmedPaymentsTable();
+    }
+
+    // ==================== KÍCH HOẠT REFRESH ====================
+
+    // Khi tab được focus
+    window.addEventListener('focus', function () {
+        console.log("Tab được focus, cập nhật dữ liệu...");
+        refreshAllDashboardData();
+    });
+
+    // Khi quay lại trang (back button)
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            console.log("Quay lại trang, cập nhật dữ liệu...");
+            refreshAllDashboardData();
+        }
+    });
+
+    // Lắng nghe signal từ trang thanh toán
+    window.addEventListener('storage', function (e) {
+        if (e.key === 'paymentConfirmed' && e.newValue === 'true') {
+            console.log("Có đơn hàng được xác nhận, cập nhật dashboard...");
+            setTimeout(function () {
+                refreshAllDashboardData();
+            }, 1000); // Chờ 1 giây để database update xong
+            sessionStorage.removeItem('paymentConfirmed');
+        }
+    });
+
+    // Load dữ liệu lần đầu khi page load
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("Page loaded, loading initial data...");
+        refreshAllDashboardData();
+    });
+
+</script>

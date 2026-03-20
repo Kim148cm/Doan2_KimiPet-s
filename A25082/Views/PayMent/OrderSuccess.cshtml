@@ -1,0 +1,115 @@
+﻿@model A25082.Models.Payment
+
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+}
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "@TempData["SuccessMessage"]",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+}
+
+
+
+<div class="container">
+    <h2 class="text-success">🎉 Đơn hàng của bạn đã được đặt thành công!</h2>
+    <p>Cảm ơn bạn, <strong>@Model.FullName</strong>, đã đặt hàng tại cửa hàng của chúng tôi.</p>
+
+    <h3>📦 Chi tiết đơn hàng:</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th>Mã đơn hàng</th>
+            <td>@Model.PaymentId</td>
+        </tr>
+        <tr>
+            <th>Sản phẩm đã mua</th>
+            <td>@Model.ProductNames</td>
+        </tr>
+        <tr>
+            <th>Số lượng</th>
+            <td>@Model.Quantity</td>
+        </tr>
+        <tr>
+            <th>Tổng tiền</th>
+            <td>@Model.TotalAmount.ToString("N0") VNĐ</td>
+        </tr>
+        <tr>
+            <th>Mã giảm giá</th>
+            <td>
+                @if (!string.IsNullOrEmpty(Model.VoucherCode))
+                {
+                    <span class="text-success">@Model.VoucherCode</span>
+                }
+                else
+                {
+                    <span class="text-muted">Không áp dụng</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>Số tiền giảm</th>
+            <td>@Model.DiscountApplied.ToString("N0") VNĐ</td>
+        </tr>
+        <tr>
+            <th>Tổng tiền sau giảm</th>
+            <td><strong>@Model.FinalAmount.ToString("N0") VNĐ</strong></td>
+        </tr>
+        <tr>
+            <th>Phương thức thanh toán</th>
+            <td>@Model.PaymentMethod</td>
+        </tr>
+        <tr>
+            <th>Ngày đặt</th>
+            <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+        <tr>
+            <th>Trạng thái đơn hàng</th>
+            <td>
+                @if (Model.Status == "Chờ xác nhận")
+                {
+                    <span class="badge bg-warning text-dark">🕒 @Model.Status</span>
+                }
+                else if (Model.Status == "Đã xác nhận")
+                {
+                    <span class="badge bg-success">✅ @Model.Status</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Model.Status</span>
+                }
+            </td>
+        </tr>
+    </table>
+
+    <h3>🏠 Thông tin nhận hàng:</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th>Họ và tên</th>
+            <td>@Model.FullName</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>@Model.Email</td>
+        </tr>
+        <tr>
+            <th>Số điện thoại</th>
+            <td>@Model.PhoneNumber</td>
+        </tr>
+        <tr>
+            <th>Địa chỉ</th>
+            <td>@Model.Address, @Model.Ward, @Model.District, @Model.Province</td>
+        </tr>
+    </table>
+
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Tiếp tục mua sắm</a>
+</div>

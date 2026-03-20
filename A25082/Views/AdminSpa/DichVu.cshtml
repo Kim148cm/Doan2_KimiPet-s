@@ -1,0 +1,609 @@
+﻿@model List<WebCafe.Models.DichVuSpa>
+@{
+    ViewBag.Title = "Quản lý Dịch vụ Spa";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --border: #e5e5e5;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #999;
+        --white: #fff;
+        --bg: #f7f9f7;
+        --r: 10px;
+        --font: 'Nunito',sans-serif;
+    }
+
+    * {
+        font-family: var(--font);
+        box-sizing: border-box;
+    }
+
+    .dv-page {
+        padding: 24px;
+        background: var(--bg);
+        min-height: 80vh;
+    }
+
+    .dv-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+        .dv-topbar h2 {
+            font-size: 19px;
+            font-weight: 900;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .dv-topbar p {
+            font-size: 13px;
+            color: var(--text3);
+            margin: 4px 0 0;
+        }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: background .2s;
+    }
+
+        .btn-add:hover {
+            background: #145f2e;
+        }
+
+    /* Table */
+    .dv-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+    }
+
+    .dv-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .dv-table th {
+            background: #f8f9f8;
+            padding: 11px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .dv-table td {
+            padding: 13px 14px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 13.5px;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        .dv-table tr:last-child td {
+            border: none;
+        }
+
+        .dv-table tr:hover td {
+            background: #fafcfa;
+        }
+
+        .dv-table .name-cell {
+            font-weight: 800;
+        }
+
+        .dv-table .desc-cell {
+            font-size: 12.5px;
+            color: var(--text3);
+            max-width: 220px;
+        }
+
+        .dv-table .price-cell {
+            font-weight: 800;
+            color: var(--green);
+            white-space: nowrap;
+        }
+
+        .dv-table .time-cell {
+            color: var(--text2);
+        }
+
+    .badge-on {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 3px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .badge-off {
+        background: #f5f5f5;
+        color: var(--text3);
+        padding: 3px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font);
+        transition: all .15s;
+    }
+
+    .act-edit {
+        background: #f0faf4;
+        color: var(--green);
+        border: 1px solid var(--green-md);
+    }
+
+        .act-edit:hover {
+            background: var(--green);
+            color: #fff;
+        }
+
+    .act-toggle {
+        background: #fef9ec;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+        .act-toggle:hover {
+            background: #d97706;
+            color: #fff;
+        }
+
+    .act-del {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+        .act-del:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+    .empty-row td {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--text3);
+        font-size: 14px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+    .modal-box {
+        background: var(--white);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        margin: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.2);
+        animation: slideUp .2s ease;
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .modal-head h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: var(--text3);
+        line-height: 1;
+        padding: 0 4px;
+    }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+    .modal-body {
+        padding: 20px 22px;
+    }
+
+    .modal-foot {
+        padding: 14px 22px 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .f-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text2);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .f-req {
+        color: #e53935;
+        margin-left: 2px;
+    }
+
+    .f-row {
+        margin-bottom: 15px;
+    }
+
+        .f-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .f-row.cols-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+    .f-input, .f-textarea, .f-select {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 13px;
+        font-size: 13.5px;
+        font-family: var(--font);
+        color: var(--text);
+        background: #fafafa;
+        outline: none;
+        transition: border-color .2s;
+    }
+
+        .f-input:focus, .f-textarea:focus, .f-select:focus {
+            border-color: var(--green);
+            background: #fff;
+        }
+
+    .f-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .f-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        padding-right: 30px;
+    }
+
+    .btn-save {
+        background: var(--green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: background .2s;
+    }
+
+        .btn-save:hover {
+            background: #145f2e;
+        }
+
+    .btn-cancel-modal {
+        background: #f3f4f6;
+        color: var(--text2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+    }
+
+        .btn-cancel-modal:hover {
+            background: #e5e7eb;
+        }
+</style>
+
+<div class="dv-page">
+
+    <div class="dv-topbar">
+        <div>
+            <h2>Quản lý Dịch vụ Spa</h2>
+            <p>Thêm, chỉnh sửa và ẩn/hiện các dịch vụ spa thú cưng.</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <a href="@Url.Action("Index","AdminSpa")"
+               style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:700;background:#fff;border:1px solid var(--border);color:var(--text2);text-decoration:none;">
+                Lịch hẹn
+            </a>
+            <button class="btn-add" onclick="openModal()">+ Thêm dịch vụ</button>
+        </div>
+    </div>
+
+    <div class="dv-table-wrap">
+        <table class="dv-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên dịch vụ</th>
+                    <th>Mô tả</th>
+                    <th>Giá</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int stt = 1;
+                    foreach (var dv in Model)
+                    {
+                        <tr>
+                            <td style="color:var(--text3);font-weight:700;">@(stt++)</td>
+                            <td class="name-cell">@dv.TenDichVu</td>
+                            <td class="desc-cell">@(string.IsNullOrEmpty(dv.MoTa) ? "—" : (dv.MoTa.Length > 60 ? dv.MoTa.Substring(0, 60) + "..." : dv.MoTa))</td>
+                            <td class="price-cell">@dv.GiaTien.ToString("N0")đ</td>
+                            <td class="time-cell">~@dv.ThoiGian phút</td>
+                            <td>
+                                @if (dv.TrangThai)
+                                {
+                                    <span class="badge-on">Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-off">Đã ẩn</span>
+                                }
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    <button class="act-btn act-edit"
+                                            onclick="openEditModal(@dv.MaDichVu, '@Html.Raw(dv.TenDichVu.Replace("'","\\\'"))', '@Html.Raw((dv.MoTa??"").Replace("'","\\\'"))', @dv.GiaTien, @dv.ThoiGian, @(dv.TrangThai ? "true" : "false"))">
+                                        Sửa
+                                    </button>
+                                    <button class="act-btn act-toggle"
+                                            onclick="toggleTrangThai(@dv.MaDichVu, @(dv.TrangThai ? "true" : "false"))">
+                                        @(dv.TrangThai ? "Ẩn" : "Hiện")
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="empty-row"><td colspan="7">Chưa có dịch vụ nào. Nhấn "+ Thêm dịch vụ" để bắt đầu.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal Thêm / Sửa -->
+<div class="modal-overlay" id="dvModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h4 id="modalTitle">Thêm dịch vụ mới</h4>
+            <button class="modal-close" onclick="closeModal()">&#215;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editId" value="0" />
+            <div class="f-row">
+                <label class="f-label">Tên dịch vụ <span class="f-req">*</span></label>
+                <input type="text" class="f-input" id="fTen" placeholder="Ví dụ: Tắm + sấy cơ bản" maxlength="255" />
+            </div>
+            <div class="f-row">
+                <label class="f-label">Mô tả</label>
+                <textarea class="f-textarea" id="fMoTa" placeholder="Mô tả ngắn về dịch vụ..."></textarea>
+            </div>
+            <div class="f-row cols-2">
+                <div>
+                    <label class="f-label">Giá tiền (đ) <span class="f-req">*</span></label>
+                    <input type="number" class="f-input" id="fGia" placeholder="150000" min="0" step="1000" />
+                </div>
+                <div>
+                    <label class="f-label">Thời gian (phút) <span class="f-req">*</span></label>
+                    <input type="number" class="f-input" id="fThoiGian" placeholder="60" min="1" />
+                </div>
+            </div>
+            <div class="f-row" id="fTrangThaiRow" style="display:none;">
+                <label class="f-label">Trạng thái</label>
+                <select class="f-select" id="fTrangThai">
+                    <option value="true">Đang hoạt động</option>
+                    <option value="false">Ẩn</option>
+                </select>
+            </div>
+            <div id="fError" style="color:#dc2626;font-size:12.5px;font-weight:600;margin-top:8px;display:none;"></div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-cancel-modal" onclick="closeModal()">Hủy</button>
+            <button class="btn-save" id="saveBtn" onclick="saveService()">Lưu dịch vụ</button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>function openModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm dịch vụ mới';
+    document.getElementById('editId').value = '0';
+    document.getElementById('fTen').value = '';
+    document.getElementById('fMoTa').value = '';
+    document.getElementById('fGia').value = '';
+    document.getElementById('fThoiGian').value = '';
+    document.getElementById('fTrangThaiRow').style.display = 'none';
+    document.getElementById('fError').style.display = 'none';
+    document.getElementById('dvModal').classList.add('open');
+    document.getElementById('fTen').focus();
+}
+
+function openEditModal(id, ten, moTa, gia, thoiGian, trangThai) {
+    document.getElementById('modalTitle').textContent = 'Sửa dịch vụ';
+    document.getElementById('editId').value = id;
+    document.getElementById('fTen').value = ten;
+    document.getElementById('fMoTa').value = moTa;
+    document.getElementById('fGia').value = gia;
+    document.getElementById('fThoiGian').value = thoiGian;
+    document.getElementById('fTrangThai').value = trangThai ? 'true' : 'false';
+    document.getElementById('fTrangThaiRow').style.display = 'block';
+    document.getElementById('fError').style.display = 'none';
+    document.getElementById('dvModal').classList.add('open');
+    document.getElementById('fTen').focus();
+}
+
+function closeModal() {
+    document.getElementById('dvModal').classList.remove('open');
+}
+
+// Đóng modal khi click ngoài
+document.getElementById('dvModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+function saveService() {
+    var id       = parseInt(document.getElementById('editId').value);
+    var ten      = document.getElementById('fTen').value.trim();
+    var moTa     = document.getElementById('fMoTa').value.trim();
+    var gia      = parseFloat(document.getElementById('fGia').value);
+    var thoiGian = parseInt(document.getElementById('fThoiGian').value);
+    var ttVal    = document.getElementById('fTrangThai').value;
+    var tt       = (ttVal === 'true');
+
+    var err = document.getElementById('fError');
+    if (!ten) { err.textContent = 'Vui lòng nhập tên dịch vụ.'; err.style.display='block'; return; }
+    if (!gia || gia <= 0) { err.textContent = 'Vui lòng nhập giá tiền hợp lệ.'; err.style.display='block'; return; }
+    if (!thoiGian || thoiGian <= 0) { err.textContent = 'Vui lòng nhập thời gian hợp lệ.'; err.style.display='block'; return; }
+    err.style.display = 'none';
+
+    var btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.textContent = 'Đang lưu...';
+
+    var url  = id === 0 ? '/AdminSpa/ThemDichVu' : '/AdminSpa/SuaDichVu';
+    var data = { TenDichVu: ten, MoTa: moTa, GiaTien: gia, ThoiGian: thoiGian, TrangThai: tt };
+    if (id > 0) data.MaDichVu = id;
+
+    $.post(url, data, function(res) {
+        if (res.success) {
+            closeModal();
+            Swal.fire({
+                icon: 'success', title: res.message,
+                toast: true, position: 'top-end',
+                showConfirmButton: false, timer: 2000, timerProgressBar: true
+            });
+            setTimeout(function(){ location.reload(); }, 1800);
+        } else {
+            err.textContent = res.message || 'Có lỗi xảy ra.';
+            err.style.display = 'block';
+            btn.disabled = false; btn.textContent = 'Lưu dịch vụ';
+        }
+    }).fail(function() {
+        err.textContent = 'Lỗi kết nối, vui lòng thử lại.';
+        err.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Lưu dịch vụ';
+    });
+}
+
+function toggleTrangThai(id, isActive) {
+    var action = isActive ? 'ẩn' : 'hiện lại';
+    Swal.fire({
+        title: (isActive ? 'Ẩn' : 'Hiện') + ' dịch vụ?',
+        text: 'Bạn muốn ' + action + ' dịch vụ này?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#1a7a3c',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+    }).then(function(r) {
+        if (!r.isConfirmed) return;
+        $.post('/AdminSpa/SuaDichVu', {
+            MaDichVu: id,
+            TrangThai: !isActive,
+            TenDichVu: '_keep_',   // Controller sẽ không update nếu rỗng — cần giữ tên
+            GiaTien: 0,
+            ThoiGian: 1
+        }, function() {
+            // Dùng XoaDichVu endpoint (soft-delete = ẩn) nếu đang ẩn
+            if (isActive) {
+                $.post('/AdminSpa/XoaDichVu', { id: id }, function(res) {
+                    if (res.success) {
+                        Swal.fire({ icon:'success', title:'Đã ẩn dịch vụ', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+                        setTimeout(function(){ location.reload(); }, 1600);
+                    }
+                });
+            }
+        });
+    });
+}</script>
+}

@@ -1,0 +1,174 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.bg_filter_pr {
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+}
+
+.link_filter_pr {
+    border: 1px solid black;
+    padding: 7px 10px;
+    color: black;
+    text-decoration: none;
+}
+
+.title_sort_pr {
+    font-size: 15px;
+}
+
+.container_body_sale {
+    max-width: 1250px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.bg_dropdow_sale {
+    border: 1px solid #e5e5e5;
+    padding: 10px 2rem;
+}
+
+.bg_filter_pr {
+    margin-top: 2rem;
+    padding-bottom: 1rem;
+}
+
+.price-nav .btn {
+    padding: 8px 20px;
+    border-radius: 0;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin: 2px;
+}
+
+.body_info_sale_pr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.category-nav .btn {
+    padding: 8px 20px;
+    border-radius: 0;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin: 2px;
+}
+
+.primary-nav .btn {
+    background-color: #ff3b30;
+    color: white;
+}
+
+.product-card {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+    .product-card:hover {
+        border: 1px solid #dee2e6;
+    }
+
+.new-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    background-color: transparent;
+    border: 1px solid black;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.color-options {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.color-option {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.sale-price {
+    color: #ff3b30;
+    font-weight: bold;
+}
+
+.bg_btn_disCount {
+    display: flex;
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    background-color: #f8f9fa;
+    margin-bottom: 15px;
+}
+
+.body_image_sale {
+    width: 100%;
+    height: auto;
+}
+
+    .body_image_sale img {
+        width: 100%;
+        height: auto;
+    }
+
+
+.btn.active {
+    background-color: red;
+    color: white;
+}
+
+.btn.selected_btn.active {
+    background-color: red;
+    color: white;
+}
+
+
+@media (max-width: 575.98px) {
+    .row_pr_sale {
+        padding: 10px;
+    }
+}
+
+
+@media (max-width: 767.98px) {
+}
+
+
+@media (max-width: 992px) {
+    .row_pr_sale {
+        padding: 10px;
+    }
+
+    .image-container {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+    }
+}
+
+@media (max-width: 1199.98px) {
+}
+
+@media (max-width: 1399.98px) {
+}

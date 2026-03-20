@@ -1,0 +1,294 @@
+﻿@model List<A25082.Models.NguoiDung>
+@{
+    ViewBag.Title = "Quản lý Người Dùng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@{
+    var roles = ViewBag.Roles as List<A25082.Models.VaiTro>;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-4">
+    <h5 class="mb-0"><i class="fas fa-users class-icons"></i> QUẢN LÝ NGƯỜI DÙNG</h5>
+
+    <div class="card shadow-sm p-4 mt-4">
+        <input type="hidden" id="userId" value="0" />
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tên đăng nhập:</label>
+            <input type="text" id="userName" class="form-control" placeholder="Nhập tên đăng nhập" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Email:</label>
+            <input type="email" id="email" class="form-control" placeholder="Nhập email" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Mật khẩu:</label>
+            <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu (để trống nếu không đổi)" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Số điện thoại:</label>
+            <input type="text" id="phoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Vai trò:</label>
+            <select id="roleId" class="form-select">
+                <option value="">Chọn vai trò</option>
+                @foreach (var role in roles)
+                {
+                    <option value="@role.MaVaiTro">@role.TenVaiTro</option>
+                }
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-success" onclick="saveUser()">
+                <i class="fas fa-save"></i> Lưu thông tin
+            </button>
+            <button class="btn btn-secondary" onclick="resetForm()">Hủy bỏ</button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-5">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">DANH SÁCH NGƯỜI DÙNG</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Vai trò</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        var roleName = roles?.FirstOrDefault(r => r.MaVaiTro == user.MaVaiTro)?.TenVaiTro ?? "Không xác định";
+                        <tr class="align-middle">
+                            <td>@user.MaNguoiDung</td>
+                            <td>@user.TenDangNhap</td>
+                            <td>@user.Email</td>
+                            <td>@user.SoDienThoai</td>
+                            <td>@roleName</td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm" onclick="editUser(@user.MaNguoiDung)">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser(@user.MaNguoiDung)">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .class-icons {
+        background-color: forestgreen;
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    function saveUser() {
+        let userId = $("#userId").val();
+        let userName = $("#userName").val();
+        let email = $("#email").val();
+        let phoneNumber = $("#phoneNumber").val();
+        let roleId = $("#roleId").val();
+        let password = $("#password").val();
+
+        if (!userName || !email || !phoneNumber || !roleId) {
+            Swal.fire("Lỗi!", "Vui lòng điền đầy đủ thông tin!", "error");
+            return;
+        }
+
+        // Gửi dữ liệu đúng tên trường trong ViewModel: MatKhau (password thô)
+        $.ajax({
+            url: "/AdminUser/SaveUser",
+            type: "POST",
+            data: JSON.stringify({
+                MaNguoiDung: parseInt(userId) || 0,
+                TenDangNhap: userName,
+                Email: email,
+                SoDienThoai: phoneNumber,
+                MaVaiTro: parseInt(roleId),
+                MatKhau: password
+            }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Thành công!", response.message, "success").then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire("Lỗi!", response.message, "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Lỗi!", "Không thể lưu thông tin.", "error");
+            }
+        });
+    }
+
+    function editUser(id) {
+        // Lấy thông tin user từ bảng hiện tại
+        let row = $(`button[onclick='editUser(${id})']`).closest('tr');
+
+        let userName = row.find('td:eq(1)').text();
+        let email = row.find('td:eq(2)').text();
+        let phone = row.find('td:eq(3)').text();
+        let roleName = row.find('td:eq(4)').text();
+
+        // Lấy mã vai trò theo tên (từ dropdown)
+        let roleId = $("#roleId option").filter(function () {
+            return $(this).text() === roleName;
+        }).val();
+
+        Swal.fire({
+            title: 'Chỉnh sửa thông tin người dùng',
+            html: `
+                <input type="hidden" id="editUserId" value="${id}" />
+                <input type="text" id="editUserName" class="swal2-input" placeholder="Tên đăng nhập" value="${userName}" />
+                <input type="email" id="editEmail" class="swal2-input" placeholder="Email" value="${email}" />
+                <input type="text" id="editPhone" class="swal2-input" placeholder="Số điện thoại" value="${phone}" />
+                <select id="editRoleId" class="swal2-select">
+                    ${$("#roleId").html()}
+                </select>
+                <input type="password" id="editPassword" class="swal2-input" placeholder="Mật khẩu mới (để trống nếu không đổi)" />
+                <input type="password" id="editPasswordConfirm" class="swal2-input" placeholder="Xác nhận mật khẩu mới" />
+            `,
+            didOpen: () => {
+                $("#editRoleId").val(roleId);
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Cập nhật',
+            preConfirm: () => {
+                const newId = $("#editUserId").val();
+                const newUserName = $("#editUserName").val();
+                const newEmail = $("#editEmail").val();
+                const newPhone = $("#editPhone").val();
+                const newRoleId = $("#editRoleId").val();
+                const newPass = $("#editPassword").val();
+                const newPassConfirm = $("#editPasswordConfirm").val();
+
+                if (!newUserName || !newEmail || !newPhone || !newRoleId) {
+                    Swal.showValidationMessage("Vui lòng nhập đầy đủ thông tin!");
+                    return false;
+                }
+
+                if (newPass || newPassConfirm) {
+                    if (newPass !== newPassConfirm) {
+                        Swal.showValidationMessage("Mật khẩu xác nhận không khớp!");
+                        return false;
+                    }
+                }
+
+                return {
+                    MaNguoiDung: parseInt(newId),
+                    TenDangNhap: newUserName,
+                    Email: newEmail,
+                    SoDienThoai: newPhone,
+                    MaVaiTro: parseInt(newRoleId),
+                    MatKhau: newPass
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/AdminUser/SaveUser",
+                    type: "POST",
+                    data: JSON.stringify(result.value),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: () => {
+                        Swal.fire({
+                            title: "Đang cập nhật...",
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                    },
+                    success: (res) => {
+                        Swal.fire({
+                            title: res.success ? "Thành công!" : "Thất bại!",
+                            text: res.message,
+                            icon: res.success ? "success" : "error",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            if (res.success) location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteUser(id) {
+        Swal.fire({
+            title: "Bạn có chắc chắn muốn xóa?",
+            text: "Thao tác này không thể hoàn tác!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Có, xóa!",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/AdminUser/DeleteUser",
+                    type: "POST",
+                    data: JSON.stringify({ id: id }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: (response) => {
+                        if (response.success) {
+                            Swal.fire("Đã xóa!", response.message, "success").then(() => location.reload());
+                        } else {
+                            Swal.fire("Lỗi!", response.message, "error");
+                        }
+                    },
+                    error: () => {
+                        Swal.fire("Lỗi!", "Không thể xóa người dùng.", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function resetForm() {
+        $("#userId").val("0");
+        $("#userName").val("");
+        $("#email").val("");
+        $("#phoneNumber").val("");
+        $("#roleId").val("");
+        $("#password").val("");
+
+        Swal.fire({
+            title: "Đã đặt lại!",
+            text: "Trường nhập đã được đặt lại!",
+            icon: "info",
+            confirmButtonText: "OK"
+        });
+    }
+</script>

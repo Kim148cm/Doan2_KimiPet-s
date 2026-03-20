@@ -1,0 +1,771 @@
+﻿
+
+
+@model List<WebCafe.Models.DatLichSpa>
+@{
+    ViewBag.Title = "Lịch Sử Đặt Lịch Spa | Kimipet's";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --green-dk: #145f2e;
+        --gold: #f5c518;
+        --border: #e5e5e5;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #999;
+        --bg: #f7f9f7;
+        --white: #fff;
+        --r: 12px;
+        --font: 'Nunito', sans-serif;
+    }
+
+    .ls-page {
+        background: var(--bg);
+        min-height: 80vh;
+        padding-bottom: 60px;
+        font-family: var(--font);
+    }
+
+    /* ── Header ── */
+    .ls-header {
+        background: linear-gradient(135deg, #0f3c1e, #1a7a3c, #34c769);
+        padding: 40px 24px 56px;
+        text-align: center;
+        position: relative;
+    }
+
+        .ls-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: var(--bg);
+            border-radius: 32px 32px 0 0;
+        }
+
+        .ls-header h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 8px;
+        }
+
+        .ls-header p {
+            font-size: 14px;
+            color: rgba(255,255,255,.8);
+            margin: 0;
+        }
+
+    /* ── Wrap ── */
+    .ls-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 20px 0;
+    }
+
+    /* ── Tabs ── */
+    .ls-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .ls-tab {
+        padding: 8px 18px;
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text2);
+        background: var(--white);
+        cursor: pointer;
+        transition: all .18s;
+        font-family: var(--font);
+    }
+
+        .ls-tab:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .ls-tab.active {
+            background: var(--green);
+            color: #fff;
+            border-color: var(--green);
+        }
+
+        .ls-tab .cnt {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.25);
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 11px;
+            margin-left: 5px;
+            font-weight: 800;
+        }
+
+        .ls-tab:not(.active) .cnt {
+            background: var(--bg);
+            color: var(--text3);
+        }
+
+    /* ── Card ── */
+    .ls-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        margin-bottom: 14px;
+        overflow: hidden;
+        transition: box-shadow .2s;
+    }
+
+        .ls-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,.08);
+        }
+
+    .ls-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid #f5f5f5;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ls-card-id {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text3);
+        letter-spacing: .5px;
+    }
+
+    .ls-card-date {
+        font-size: 12px;
+        color: var(--text3);
+        font-weight: 600;
+    }
+
+    /* Status badges */
+    .ls-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+        .ls-badge.wait {
+            background: #fff8e1;
+            color: #d97706;
+        }
+
+        .ls-badge.confirm {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .ls-badge.doing {
+            background: #fae8ff;
+            color: #9333ea;
+        }
+
+        .ls-badge.done {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .ls-badge.cancel {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+    .ls-card-body {
+        padding: 16px 18px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .ls-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ls-info-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .ls-info-val {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+        .ls-info-val.green {
+            color: var(--green);
+        }
+
+    /* Pet block */
+    .ls-pet-block {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--green-lt);
+        border: 1px solid var(--green-md);
+        border-radius: 9px;
+        padding: 12px 14px;
+    }
+
+    .ls-pet-emoji {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .ls-pet-name {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text);
+    }
+
+    .ls-pet-sub {
+        font-size: 12.5px;
+        color: var(--text3);
+        font-weight: 600;
+    }
+
+    /* Actions */
+    .ls-card-foot {
+        padding: 12px 18px;
+        border-top: 1px solid #f5f5f5;
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .ls-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font);
+        transition: all .18s;
+        text-decoration: none;
+    }
+
+    .ls-btn-green {
+        background: var(--green);
+        color: #fff;
+    }
+
+        .ls-btn-green:hover {
+            background: var(--green-dk);
+            color: #fff;
+        }
+
+    .ls-btn-outline {
+        background: #fff;
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+    }
+
+        .ls-btn-outline:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+    .ls-btn-red {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1.5px solid #fecaca;
+    }
+
+        .ls-btn-red:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+    /* Note box */
+    .ls-note {
+        background: #fff8e1;
+        border-left: 4px solid var(--gold);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12.5px;
+        color: #7a5c00;
+        line-height: 1.6;
+        grid-column: 1 / -1;
+    }
+
+    /* ── Empty ── */
+    .ls-empty {
+        text-align: center;
+        padding: 60px 20px;
+        font-family: var(--font);
+    }
+
+    .ls-empty-icon {
+        font-size: 52px;
+        margin-bottom: 14px;
+    }
+
+    .ls-empty h3 {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--text2);
+        margin-bottom: 6px;
+    }
+
+    .ls-empty p {
+        font-size: 13.5px;
+        color: var(--text3);
+    }
+
+    .ls-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        background: var(--green);
+        color: #fff;
+        padding: 12px 26px;
+        border-radius: 9px;
+        font-weight: 800;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all .2s;
+        font-family: var(--font);
+    }
+
+        .ls-empty-btn:hover {
+            background: var(--green-dk);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    /* ── Hủy modal ── */
+    .modal-content {
+        border-radius: var(--r);
+        border: none;
+        font-family: var(--font);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #e53935, #ff6b6b);
+        color: #fff;
+        border-radius: var(--r) var(--r) 0 0;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    @@media (max-width: 600px) {
+        .ls-card-body {
+            grid-template-columns: 1fr;
+        }
+
+        .ls-pet-block {
+            grid-column: 1;
+        }
+
+        .ls-note {
+            grid-column: 1;
+        }
+
+        .ls-header h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="ls-page">
+
+    <!-- Header -->
+    <div class="ls-header">
+        <h1>🗓️ Lịch Sử Đặt Lịch Spa</h1>
+        <p>Theo dõi toàn bộ lịch hẹn spa cho thú cưng của bạn</p>
+    </div>
+
+    <div class="ls-wrap">
+        <div class="ls-wrap">
+
+         
+            @if (Session["User"] == null)
+            {
+                <div style="background:#fff8e1;border:1px solid #fbbf24;border-radius:10px;
+                        padding:14px 18px;margin-bottom:18px;display:flex;
+                        align-items:center;gap:12px;font-family:var(--font);">
+                    <span style="font-size:22px;">⚠️</span>
+                    <div>
+                        <div style="font-weight:800;font-size:14px;color:#92400e;">
+                            Bạn đang xem lịch sử với tư cách khách
+                        </div>
+                        <div style="font-size:12.5px;color:#b45309;margin-top:2px;">
+                            Lịch hẹn chỉ được lưu trong phiên này.
+                            <a href="@Url.Action("Index","DangNhapNguoiDung")"
+                               style="color:#d97706;font-weight:800;text-decoration:underline;">
+                                Đăng nhập
+                            </a>
+                            để quản lý lịch hẹn mọi lúc mọi nơi.
+                        </div>
+                    </div>
+                </div>
+            }
+
+           
+
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="ls-empty">
+                        <div class="ls-empty-icon">🐾</div>
+                        <h3>Bạn chưa có lịch hẹn nào</h3>
+                        <p>Hãy đặt lịch spa để chăm sóc thú cưng của bạn ngay hôm nay!</p>
+                        <a href="@Url.Action("DatLich","Spa")" class="ls-empty-btn">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch ngay
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Thống kê nhanh -->
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
+                        @{
+                            int tongLich = Model.Count;
+                            int choXacNhan = Model.Count(l => l.TrangThai == "Chờ xác nhận");
+                            int daXacNhan = Model.Count(l => l.TrangThai == "Đã xác nhận" || l.TrangThai == "Đang thực hiện");
+                            int hoanThanh = Model.Count(l => l.TrangThai == "Hoàn thành");
+                            int daHuy = Model.Count(l => l.TrangThai == "Đã hủy");
+                        }
+                        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                            <div style="font-size:22px;font-weight:900;color:var(--green);">@tongLich</div>
+                            <div style="font-size:11px;font-weight:700;color:var(--text3);">Tổng lịch</div>
+                        </div>
+                        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                            <div style="font-size:22px;font-weight:900;color:#f59e0b;">@choXacNhan</div>
+                            <div style="font-size:11px;font-weight:700;color:var(--text3);">Chờ xác nhận</div>
+                        </div>
+                        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                            <div style="font-size:22px;font-weight:900;color:#10b981;">@hoanThanh</div>
+                            <div style="font-size:11px;font-weight:700;color:var(--text3);">Hoàn thành</div>
+                        </div>
+                        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                            <div style="font-size:22px;font-weight:900;color:#ef4444;">@daHuy</div>
+                            <div style="font-size:11px;font-weight:700;color:var(--text3);">Đã hủy</div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs lọc -->
+                    <div class="ls-tabs">
+                        <button class="ls-tab active" onclick="filterTab('all', this)">
+                            Tất cả <span class="cnt">@tongLich</span>
+                        </button>
+                        <button class="ls-tab" onclick="filterTab('cho', this)">
+                            ⏳ Chờ xác nhận <span class="cnt">@choXacNhan</span>
+                        </button>
+                        <button class="ls-tab" onclick="filterTab('xacnhan', this)">
+                            ✅ Đã xác nhận <span class="cnt">@daXacNhan</span>
+                        </button>
+                        <button class="ls-tab" onclick="filterTab('hoanthanh', this)">
+                            🎉 Hoàn thành <span class="cnt">@hoanThanh</span>
+                        </button>
+                        <button class="ls-tab" onclick="filterTab('huy', this)">
+                            ❌ Đã hủy <span class="cnt">@daHuy</span>
+                        </button>
+                    </div>
+
+                    <!-- Nút đặt lịch mới -->
+                    <div style="text-align:right;margin-bottom:16px;">
+                        <a href="@Url.Action("DatLich","Spa")" class="ls-btn ls-btn-green">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch mới
+                        </a>
+                    </div>
+
+                    <!-- Danh sách lịch -->
+                    <div id="lichList">
+                        @foreach (var l in Model)
+                        {
+                            // Xác định badge class
+                            string bCls, bTxt;
+                            if (l.TrangThai == "Chờ xác nhận") { bCls = "wait"; bTxt = "⏳ Chờ xác nhận"; }
+                            else if (l.TrangThai == "Đã xác nhận") { bCls = "confirm"; bTxt = "✅ Đã xác nhận"; }
+                            else if (l.TrangThai == "Đang thực hiện") { bCls = "doing"; bTxt = "🔄 Đang thực hiện"; }
+                            else if (l.TrangThai == "Hoàn thành") { bCls = "done"; bTxt = "🎉 Hoàn thành"; }
+                            else if (l.TrangThai == "Đã hủy") { bCls = "cancel"; bTxt = "❌ Đã hủy"; }
+                            else { bCls = "wait"; bTxt = l.TrangThai; }
+
+                            // Data filter attribute
+                            string filterAttr;
+                            if (l.TrangThai == "Chờ xác nhận") { filterAttr = "cho"; }
+                            else if (l.TrangThai == "Đã xác nhận" || l.TrangThai == "Đang thực hiện") { filterAttr = "xacnhan"; }
+                            else if (l.TrangThai == "Hoàn thành") { filterAttr = "hoanthanh"; }
+                            else if (l.TrangThai == "Đã hủy") { filterAttr = "huy"; }
+                            else { filterAttr = "cho"; }
+
+                            <div class="ls-card" data-filter="@filterAttr">
+                                <!-- Top row -->
+                                <div class="ls-card-top">
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <span class="ls-card-id">MÃ LỊCH #@l.MaLich</span>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <span class="ls-card-date">
+                                            <i class="fa-regular fa-clock" style="color:var(--text3);"></i>
+                                            Đặt lúc @l.NgayTao.ToString("HH:mm dd/MM/yyyy")
+                                        </span>
+                                        <span class="ls-badge @bCls">@bTxt</span>
+                                    </div>
+                                </div>
+
+                                <!-- Body -->
+                                <div class="ls-card-body">
+
+                                    <!-- Pet block -->
+                                    <div class="ls-pet-block">
+                                        <div class="ls-pet-emoji">
+                                            @(l.LoaiThuCung != null && l.LoaiThuCung.TenLoaiThu == "Mèo" ? "🐱" :
+                                  l.LoaiThuCung != null && l.LoaiThuCung.TenLoaiThu == "Chó" ? "🐶" : "🐾")
+                                        </div>
+                                        <div>
+                                            <div class="ls-pet-name">@l.TenThuCung</div>
+                                            <div class="ls-pet-sub">
+                                                @(l.LoaiThuCung != null ? l.LoaiThuCung.TenLoaiThu : "")
+                                                @(!string.IsNullOrEmpty(l.Giong) ? " · " + l.Giong : "")
+                                                @(!string.IsNullOrEmpty(l.CanNang) ? " · " + l.CanNang : "")
+                                                @(!string.IsNullOrEmpty(l.TuoiThuCung) ? " · " + l.TuoiThuCung : "")
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dịch vụ -->
+                                    <div class="ls-info-item">
+                                        <span class="ls-info-label">✂️ Dịch vụ</span>
+                                        <span class="ls-info-val">
+                                            @(l.DichVuSpa != null ? l.DichVuSpa.TenDichVu : "—")
+                                        </span>
+                                    </div>
+
+                                    <!-- Chi phí -->
+                                    <div class="ls-info-item">
+                                        <span class="ls-info-label">💰 Chi phí</span>
+                                        <span class="ls-info-val green">
+                                            @(l.DichVuSpa != null ? l.DichVuSpa.GiaTien.ToString("N0") + "đ" : "—")
+                                        </span>
+                                    </div>
+
+                                    <!-- Ngày hẹn -->
+                                    <div class="ls-info-item">
+                                        <span class="ls-info-label">📅 Ngày hẹn</span>
+                                        <span class="ls-info-val">@l.NgayHen.ToString("dd/MM/yyyy")</span>
+                                    </div>
+
+                                    <!-- Giờ hẹn -->
+                                    <div class="ls-info-item">
+                                        <span class="ls-info-label">🕐 Giờ hẹn</span>
+                                        <span class="ls-info-val">@l.GioHen.ToString(@"hh\:mm")</span>
+                                    </div>
+
+                                    <!-- Ghi chú KH -->
+                                    @if (!string.IsNullOrEmpty(l.GhiChu))
+                                    {
+                                        <div class="ls-info-item" style="grid-column:1/-1;">
+                                            <span class="ls-info-label">📝 Ghi chú của bạn</span>
+                                            <span class="ls-info-val" style="font-weight:600;color:var(--text2);">@l.GhiChu</span>
+                                        </div>
+                                    }
+
+                                    <!-- Ghi chú admin -->
+                                    @if (!string.IsNullOrEmpty(l.GhiChuAdmin))
+                                    {
+                                        <div class="ls-note">
+                                            <strong>💬 Nhân viên ghi chú:</strong> @l.GhiChuAdmin
+                                        </div>
+                                    }
+
+                                    <!-- Lý do hủy -->
+                                    @if (l.TrangThai == "Đã hủy" && !string.IsNullOrEmpty(l.LyDoHuy))
+                                    {
+                                        <div style="grid-column:1/-1;background:#fee2e2;border-left:4px solid #dc2626;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#7f1d1d;">
+                                            <strong>❌ Lý do hủy:</strong> @l.LyDoHuy
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Footer actions -->
+                                <div class="ls-card-foot">
+                                    @if (l.TrangThai == "Chờ xác nhận" || l.TrangThai == "Đã xác nhận")
+                                    {
+                                        <button class="ls-btn ls-btn-red"
+                                                onclick="xacNhanHuy(@l.MaLich, '@Html.Raw(l.TenThuCung.Replace("'","\\\'"))')">
+                                            <i class="fa-solid fa-xmark"></i> Hủy lịch
+                                        </button>
+                                    }
+                                    @if (l.TrangThai == "Hoàn thành")
+                                    {
+                                        <a href="@Url.Action("DatLich","Spa")" class="ls-btn ls-btn-green">
+                                            <i class="fa-solid fa-rotate-right"></i> Đặt lại
+                                        </a>
+                                        <a href="@Url.Action("DanhGia","DangNhapNguoiDung")" class="ls-btn ls-btn-outline">
+                                            <i class="fa-solid fa-star"></i> Đánh giá
+                                        </a>
+                                    }
+                                    @if (l.TrangThai == "Đã hủy")
+                                    {
+                                        <a href="@Url.Action("DatLich","Spa")" class="ls-btn ls-btn-outline">
+                                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch mới
+                                        </a>
+                                    }
+                                    <span style="margin-left:auto;font-size:11.5px;color:var(--text3);font-weight:600;">
+                                        @if (l.NgayCapNhat.HasValue)
+                                        {
+                                            <span>Cập nhật: @l.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Đặt lịch mới banner -->
+                    <div style="background:linear-gradient(135deg,#1a7a3c,#34c769);border-radius:14px;padding:28px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:10px;">
+                        <div>
+                            <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;">🐾 Đặt thêm lịch cho boss?</div>
+                            <div style="font-size:13px;color:rgba(255,255,255,.8);">Xác nhận trong 30 phút · Nhiều dịch vụ chăm sóc toàn diện</div>
+                        </div>
+                        <a href="@Url.Action("DatLich","Spa")"
+                           style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--green);padding:12px 24px;border-radius:9px;font-weight:800;font-size:14px;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch ngay
+                        </a>
+                    </div>
+                }
+
+        </div>
+    </div>
+
+<!-- Modal xác nhận hủy -->
+<div class="modal fade" id="huyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="font-weight:800;">❌ Xác nhận hủy lịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px 24px;font-family:var(--font);">
+                <p style="font-size:14px;color:#555;margin-bottom:16px;">
+                    Bạn muốn hủy lịch hẹn spa cho bé <strong id="petNameModal"></strong>?
+                </p>
+                <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:7px;">
+                    Lý do hủy (tùy chọn):
+                </label>
+                <textarea id="lyDoHuyInput"
+                          style="width:100%;border:1.5px solid #e5e5e5;border-radius:8px;padding:10px 14px;font-size:13.5px;font-family:var(--font);outline:none;resize:none;"
+                          rows="3"
+                          placeholder="Ví dụ: Bận việc đột xuất, thú cưng không khỏe..."></textarea>
+            </div>
+            <div class="modal-footer" style="border:none;padding:12px 24px 20px;gap:10px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        style="font-family:var(--font);font-weight:700;border-radius:8px;">
+                    Giữ lịch
+                </button>
+                <button type="button" id="confirmHuyBtn"
+                        style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-weight:800;font-size:14px;cursor:pointer;font-family:var(--font);">
+                    <i class="fa-solid fa-xmark"></i> Xác nhận hủy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsProducts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+var currentHuyId = null;
+
+function xacNhanHuy(id, petName) {
+    currentHuyId = id;
+    document.getElementById('petNameModal').textContent = petName;
+    document.getElementById('lyDoHuyInput').value = '';
+    new bootstrap.Modal(document.getElementById('huyModal')).show();
+}
+
+document.getElementById('confirmHuyBtn').addEventListener('click', function () {
+    if (!currentHuyId) return;
+    var lyDo = document.getElementById('lyDoHuyInput').value.trim();
+
+    var btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+
+    $.ajax({
+        url: '/Spa/HuyLich',
+        type: 'POST',
+        data: { id: currentHuyId, lyDo: lyDo },
+        success: function (res) {
+            bootstrap.Modal.getInstance(document.getElementById('huyModal')).hide();
+            if (res.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã hủy lịch!',
+                    text: res.message,
+                    confirmButtonColor: '#1a7a3c',
+                    confirmButtonText: 'OK'
+                }).then(function () {
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Lỗi', res.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Xác nhận hủy';
+            }
+        },
+        error: function () {
+            Swal.fire('Lỗi', 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Xác nhận hủy';
+        }
+    });
+});
+
+// Tab filter
+function filterTab(type, el) {
+    document.querySelectorAll('.ls-tab').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+
+    document.querySelectorAll('#lichList .ls-card').forEach(function(card) {
+        if (type === 'all') {
+            card.style.display = '';
+        } else {
+            card.style.display = (card.getAttribute('data-filter') === type) ? '' : 'none';
+        }
+    });
+}
+    </script>
+}
+

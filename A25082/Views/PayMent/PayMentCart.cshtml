@@ -1,0 +1,321 @@
+﻿@model List<A25082.Models.GioHang>
+
+@{
+    var voucherCode = ViewBag.VoucherCode as string;
+    var voucherDiscount = ViewBag.VoucherDiscount as decimal? ?? 0;
+    var totalAmount = Model.Sum(item => item.TongTien);
+    var totalAfterDiscount = totalAmount - voucherDiscount;
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="container" style="margin-top: 2rem;">
+        <a href="@Url.Action("Index", "Home")" class="title_logo_pay" style="text-decoration:none;color:forestgreen;">Kimipet's</a>
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" style="margin-bottom: 2rem;">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "GioHang")" style="color: #3DA9E1;text-decoration:none;">Giỏ hàng</a></li>
+                <li class="breadcrumb-item active">Thông tin giao hàng</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-xl-7">
+                <form id="confirmOrderForm" method="post" action="@Url.Action("ConfirmOrder", "PayMent")">
+
+                    <div class="mb-3">
+                        <input type="text" name="FullName" class="form-control" placeholder="Họ và tên">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <input type="email" name="Email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="col">
+                            <input type="tel" name="PhoneNumber" class="form-control form_sm" placeholder="Số điện thoại">
+                        </div>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <input type="text" name="Address" class="form-control" placeholder="Địa chỉ">
+                    </div>
+                    <div class="row row_address">
+                        <div class="col">
+                            <select id="tinh" class="form-select" name="Province">
+                                <option selected>Chọn tỉnh/thành phố</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="quan" class="form-select" name="District">
+                                <option selected>Chọn quận/huyện</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="phuong" class="form-select" name="Ward">
+                                <option selected>Chọn phường/xã</option>
+                            </select>
+                        </div>
+                    </div>
+
+                   
+
+                    <h6 class="title_h_pay">Phương thức vận chuyển</h6>
+                    <div class="shipping-method">
+                        <div class="text-center">
+                            <p class="text-muted mt-3">Vui lòng chọn tỉnh / thành để có danh sách phương thức vận chuyển.</p>
+                        </div>
+                    </div>
+
+                    <div class="payment-methods mt-4">
+                        <h3 class="title_h_pay">Phương thức thanh toán</h3>
+                        <div class="payment-options">
+                            <div class="payment-option" name="PaymentMethod">
+                                <input type="radio" class="form-check-input" name="PaymentMethod" id="cod" value="Thanh toán khi nhận hàng">
+                                <label class="form-check-label d-flex align-items-center" for="cod">
+                                    <img src="Assets/image/tt2.jpg" alt="COD" class="payment-icon">
+                                    <span>Thanh toán khi giao hàng (COD)</span>
+                                </label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" class="form-check-input" name="PaymentMethod" id="vietqr" value="vietqr">
+                                <label class="form-check-label d-flex align-items-center" for="vietqr">
+                                    <img src="https://www.rapyd.net/wp-content/uploads/2025/04/vietqr.png" alt="VietQR" class="payment-icon">
+                                    <span>Thanh toán VietQR</span>
+                                </label>
+                            </div>
+                           
+                            
+                            
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4 body_btn_sm">
+                            <a href="@Url.Action("Index", "GioHang")" class="text-decoration-none" style="color: #3DA9E1;">
+                                <i class="bi bi-arrow-left"></i> Giỏ hàng
+                            </a>
+                            <button type="submit" class="btn btn-success btn-confirm-order">Xác nhận đặt hàng</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-xl-5">
+                <div class="cart-items">
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item">
+                            <div class="body_img_pay">
+                                <span class="quantity-badge" style="background-color:orangered;">@item.SoLuong</span>
+                                <img src="@Url.Content(item.ImageUrl)" alt="Product">
+                            </div>
+                            <div>
+                                <h6 class="title_pr_pay">@item.TenKem</h6>
+                                <p class="mb-0" style="font-size: 15px;font-weight: 500;">
+                                    @( (item.GiaGoc > 0 ? item.GiaGoc : item.GiaGiam).ToString("N0") )<u>đ</u>
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="total-section mt-4">
+                    <div class="d-flex justify-content-between mb-2" style="border-bottom: 1px solid #e5e5e5;padding-bottom: 2rem;">
+                        <span>Mã giảm giá áp dụng</span>
+                        <span>@voucherCode</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" style="border-bottom: 1px solid #e5e5e5;padding-bottom: 2rem;">
+                        <span>Số tiền giảm</span>
+                        <span>— @(voucherDiscount.ToString("N0"))₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính</span>
+                        <span>@(totalAfterDiscount.ToString("N0"))₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <strong>Tổng cộng</strong>
+                        <strong style="font-size: 25px;font-weight: 450;">@(totalAfterDiscount.ToString("N0"))<u>đ</u></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Giỏ hàng của bạn đang trống.</p>
+}
+
+
+<style>
+    /* Logo  */
+    .title_logo_pay {
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(45deg, #56ab2f, #a8e063); /* gradient xanh lá */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .title_logo_pay:hover {
+            transform: scale(1.1);
+            text-shadow: 2px 2px 8px rgba(86, 171, 47, 0.5);
+        }
+
+    /* Nút Xác nhận đặt hàng */
+    .btn-confirm-order {
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: #fff;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 50px;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(86, 171, 47, 0.4);
+    }
+
+        .btn-confirm-order:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.6);
+        }
+    #map {
+        height: 450px;
+        width: 100%;
+        border-radius: 10px;
+        z-index: 1; /* đảm bảo trên các layer khác */
+        position: relative; /* tránh bị các element position absolute chèn lên */
+    }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById("confirmOrderForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // chặn submit mặc định để kiểm tra trước
+
+        let fullName = document.querySelector("[name='FullName']").value.trim();
+        let email = document.querySelector("[name='Email']").value.trim();
+        let phone = document.querySelector("[name='PhoneNumber']").value.trim();
+        let address = document.querySelector("[name='Address']").value.trim();
+        let province = document.querySelector("[name='Province']").value;
+        let district = document.querySelector("[name='District']").value;
+        let ward = document.querySelector("[name='Ward']").value;
+        let paymentMethod = document.querySelector("input[name='PaymentMethod']:checked");
+
+        // Bắt lỗi từng trường
+        if (!fullName) {
+            Swal.fire("Thiếu thông tin!", "Vui lòng nhập họ và tên.", "warning");
+            return;
+        }
+        if (!phone || !/^[0-9]{10}$/.test(phone)) {
+            Swal.fire("Sai số điện thoại!", "Số điện thoại phải gồm đúng 10 chữ số.", "error");
+            return;
+        }
+       
+        if (province === "Chọn tỉnh/thành phố" || !province) {
+            Swal.fire("Thiếu thông tin!", "Vui lòng chọn tỉnh/thành phố.", "warning");
+            return;
+        }
+        if (district === "Chọn quận/huyện" || !district) {
+            Swal.fire("Thiếu thông tin!", "Vui lòng chọn quận/huyện.", "warning");
+            return;
+        }
+        if (ward === "Chọn phường/xã" || !ward) {
+            Swal.fire("Thiếu thông tin!", "Vui lòng chọn phường/xã.", "warning");
+            return;
+        }
+        if (!paymentMethod) {
+            Swal.fire("Chưa chọn phương thức!", "Vui lòng chọn phương thức thanh toán.", "info");
+            return;
+        }
+
+        // Hiển thị SweetAlert loading ----------------------
+        Swal.fire({
+            title: 'Đang xử lý...',
+            text: 'Vui lòng chờ trong giây lát.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                // Gửi form sau khi loading
+                this.submit();
+            }
+        });
+    });
+
+    //-------------
+    let map, marker, geocoder;
+
+    function initMap() {
+        const defaultLocation = { lat: 10.007642, lng: 105.720338 }; // tọa độ mặc định
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: defaultLocation,
+            zoom: 15,
+        });
+
+        marker = new google.maps.Marker({
+            position: defaultLocation,
+            map: map,
+            draggable: true // cho phép kéo marker
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        // Khi click map
+        map.addListener("click", (event) => {
+            placeMarker(event.latLng);
+        });
+
+        // Khi kéo marker xong
+        marker.addListener("dragend", (event) => {
+            placeMarker(event.latLng);
+        });
+    }
+
+    function placeMarker(location) {
+        marker.setPosition(location);
+
+        geocoder.geocode({ location: location }, (results, status) => {
+            if (status === "OK") {
+                if (results[0]) {
+                    let fullAddress = results[0].formatted_address;
+
+                    // Gán vào input Address
+                    document.querySelector("[name='Address']").value = fullAddress;
+
+                    // Nếu cần tách riêng tỉnh/huyện/xã
+                    let components = results[0].address_components;
+                    let province = "";
+                    let district = "";
+                    let ward = "";
+
+                    components.forEach(c => {
+                        if (c.types.includes("administrative_area_level_1")) {
+                            province = c.long_name;
+                        }
+                        if (c.types.includes("administrative_area_level_2")) {
+                            district = c.long_name;
+                        }
+                        if (c.types.includes("administrative_area_level_3") || c.types.includes("sublocality_level_1")) {
+                            ward = c.long_name;
+                        }
+                    });
+
+                    document.querySelector("[name='Province']").value = province;
+                    document.querySelector("[name='District']").value = district;
+                    document.querySelector("[name='Ward']").value = ward;
+                }
+            }
+        });
+    }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLxsL0CRwzni67zo0I_Jezjd-tk2zUGB8&callback=initMap">
+</script>

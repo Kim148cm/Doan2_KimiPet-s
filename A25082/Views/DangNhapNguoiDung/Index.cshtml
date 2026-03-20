@@ -1,0 +1,693 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập | Kimipet's";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@* ── SweetAlert notifications ── *@
+@if (TempData["SweetAlertError"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({ icon:'warning', title:'Bạn chưa đăng nhập',
+                text: @Html.Raw(System.Web.Helpers.Json.Encode(TempData["SweetAlertError"])),
+                confirmButtonText:'OK', confirmButtonColor:'#1a7a3c' });
+        });
+    </script>
+}
+@if (TempData["SuccessMessageChange"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({ icon:'success', title:'Thành công',
+                text: @Html.Raw(System.Web.Helpers.Json.Encode(TempData["SuccessMessageChange"])),
+                confirmButtonText:'OK', confirmButtonColor:'#1a7a3c' });
+        });
+    </script>
+}
+@if (TempData["SuccessMessageRegister"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({ icon:'success', title:'Thành công',
+                text: @Html.Raw(System.Web.Helpers.Json.Encode(TempData["SuccessMessageRegister"])),
+                confirmButtonText:'OK', confirmButtonColor:'#1a7a3c' });
+        });
+    </script>
+}
+@if (TempData["LoginError"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({ icon:'error', title:'Đăng nhập thất bại',
+                text: @Html.Raw(System.Web.Helpers.Json.Encode(TempData["LoginError"])),
+                confirmButtonText:'Thử lại', confirmButtonColor:'#e53935' });
+        });
+    </script>
+}
+
+<style>
+    /* ── Reset ── */
+    .lg-root * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ── Page wrapper ── */
+    .lg-root {
+        display: flex;
+        min-height: 88vh;
+        font-family: 'Nunito', sans-serif;
+        background: #f4f6f4;
+    }
+
+    /* ════ LEFT PANEL ════ */
+    .lg-left {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 48px;
+        min-height: 540px;
+        background: linear-gradient(160deg, rgba(15,60,30,0.72) 0%, rgba(26,122,60,0.55) 50%, rgba(82,214,138,0.3) 100%), url('https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=900&q=80&auto=format&fit=crop') center/cover no-repeat;
+    }
+
+        .lg-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+    .lg-left-content {
+        position: relative;
+        z-index: 2;
+        animation: lgFadeUp .7s ease both;
+    }
+
+    .lg-brand {
+        font-family: 'Baloo 2', cursive;
+        font-size: 38px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 6px;
+        letter-spacing: -0.5px;
+    }
+
+        .lg-brand em {
+            font-style: normal;
+            color: #f5c518;
+        }
+
+    .lg-tagline {
+        font-size: 15px;
+        color: rgba(255,255,255,0.8);
+        font-weight: 600;
+        margin-bottom: 36px;
+        line-height: 1.55;
+        max-width: 320px;
+    }
+
+    .lg-features {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .lg-feat {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: lgFadeUp .7s ease both;
+    }
+
+        .lg-feat:nth-child(1) {
+            animation-delay: .1s;
+        }
+
+        .lg-feat:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .lg-feat:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+    .lg-feat-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #fff;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .lg-feat-text strong {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .lg-feat-text span {
+        font-size: 12px;
+        color: rgba(255,255,255,0.65);
+        font-weight: 500;
+    }
+
+    .lg-badge-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+    }
+
+    .lg-badge {
+        background: rgba(255,255,255,0.14);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.22);
+        border-radius: 20px;
+        padding: 5px 14px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.9);
+        letter-spacing: 0.3px;
+    }
+
+    /* ════ RIGHT PANEL ════ */
+    .lg-right {
+        width: 440px;
+        flex-shrink: 0;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 40px;
+        position: relative;
+    }
+
+        .lg-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1a7a3c, #52d68a, #f5c518);
+        }
+
+    .lg-form-wrap {
+        width: 100%;
+        max-width: 340px;
+        animation: lgFadeUp .55s ease both;
+    }
+
+    /* Header */
+    .lg-form-header {
+        margin-bottom: 28px;
+    }
+
+    .lg-form-eyebrow {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #1a7a3c;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .lg-form-eyebrow::before {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background: #1a7a3c;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+    .lg-form-title {
+        font-family: 'Baloo 2', cursive;
+        font-size: 28px;
+        font-weight: 800;
+        color: #1a1a1a;
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+
+    .lg-form-sub {
+        font-size: 13px;
+        color: #888;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+        .lg-form-sub a {
+            color: #1a7a3c;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+            .lg-form-sub a:hover {
+                text-decoration: underline;
+            }
+
+    /* Fields */
+    .lg-field {
+        margin-bottom: 16px;
+    }
+
+        .lg-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+    /* Input wrapper — key layout */
+    .lg-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        /* Left icon (lock / envelope) */
+        .lg-input-wrap .lg-icon-left {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #bbb;
+            pointer-events: none;
+            z-index: 2;
+            transition: color .2s;
+        }
+
+    /* Input */
+    .lg-input {
+        width: 100%;
+        border: 1.5px solid #e5e5e5;
+        border-radius: 10px;
+        padding: 11px 44px 11px 40px; /* right padding để không bị nút eye đè */
+        font-size: 14px;
+        font-family: 'Nunito', sans-serif;
+        color: #1a1a1a;
+        background: #fafafa;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s, background .2s;
+        /* ★ Ẩn nút eye mặc định của trình duyệt (IE/Edge/Chrome) */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+        /* Chrome/Safari/Edge ẩn nút reveal mặc định */
+        .lg-input::-ms-reveal,
+        .lg-input::-ms-clear,
+        .lg-input::-webkit-credentials-auto-fill-button,
+        .lg-input::-webkit-textfield-decoration-container {
+            display: none !important;
+        }
+        /* Firefox */
+        .lg-input[type="password"]::-moz-reveal {
+            display: none !important;
+        }
+
+        .lg-input:focus {
+            border-color: #1a7a3c;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(26,122,60,.1);
+        }
+
+    .lg-input-wrap:focus-within .lg-icon-left {
+        color: #1a7a3c;
+    }
+
+    /* ★ Nút toggle eye — hoàn toàn tách biệt, không bị đè */
+    .lg-eye-btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 42px;
+        background: transparent;
+        border: none;
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #bbb;
+        font-size: 15px;
+        z-index: 10;
+        transition: color .2s;
+        /* Đảm bảo pointer events hoạt động */
+        pointer-events: all;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+        .lg-eye-btn:hover {
+            color: #1a7a3c;
+        }
+
+        .lg-eye-btn:focus {
+            outline: none;
+        }
+    /* Ngăn autofill của Chrome tô xanh che mất icon */
+    .lg-input:-webkit-autofill,
+    .lg-input:-webkit-autofill:hover,
+    .lg-input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+        box-shadow: 0 0 0px 1000px #fff inset;
+        -webkit-text-fill-color: #1a1a1a;
+        transition: background-color 9999s ease-in-out 0s;
+    }
+
+    /* Forgot */
+    .lg-forgot {
+        text-align: right;
+        margin-top: -8px;
+        margin-bottom: 20px;
+    }
+
+        .lg-forgot a {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+            .lg-forgot a:hover {
+                color: #1a7a3c;
+            }
+
+    /* Submit */
+    .lg-btn-submit {
+        width: 100%;
+        background: #1a7a3c;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 13px;
+        font-size: 14.5px;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+        cursor: pointer;
+        transition: background .2s, transform .15s, box-shadow .2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 14px rgba(26,122,60,.28);
+    }
+
+        .lg-btn-submit:hover {
+            background: #145f2e;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26,122,60,.38);
+        }
+
+        .lg-btn-submit:active {
+            transform: translateY(0);
+        }
+
+    /* Divider */
+    .lg-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+        .lg-divider::before, .lg-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e5e5;
+        }
+
+        .lg-divider span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #bbb;
+            white-space: nowrap;
+        }
+
+    /* Google */
+    .lg-btn-google {
+        width: 100%;
+        background: #fff;
+        color: #444;
+        border: 1.5px solid #e5e5e5;
+        border-radius: 10px;
+        padding: 11px;
+        font-size: 13.5px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        cursor: pointer;
+        transition: all .2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        text-decoration: none;
+        margin-bottom: 24px;
+    }
+
+        .lg-btn-google:hover {
+            border-color: #bbb;
+            background: #f9f9f9;
+            color: #222;
+            box-shadow: 0 2px 10px rgba(0,0,0,.07);
+        }
+
+        .lg-btn-google img {
+            width: 18px;
+            height: 18px;
+        }
+
+    /* Register */
+    .lg-register-row {
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        font-weight: 500;
+        padding-top: 18px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+        .lg-register-row a {
+            color: #1a7a3c;
+            font-weight: 800;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+            .lg-register-row a:hover {
+                text-decoration: underline;
+            }
+
+    /* Animations */
+    @@keyframes lgFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 860px) {
+        .lg-left {
+            display: none;
+        }
+
+        .lg-right {
+            width: 100%;
+            padding: 40px 24px;
+        }
+
+        .lg-root {
+            min-height: 80vh;
+        }
+    }
+
+    @@media (max-width: 420px) {
+        .lg-right {
+            padding: 32px 16px;
+        }
+
+        .lg-form-title {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="lg-root">
+
+    <!-- LEFT -->
+    <div class="lg-left">
+        <div class="lg-left-content">
+            <div class="lg-brand">Kimi<em>pet's</em></div>
+            <p class="lg-tagline">
+                Thiên đường mua sắm cho boss nhà bạn —<br>
+                thức ăn, phụ kiện, chăm sóc thú cưng toàn quốc.
+            </p>
+            <div class="lg-features">
+                <div class="lg-feat">
+                    <div class="lg-feat-icon">🚚</div>
+                    <div class="lg-feat-text">
+                        <strong>Giao nhanh toàn quốc</strong>
+                        <span>Nhận hàng trong 2–4 giờ nội thành</span>
+                    </div>
+                </div>
+                <div class="lg-feat">
+                    <div class="lg-feat-icon">✅</div>
+                    <div class="lg-feat-text">
+                        <strong>Hàng chính hãng 100%</strong>
+                        <span>Cam kết nguồn gốc, an toàn cho thú cưng</span>
+                    </div>
+                </div>
+                <div class="lg-feat">
+                    <div class="lg-feat-icon">🎁</div>
+                    <div class="lg-feat-text">
+                        <strong>Ưu đãi thành viên</strong>
+                        <span>Tích điểm, hoàn tiền, quà tặng mỗi đơn</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lg-badge-row">
+                <span class="lg-badge">🐶 Thức ăn chó</span>
+                <span class="lg-badge">🐱 Thức ăn mèo</span>
+                <span class="lg-badge">🛍 Phụ kiện</span>
+                <span class="lg-badge">💊 Dinh dưỡng</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="lg-right">
+        <div class="lg-form-wrap">
+
+            <div class="lg-form-header">
+                <div class="lg-form-eyebrow">Tài khoản</div>
+                <h1 class="lg-form-title">Chào mừng trở lại</h1>
+                <p class="lg-form-sub">
+                    Chưa có tài khoản?
+                    <a href="@Url.Action("DangKyNguoiDung", "DangNhapNguoiDung", new { area = "" })">Đăng ký miễn phí</a>
+                </p>
+            </div>
+
+            @using (Html.BeginForm("DangNhap", "DangNhapNguoiDung", FormMethod.Post, new { id = "loginForm" }))
+            {
+                <!-- Email -->
+                <div class="lg-field">
+                    <label for="Email">Email</label>
+                    <div class="lg-input-wrap">
+                        <i class="fa-regular fa-envelope lg-icon-left"></i>
+                        <input type="email" id="Email" name="Email"
+                               class="lg-input"
+                               placeholder="example@email.com"
+                               required autocomplete="email" />
+                    </div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="lg-field">
+                    <label for="Password">Mật khẩu</label>
+                    <div class="lg-input-wrap">
+                        <i class="fa-solid fa-lock lg-icon-left"></i>
+                        <input type="password" id="Password" name="Password"
+                               class="lg-input"
+                               placeholder="Nhập mật khẩu..."
+                               required autocomplete="current-password" />
+                        <button type="button"
+                                id="togglePwd"
+                                class="lg-eye-btn"
+                                tabindex="-1"
+                                aria-label="Hiện/ẩn mật khẩu"
+                                onclick="togglePassword()">
+                            <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg-forgot">
+                    <a href="@Url.Action("DoiMatKhau", "DangNhapNguoiDung", new { area = "" })">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="lg-btn-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Đăng nhập
+                </button>
+
+                <div class="lg-divider"><span>hoặc tiếp tục với</span></div>
+
+                <a href="@Url.Action("GoogleLogin", "DangNhapNguoiDung", new { area = "" })" class="lg-btn-google">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+                    Đăng nhập với Google
+                </a>
+            }
+
+            <div class="lg-register-row">
+                Chưa có tài khoản?
+                <a href="@Url.Action("DangKyNguoiDung", "DangNhapNguoiDung", new { area = "" })">Đăng ký ngay</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // ★ Toggle show/hide password — dùng onclick trực tiếp để tránh mọi vấn đề event bubbling
+    function togglePassword() {
+        var input = document.getElementById('Password');
+        var icon = document.getElementById('eyeIcon');
+        if (!input || !icon) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-regular fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-regular fa-eye';
+        }
+    }
+
+    // Focus label highlight
+    document.querySelectorAll('.lg-input').forEach(function (inp) {
+        inp.addEventListener('focus', function () {
+            var lbl = this.closest('.lg-field') && this.closest('.lg-field').querySelector('label');
+            if (lbl) lbl.style.color = '#1a7a3c';
+        });
+        inp.addEventListener('blur', function () {
+            var lbl = this.closest('.lg-field') && this.closest('.lg-field').querySelector('label');
+            if (lbl) lbl.style.color = '';
+        });
+    });
+</script>

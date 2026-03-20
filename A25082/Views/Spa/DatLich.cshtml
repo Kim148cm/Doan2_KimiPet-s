@@ -1,0 +1,717 @@
+﻿@model WebCafe.Models.DatLichSpaFormViewModel
+@{
+    ViewBag.Title = "Đặt Lịch Spa Thú Cưng | Kimipet's";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --green-dk: #145f2e;
+        --gold: #f5c518;
+        --border: #e5e5e5;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #999;
+        --white: #fff;
+        --bg: #f7f9f7;
+        --r: 12px;
+        --font: 'Nunito', sans-serif;
+    }
+
+    .spa-page {
+        background: var(--bg);
+        min-height: 80vh;
+        padding: 0 0 60px;
+        font-family: var(--font);
+    }
+
+    .spa-hero {
+        background: linear-gradient(135deg, #0f3c1e 0%, #1a7a3c 50%, #34c769 100%);
+        padding: 56px 24px 80px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .spa-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+    .spa-hero-emoji {
+        font-size: 56px;
+        display: block;
+        margin-bottom: 12px;
+        animation: floatPaw 3s ease-in-out infinite;
+    }
+
+    @@keyframes floatPaw {
+        0%, 100% {
+            transform: translateY(0)
+        }
+
+        50% {
+            transform: translateY(-8px)
+        }
+    }
+
+    .spa-hero h1 {
+        font-family: 'Baloo 2', cursive;
+        font-size: 36px;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 10px;
+    }
+
+    .spa-hero p {
+        font-size: 16px;
+        color: rgba(255,255,255,0.85);
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .spa-wave {
+        display: block;
+        margin-top: -1px;
+    }
+
+    .spa-services-wrap {
+        max-width: 1100px;
+        margin: -30px auto 0;
+        padding: 0 24px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .spa-services-title {
+        text-align: center;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 16px;
+    }
+
+    .spa-services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 14px;
+        margin-bottom: 40px;
+    }
+
+    .spa-svc-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 18px 16px;
+        cursor: pointer;
+        transition: all .2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .spa-svc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--green);
+            transform: scaleY(0);
+            transition: transform .2s;
+            transform-origin: bottom;
+        }
+
+        .spa-svc-card:hover {
+            border-color: var(--green);
+            box-shadow: 0 6px 24px rgba(26,122,60,.15);
+            transform: translateY(-2px);
+        }
+
+            .spa-svc-card:hover::before {
+                transform: scaleY(1);
+            }
+
+        .spa-svc-card.selected {
+            border-color: var(--green);
+            background: var(--green-lt);
+            box-shadow: 0 0 0 2px var(--green);
+        }
+
+            .spa-svc-card.selected::before {
+                transform: scaleY(1);
+            }
+
+    .spa-svc-name {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .spa-svc-desc {
+        font-size: 12px;
+        color: var(--text3);
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    .spa-svc-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .spa-svc-price {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--green);
+    }
+
+    .spa-svc-time {
+        font-size: 11px;
+        color: var(--text3);
+        background: var(--bg);
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    .spa-svc-check {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 22px;
+        height: 22px;
+        background: var(--green);
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .spa-svc-check i {
+            font-size: 11px;
+            color: #fff;
+        }
+
+    .spa-svc-card.selected .spa-svc-check {
+        display: flex;
+    }
+
+    .spa-form-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    .spa-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+
+    .spa-card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfa;
+    }
+
+        .spa-card-head .step-num {
+            width: 30px;
+            height: 30px;
+            background: var(--green);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .spa-card-head h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+    .spa-card-body {
+        padding: 22px;
+    }
+
+    .spa-row {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+        .spa-row.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .spa-row.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+    .spa-field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text2);
+        margin-bottom: 7px;
+        letter-spacing: .3px;
+    }
+
+        .spa-field label .req {
+            color: #e53935;
+            margin-left: 2px;
+        }
+
+    .spa-input, .spa-select, .spa-textarea {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        padding: 11px 14px;
+        font-size: 14px;
+        font-family: var(--font);
+        color: var(--text);
+        background: #fafafa;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        -webkit-appearance: none;
+        appearance: none;
+        box-sizing: border-box;
+    }
+
+    .spa-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 38px;
+    }
+
+        .spa-input:focus, .spa-select:focus, .spa-textarea:focus {
+            border-color: var(--green);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(26,122,60,.1);
+        }
+
+        .spa-input.error, .spa-select.error {
+            border-color: #e53935;
+        }
+
+    .spa-textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .spa-time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        gap: 9px;
+    }
+
+    .time-slot {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text2);
+        cursor: pointer;
+        transition: all .15s;
+        background: var(--white);
+        font-family: var(--font);
+        user-select: none;
+    }
+
+        .time-slot:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-lt);
+        }
+
+        .time-slot.active {
+            background: var(--green);
+            color: #fff;
+            border-color: var(--green);
+        }
+
+    .spa-submit-area {
+        text-align: center;
+        padding: 10px 0 24px;
+    }
+
+    .spa-btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #1a7a3c, #34c769);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 44px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: var(--font);
+        box-shadow: 0 6px 24px rgba(26,122,60,.35);
+        transition: all .2s;
+    }
+
+        .spa-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(26,122,60,.45);
+        }
+
+        .spa-btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+    .field-validation-error {
+        color: #e53935;
+        font-size: 11.5px;
+        font-weight: 600;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .spa-note {
+        background: #fff8e1;
+        border-left: 4px solid var(--gold);
+        border-radius: 8px;
+        padding: 13px 16px;
+        font-size: 13px;
+        color: #7a5c00;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+        .spa-note strong {
+            color: #5a4400;
+        }
+
+    @@media (max-width: 680px) {
+        .spa-row.cols-2, .spa-row.cols-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .spa-hero h1 {
+            font-size: 26px;
+        }
+
+        .spa-services-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .spa-services-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="spa-page">
+
+    <!-- Hero -->
+    <div class="spa-hero">
+       
+        <h1>Đặt Lịch Spa Thú Cưng</h1>
+        <p>Chăm sóc toàn diện cho boss nhà bạn — tắm, sấy, cắt tỉa và nhiều hơn nữa từ đội ngũ chuyên nghiệp.</p>
+    </div>
+
+    <svg class="spa-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 40" fill="var(--bg)">
+        <path d="M0,40 C360,0 1080,0 1440,40 L1440,40 L0,40 Z" />
+    </svg>
+
+    <!-- Services preview -->
+    <div class="spa-services-wrap">
+        <p class="spa-services-title">✂️ Chọn dịch vụ phù hợp cho bé</p>
+        <div class="spa-services-grid">
+            @foreach (var dv in Model.DanhSachDichVu)
+            {
+                <div class="spa-svc-card" data-id="@dv.MaDichVu" onclick="selectService(@dv.MaDichVu, this)">
+                    <div class="spa-svc-check"><i class="fa-solid fa-check"></i></div>
+                    <div class="spa-svc-name">@dv.TenDichVu</div>
+                    <div class="spa-svc-desc">@dv.MoTa</div>
+                    <div class="spa-svc-meta">
+                        <span class="spa-svc-price">@dv.GiaTien.ToString("N0")đ</span>
+                        <span class="spa-svc-time"><i class="fa-regular fa-clock"></i> ~@dv.ThoiGian phút</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="spa-form-wrap">
+
+        <div class="spa-note">
+            <strong>📋 Lưu ý:</strong> Vui lòng mang theo phiếu tiêm phòng của thú cưng (nếu có). Đến trước giờ hẹn 5–10 phút. Liên hệ <strong>039 4627 246</strong> nếu cần thay đổi lịch.
+        </div>
+
+        @using (Html.BeginForm("DatLich", "Spa", FormMethod.Post, new { id = "spaForm", novalidate = "novalidate" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- BƯỚC 1: Thông tin chủ nhân -->
+            <div class="spa-card">
+                <div class="spa-card-head">
+                    <div class="step-num">1</div>
+                    <h3>Thông tin chủ nhân</h3>
+                </div>
+                <div class="spa-card-body">
+                    <div class="spa-row cols-3">
+                        <div class="spa-field">
+                            <label>Họ và tên <span class="req">*</span></label>
+                            @Html.TextBoxFor(m => m.DatLich.HoTen, new { @class = "spa-input", placeholder = "Nguyễn Văn A" })
+                            @Html.ValidationMessageFor(m => m.DatLich.HoTen)
+                        </div>
+                        <div class="spa-field">
+                            <label>Email <span class="req">*</span></label>
+                            @Html.TextBoxFor(m => m.DatLich.Email, new { @class = "spa-input", placeholder = "email@gmail.com", type = "email" })
+                            @Html.ValidationMessageFor(m => m.DatLich.Email)
+                        </div>
+                        <div class="spa-field">
+                            <label>Số điện thoại <span class="req">*</span></label>
+                            @Html.TextBoxFor(m => m.DatLich.SoDienThoai, new { @class = "spa-input", placeholder = "0912345678", maxlength = "10" })
+                            @Html.ValidationMessageFor(m => m.DatLich.SoDienThoai)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BƯỚC 2: Thông tin thú cưng -->
+            <div class="spa-card">
+                <div class="spa-card-head">
+                    <div class="step-num">2</div>
+                    <h3>Thông tin thú cưng</h3>
+                </div>
+                <div class="spa-card-body">
+                    <div class="spa-row cols-2">
+                        <div class="spa-field">
+                            <label>Tên thú cưng <span class="req">*</span></label>
+                            @Html.TextBoxFor(m => m.DatLich.TenThuCung, new { @class = "spa-input", placeholder = "Ví dụ: Bông, Mimi..." })
+                            @Html.ValidationMessageFor(m => m.DatLich.TenThuCung)
+                        </div>
+                        <div class="spa-field">
+                            <label>Loại thú cưng <span class="req">*</span></label>
+                            @Html.DropDownListFor(m => m.DatLich.MaLoaiThu,
+                                     new SelectList(Model.DanhSachLoaiThu, "MaLoaiThu", "TenLoaiThu"),
+                                     "-- Chọn loại --",
+                                     new { @class = "spa-select" })
+                            @Html.ValidationMessageFor(m => m.DatLich.MaLoaiThu)
+                        </div>
+                    </div>
+                    <div class="spa-row cols-3">
+                        <div class="spa-field">
+                            <label>Giống (tùy chọn)</label>
+                            @Html.TextBoxFor(m => m.DatLich.Giong, new { @class = "spa-input", placeholder = "Poodle, Mèo Anh lông ngắn..." })
+                        </div>
+                        <div class="spa-field">
+                            <label>Tuổi</label>
+                            @Html.DropDownListFor(m => m.DatLich.TuoiThuCung,
+                                     new SelectList(new[] { "Dưới 6 tháng", "6–12 tháng", "1–2 tuổi", "2–5 tuổi", "5–8 tuổi", "Trên 8 tuổi" }),
+                                     "-- Chọn tuổi --",
+                                     new { @class = "spa-select" })
+                        </div>
+                        <div class="spa-field">
+                            <label>Cân nặng</label>
+                            @Html.DropDownListFor(m => m.DatLich.CanNang,
+                                     new SelectList(new[] { "Dưới 2kg", "2–5kg", "5–10kg", "10–20kg", "Trên 20kg" }),
+                                     "-- Cân nặng --",
+                                     new { @class = "spa-select" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BƯỚC 3: Dịch vụ & Lịch hẹn -->
+            <div class="spa-card">
+                <div class="spa-card-head">
+                    <div class="step-num">3</div>
+                    <h3>Dịch vụ & Thời gian hẹn</h3>
+                </div>
+                <div class="spa-card-body">
+                    <div class="spa-row cols-2">
+                        <div class="spa-field">
+                            <label>Dịch vụ <span class="req">*</span></label>
+                            @Html.DropDownListFor(m => m.DatLich.MaDichVu,
+                                     new SelectList(Model.DanhSachDichVu, "MaDichVu", "TenDichVu"),
+                                     "-- Chọn dịch vụ --",
+                                     new { @class = "spa-select", id = "dichVuSelect" })
+                            @Html.ValidationMessageFor(m => m.DatLich.MaDichVu)
+                        </div>
+                        <div class="spa-field">
+                            <label>Ngày hẹn <span class="req">*</span></label>
+                            @Html.TextBoxFor(m => m.DatLich.NgayHen,
+                                     "{0:yyyy-MM-dd}",
+                                     new
+                                     {
+                                         @class = "spa-input",
+                                         type = "date",
+                                         min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"),
+                                         max = DateTime.Today.AddDays(30).ToString("yyyy-MM-dd")
+                                     })
+                            @Html.ValidationMessageFor(m => m.DatLich.NgayHen)
+                        </div>
+                    </div>
+
+                    <!-- Time Slots -->
+                    <div class="spa-field" style="margin-bottom:16px;">
+                        <label>Giờ hẹn <span class="req">*</span></label>
+                        <div class="spa-time-grid">
+                            @{
+                                var slots = new[] {
+                                    "08:00","08:30","09:00","09:30","10:00","10:30",
+                                    "11:00","13:30","14:00","14:30","15:00","15:30",
+                                    "16:00","16:30","17:00"
+                                };
+                            }
+                            @foreach (var s in slots)
+                            {
+                                <div class="time-slot" onclick="selectTime('@s', this)">@s</div>
+                            }
+                        </div>
+                        @* ⚠️ Tên field phải khớp với prefix "DatLich." để model binding hoạt động *@
+                        <input type="hidden" name="DatLich.GioHen" id="hiddenGioHen" value="" />
+                        <span id="gioHenError" style="color:#e53935;font-size:11.5px;font-weight:600;display:none;margin-top:4px;">
+                            Vui lòng chọn giờ hẹn.
+                        </span>
+                    </div>
+
+                    <div class="spa-field">
+                        <label>Ghi chú cho nhân viên (tùy chọn)</label>
+                        @Html.TextAreaFor(m => m.DatLich.GhiChu,
+                                 new { @class = "spa-textarea", placeholder = "Ví dụ: bé sợ nước, cần nhẹ nhàng; bé hay cắn khi tỉa móng..." })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="spa-card" id="orderSummary" style="display:none;">
+                <div class="spa-card-head">
+                    <div class="step-num"><i class="fa-solid fa-receipt" style="font-size:12px;"></i></div>
+                    <h3>Tóm tắt đặt lịch</h3>
+                </div>
+                <div class="spa-card-body" id="summaryContent"></div>
+            </div>
+
+            <div class="spa-submit-area">
+                <button type="submit" class="spa-btn-submit" id="submitBtn">
+                    <i class="fa-solid fa-paw"></i> Đặt lịch ngay
+                </button>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section ScriptsProducts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+var serviceData = {
+    @foreach (var dv in Model.DanhSachDichVu)
+    {
+        @:@dv.MaDichVu: { name: '@Html.Raw(dv.TenDichVu.Replace("'", "\\'"))', price: @dv.GiaTien, time: @dv.ThoiGian },
+    }
+};
+
+function selectService(id, el) {
+    document.querySelectorAll('.spa-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('dichVuSelect').value = id;
+    updateSummary();
+}
+
+function selectTime(t, el) {
+    document.querySelectorAll('.time-slot').forEach(function(s) { s.classList.remove('active'); });
+    el.classList.add('active');
+    // ⚠️ Giá trị phải đúng định dạng HH:mm:ss để TimeSpan parse được
+    document.getElementById('hiddenGioHen').value = t + ':00';
+    document.getElementById('gioHenError').style.display = 'none';
+    updateSummary();
+}
+
+function updateSummary() {
+    var svcId = document.getElementById('dichVuSelect').value;
+    var date  = document.querySelector('[name="DatLich.NgayHen"]').value;
+    var time  = document.getElementById('hiddenGioHen').value;
+    var pet   = document.querySelector('[name="DatLich.TenThuCung"]').value;
+
+    if (!svcId || !date || !time) return;
+    var svc = serviceData[svcId];
+    if (!svc) return;
+
+    var d = new Date(date);
+    var days = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+    var dateStr = days[d.getDay()] + ', ' + d.toLocaleDateString('vi-VN');
+
+    document.getElementById('summaryContent').innerHTML =
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div style="padding:12px;background:#f7fdf9;border-radius:8px;">' +
+            '<div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:5px;">Dịch vụ</div>' +
+            '<div style="font-size:14px;font-weight:800;">' + svc.name + '</div>' +
+            '<div style="font-size:13px;color:#1a7a3c;font-weight:700;margin-top:2px;">' + Number(svc.price).toLocaleString('vi-VN') + 'đ</div>' +
+          '</div>' +
+          '<div style="padding:12px;background:#f7fdf9;border-radius:8px;">' +
+            '<div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:5px;">Thời gian</div>' +
+            '<div style="font-size:14px;font-weight:800;">' + dateStr + '</div>' +
+            '<div style="font-size:13px;color:#1a7a3c;font-weight:700;margin-top:2px;">Lúc ' + time.slice(0,5) + '</div>' +
+          '</div>' +
+          (pet ? '<div style="padding:12px;background:#f7fdf9;border-radius:8px;grid-column:1/-1;">' +
+            '<div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:5px;">Thú cưng</div>' +
+            '<div style="font-size:14px;font-weight:800;">🐾 ' + pet + '</div>' +
+          '</div>' : '') +
+        '</div>';
+
+    document.getElementById('orderSummary').style.display = 'block';
+}
+
+document.getElementById('dichVuSelect').addEventListener('change', function() {
+    document.querySelectorAll('.spa-svc-card').forEach(function(c) {
+        c.classList.toggle('selected', c.dataset.id == this.value);
+    }, this);
+    updateSummary();
+});
+
+document.querySelector('[name="DatLich.NgayHen"]').addEventListener('change', updateSummary);
+
+// Form submit validation
+document.getElementById('spaForm').addEventListener('submit', function(e) {
+    var gioHen = document.getElementById('hiddenGioHen').value;
+    if (!gioHen) {
+        e.preventDefault();
+        document.getElementById('gioHenError').style.display = 'block';
+        document.querySelector('.spa-time-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+    // Disable button để tránh double submit
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+});
+    </script>
+}

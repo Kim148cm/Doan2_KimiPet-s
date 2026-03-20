@@ -1,0 +1,35 @@
+﻿
+@model IEnumerable<A25082.Models.ProductDiscount>
+
+<div class="row mb-3 price-nav" style="margin-top:2rem;">
+    <div class="col text-center">
+        <button class="btn selected_btn" data-id="">Tất cả sản phẩm sale</button>
+        @foreach (var discount in Model)
+        {
+            <button class="btn selected_btn" data-id="@discount.Id">@discount.Name</button>
+        }
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".selected_btn").click(function () {
+            var discountId = $(this).data("id");
+
+            $.ajax({
+                url: "/SanPham/LoadProductList",
+                type: "GET",
+                data: { discountId: discountId },
+                success: function (response) {
+                    $("#product-container").html(response);
+                },
+                error: function () {
+                    alert("Lỗi khi tải sản phẩm.");
+                }
+            });
+        });
+    });
+</script>
+

@@ -1,0 +1,708 @@
+﻿
+@{
+    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model List<A25082.Models.GioHang>
+@{
+    ViewBag.Title = "Thanh toán VietQR";
+
+    decimal tongTien = ViewBag.TotalAmount ?? 0m;
+    string maVoucher = ViewBag.VoucherCode as string ?? "";
+    decimal giamGia = ViewBag.VoucherDiscount as decimal? ?? 0m;
+
+    // ── Cấu hình ngân hàng ──────────────────────────
+    string bankBin = "970422";       // VCB=970436 | MB=970422 | TCB=970407
+    string accountNo = "0796947666";   // Số tài khoản của bạn
+    string accountName = "THAITHIENKIM";     // Tên TK (không dấu, tối đa 20 ký tự)
+                                         // ─────────────────────────────────────────────────
+
+    long amt = (long)tongTien;
+    string addInfo = Uri.EscapeDataString("KIMIPETS THANH TOAN");
+    string encName = Uri.EscapeDataString(accountName);
+    string qrUrl = $"https://img.vietqr.io/image/{bankBin}-{accountNo}-compact2.png"
+                   + $"?amount={amt}&addInfo={addInfo}&accountName={encName}";
+
+    decimal subtotal = Model?.Sum(i => i.SoLuong * (i.GiaGoc > 0 ? i.GiaGoc : i.GiaGiam)) ?? 0m;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Thanh toán · Kimipet's</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f5f3;
+            --white: #ffffff;
+            --ink: #111110;
+            --ink2: #3d3d3a;
+            --muted: #8c8c87;
+            --line: #e8e8e4;
+            --green: #1a6b3c;
+            --green-l: #e8f4ee;
+            --red: #c0392b;
+            --radius: 14px;
+            --shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 36px 16px 60px;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-mark {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--ink);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 7px 14px;
+            transition: color .15s, border-color .15s;
+        }
+
+            .back-btn:hover {
+                color: var(--ink);
+                border-color: #ccc;
+            }
+
+            .back-btn svg {
+                transition: transform .15s;
+            }
+
+            .back-btn:hover svg {
+                transform: translateX(-2px);
+            }
+
+        /* ── Grid ── */
+        .grid {
+            width: 100%;
+            max-width: 820px;
+            display: grid;
+            grid-template-columns: 304px 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        /* ── Card base ── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        /* ── QR Card ── */
+        .qr-card {
+            padding: 24px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .bank-tag {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink2);
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34,197,94,.2);
+            animation: glow 2s infinite;
+        }
+
+        keyframes glow {
+            0%
+
+        {
+            box-shadow: 0 0 0 0 rgba(34,197,94,.5);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(34,197,94,0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(34,197,94,0);
+        }
+
+        }
+
+        /* QR frame */
+        .qr-frame {
+            position: relative;
+            width: 200px;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: var(--bg);
+        }
+
+            .qr-frame img {
+                width: 100%;
+                height: 100%;
+                display: block;
+                object-fit: cover;
+            }
+
+            /* corner ticks */
+            .qr-frame::before, .qr-frame::after,
+            .qr-frame .tick::before, .qr-frame .tick::after {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                border-color: var(--green);
+                border-style: solid;
+                z-index: 2;
+            }
+
+            .qr-frame::before {
+                top: 0;
+                left: 0;
+                border-width: 2.5px 0 0 2.5px;
+                border-radius: 3px 0 0 0;
+            }
+
+            .qr-frame::after {
+                top: 0;
+                right: 0;
+                border-width: 2.5px 2.5px 0 0;
+                border-radius: 0 3px 0 0;
+            }
+
+            .qr-frame .tick::before {
+                bottom: 0;
+                left: 0;
+                border-width: 0 0 2.5px 2.5px;
+                border-radius: 0 0 0 3px;
+            }
+
+            .qr-frame .tick::after {
+                bottom: 0;
+                right: 0;
+                border-width: 0 2.5px 2.5px 0;
+                border-radius: 0 0 3px 0;
+            }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            z-index: 3;
+            background: linear-gradient(90deg, transparent, rgba(26,107,60,.7) 50%, transparent);
+            animation: sweep 2.5s ease-in-out infinite;
+        }
+
+        keyframes sweep {
+            0%
+
+        {
+            top: 0;
+            opacity: .6;
+        }
+
+        50% {
+            top: calc(100% - 2px);
+            opacity: 1;
+        }
+
+        100% {
+            top: 0;
+            opacity: .6;
+        }
+
+        }
+
+        /* Amount */
+        .amount-wrap {
+            text-align: center;
+        }
+
+        .amount-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .amount-val {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--red);
+            letter-spacing: -.5px;
+        }
+
+        /* Copy field */
+        .copy-field {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 9px 9px 9px 13px;
+        }
+
+            .copy-field .code-txt {
+                flex: 1;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--green);
+                letter-spacing: .3px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .btn-copy {
+            flex-shrink: 0;
+            background: var(--ink);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            transition: background .15s, transform .12s;
+        }
+
+            .btn-copy:hover {
+                background: var(--ink2);
+                transform: scale(1.04);
+            }
+
+            .btn-copy.ok {
+                background: var(--green);
+            }
+
+        .copy-note {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+            .copy-note b {
+                color: var(--red);
+            }
+
+        /* ── Right column ── */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Section label */
+        .sec {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 2px;
+        }
+
+        /* Info rows */
+        .info-card {
+            padding: 16px 18px;
+        }
+
+        .i-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+
+            .i-row:last-child {
+                border: none;
+                padding-bottom: 0;
+            }
+
+            .i-row .lbl {
+                color: var(--muted);
+            }
+
+            .i-row .val {
+                font-weight: 600;
+                color: var(--ink);
+            }
+
+        .val-green {
+            color: var(--green) !important;
+        }
+
+        /* Products */
+        .products-card {
+            padding: 16px 18px;
+        }
+
+        .prod-row {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+            .prod-row:last-child {
+                border: none;
+                padding-bottom: 0;
+            }
+
+        .prod-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            flex-shrink: 0;
+        }
+
+        .prod-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .prod-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .prod-qty {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .prod-price {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Total */
+        .total-card {
+            padding: 16px 18px;
+        }
+
+        .t-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 5px 0;
+        }
+
+            .t-row .lbl {
+                color: var(--muted);
+            }
+
+            .t-row .val {
+                font-weight: 500;
+            }
+
+        .t-divider {
+            height: 1px;
+            background: var(--line);
+            margin: 10px 0;
+        }
+
+        .t-final {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-top: 2px;
+        }
+
+            .t-final .lbl {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+
+            .t-final .val {
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--red);
+            }
+
+        .val-discount {
+            color: var(--green) !important;
+        }
+
+        /* Steps */
+        .steps-card {
+            padding: 16px 18px;
+        }
+
+        .step {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+            color: var(--ink2);
+            line-height: 1.55;
+        }
+
+            .step:last-child {
+                border: none;
+                padding-bottom: 0;
+            }
+
+        .step-n {
+            flex-shrink: 0;
+            width: 21px;
+            height: 21px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink2);
+            margin-top: 1px;
+        }
+
+        /* ── Responsive ── */
+        media (max-width: 640px) {
+            .grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        body {
+            padding: 20px 12px 48px;
+        }
+
+        .topbar {
+            margin-bottom: 20px;
+        }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="topbar">
+        <a href="@Url.Action("Index","Home")" class="logo">
+            <div class="logo-mark">🐾</div>
+            Kimipet's
+        </a>
+        <a href="@Url.Action("Index","GioHang")" class="back-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6" /></svg>
+            Giỏ hàng
+        </a>
+    </nav>
+
+    <div class="grid">
+
+        <!-- QR Card -->
+        <div class="card qr-card">
+
+            <div class="bank-tag">
+                <div class="live-dot"></div>
+                MBBank · @accountNo
+            </div>
+
+            <div class="qr-frame">
+                <span class="tick"></span>
+                <div class="scan-line"></div>
+                <img src="@qrUrl" alt="QR VietQR"
+                     onerror="this.src='https://placehold.co/200x200/f5f5f3/1a6b3c?text=Lỗi+QR'" />
+            </div>
+
+            <div class="amount-wrap">
+                <div class="amount-label">Số tiền chuyển khoản</div>
+                <div class="amount-val">@tongTien.ToString("N0")đ</div>
+            </div>
+
+            <div class="copy-field">
+                <span class="code-txt" id="codeText">KIMIPETS THANH TOAN</span>
+                <button class="btn-copy" id="copyBtn" onclick="doCopy()">Sao chép</button>
+            </div>
+
+            <p class="copy-note"><b>* Nhập đúng nội dung</b> để đơn được xác nhận nhanh hơn</p>
+
+        </div>
+
+        <!-- Right column -->
+        <div class="right-col">
+
+            <!-- Tài khoản -->
+            <div class="card info-card">
+                <div class="sec">Thông tin tài khoản</div>
+                <div class="i-row"><span class="lbl">Ngân hàng</span><span class="val">MBBank (MB)</span></div>
+                <div class="i-row"><span class="lbl">Số tài khoản</span><span class="val">@accountNo</span></div>
+                <div class="i-row"><span class="lbl">Chủ tài khoản</span><span class="val">@accountName</span></div>
+                <div class="i-row"><span class="lbl">Nội dung CK</span><span class="val val-green">KIMIPETS THANH TOAN</span></div>
+            </div>
+
+            <!-- Sản phẩm -->
+            <div class="card products-card">
+                <div class="sec">Sản phẩm đặt mua</div>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        decimal line = item.SoLuong * (item.GiaGoc > 0 ? item.GiaGoc : item.GiaGiam);
+                        <div class="prod-row">
+                            <img class="prod-img"
+                                 src="@Url.Content(item.ImageUrl)" alt="@item.TenKem"
+                                 onerror="this.src='https://placehold.co/40x40/f5f5f3/8c8c87?text=img'" />
+                            <div class="prod-info">
+                                <div class="prod-name">@item.TenKem</div>
+                                <div class="prod-qty">× @item.SoLuong</div>
+                            </div>
+                            <div class="prod-price">@line.ToString("N0")đ</div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Tổng tiền -->
+            <div class="card total-card">
+                <div class="sec">Tổng đơn hàng</div>
+                <div class="t-row"><span class="lbl">Tạm tính</span><span class="val">@subtotal.ToString("N0")đ</span></div>
+                @if (giamGia > 0)
+                {
+                    <div class="t-row">
+                        <span class="lbl">Giảm giá @(!string.IsNullOrEmpty(maVoucher) ? $"({maVoucher})" : "")</span>
+                        <span class="val val-discount">−@giamGia.ToString("N0")đ</span>
+                    </div>
+                }
+                <div class="t-divider"></div>
+                <div class="t-final">
+                    <span class="lbl">Cần chuyển khoản</span>
+                    <span class="val">@tongTien.ToString("N0")đ</span>
+                </div>
+            </div>
+
+            <!-- Hướng dẫn -->
+            <div class="card steps-card">
+                <div class="sec">Hướng dẫn thanh toán</div>
+                <div class="step"><div class="step-n">1</div><span>Mở app ngân hàng hoặc ví hỗ trợ <strong>VietQR</strong></span></div>
+                <div class="step"><div class="step-n">2</div><span>Chọn <strong>Quét mã QR</strong> → quét mã bên trái</span></div>
+                <div class="step"><div class="step-n">3</div><span>Kiểm tra đúng số tiền <strong>@tongTien.ToString("N0")đ</strong> và nội dung</span></div>
+                <div class="step"><div class="step-n">4</div><span>Xác nhận chuyển · Chụp biên lai gửi shop để xác nhận đơn hàng</span></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function doCopy() {
+            const text = document.getElementById('codeText').textContent.trim();
+            const btn = document.getElementById('copyBtn');
+            const done = () => {
+                btn.textContent = '✓ Đã sao chép';
+                btn.classList.add('ok');
+                setTimeout(() => { btn.textContent = 'Sao chép'; btn.classList.remove('ok'); }, 2400);
+            };
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(done);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = text; el.style.cssText = 'position:fixed;opacity:0';
+                document.body.appendChild(el); el.select();
+                document.execCommand('copy'); document.body.removeChild(el);
+                done();
+            }
+        }
+    </script>
+
+</body>
+</html>
+
+

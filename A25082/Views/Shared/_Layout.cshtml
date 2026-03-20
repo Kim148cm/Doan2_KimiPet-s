@@ -1,0 +1,1578 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Kimipet's' - Trang chính</title>
+
+    <!------css ,js -->
+    <link href="~/Assets/css/phone.css" rel="stylesheet" />
+    <link href="~/Assets/css/Header.css" rel="stylesheet" />
+    <link href="~/Assets/css/PageDetail.css" rel="stylesheet" />
+    <link href="~/Assets/css/PageClotherSale.css" rel="stylesheet" />
+    <link href="~/Assets/css/PageLogin.css" rel="stylesheet" />
+    <link href="~/Assets/css/PageSanPham.css" rel="stylesheet" />
+    <link href="~/Assets/css/PageShowRoom.css" rel="stylesheet" />
+    <link href="~/Assets/css/StyleSheet.css" rel="stylesheet" />
+    <link href="~/Assets/css/GioHang.css" rel="stylesheet" />
+    <link href="~/Assets/css/PayMentCart.css" rel="stylesheet" />
+    <link href="~/Assets/css/ProductCategory.css" rel="stylesheet" />
+    <link href="~/Assets/css/ai.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="~/Assets/img/iconshop.png" sizes="64x64"/>
+    <link href="~/Assets/css/slider.css" rel="stylesheet" />
+    <!---Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!---icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!--- Swipeer -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <!---- Thông báo SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    @Scripts.Render("~/bundles/js")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <style>
+        .custom-swal {
+            z-index: 9999 !important;
+            left: 10px !important;
+            top: 10px !important;
+        }
+
+        .bg_img_r {
+            width: 100%;
+            height: auto;
+        }
+
+            .bg_img_r img {
+                width: 100%;
+                height: auto;
+            }
+
+        .find_input {
+            width: 200px;
+            height: 40px;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding-inline: 1rem;
+        }
+
+        .sidebar_right {
+            position: fixed;
+            top: 0;
+            right: -500px; /* Ẩn sidebar mặc định */
+            width: 500px;
+            height: 100%;
+            background-color: #fff;
+            transition: right 0.3s ease-in-out;
+            z-index: 9999;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+            .sidebar_right.open {
+                right: 0; /* Khi mở thì hiển thị ra */
+            }
+
+        #overlay {
+            display: none; /* Ẩn lớp phủ mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+
+            #overlay.active {
+                display: block; /* Hiển thị lớp phủ */
+            }
+
+
+        .sidebar_right.open {
+            right: 0;
+        }
+
+        .body_pr_sidebar_r {
+            padding: 1rem 0;
+            height: 500px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        /** nút liên hệ ***/
+        .echbay-sms-messenger div.phonering-alo-zalo,
+        .echbay-sms-messenger div.phonering-alo-alo {
+            background-color: #0084ff
+        }
+
+        .echbay-sms-messenger div.phonering-alo-sms {
+            background-color: #f60
+        }
+
+        .echbay-sms-messenger div.phonering-alo-messenger {
+            background-color: #e60f1e
+        }
+
+        .echbay-sms-messenger {
+            width: 45px
+        }
+
+            .echbay-sms-messenger a {
+                line-height: 45px;
+                color: transparent;
+                display: block;
+            }
+
+        .echbay-sms-messenger {
+            display: block
+        }
+
+            .echbay-sms-messenger div.phonering-alo-zalo {
+                display: block
+            }
+
+            .echbay-sms-messenger div.phonering-alo-alo {
+                background-image: url(https://codfe.com/wp-content/uploads/2020/08/call.png);
+            }
+
+            .echbay-sms-messenger div.phonering-alo-sms {
+                background-image: url(https://codfe.com/wp-content/uploads/2020/08/mail.png);
+                background-color: #f60;
+                background-size: 60%;
+            }
+
+            .echbay-sms-messenger div.phonering-alo-zalo {
+                background-image: url(https://codfe.com/wp-content/uploads/2020/08/zalo.png);
+            }
+
+            .echbay-sms-messenger div.phonering-alo-messenger {
+                background-image: url(https://codfe.com/wp-content/uploads/2020/08/messenger.png);
+                background-color: #e60f1e;
+            }
+
+            .echbay-sms-messenger div {
+                margin: 14px 0;
+                background: #0084FF center no-repeat;
+                background-size: 70%;
+                border-radius: 50%;
+                box-shadow: 0 3px 10px #888;
+            }
+
+        .echbay-sms-messenger {
+            text-align: center;
+            right: 20px;
+            position: fixed;
+            bottom: 140px;
+            z-index: 999;
+        }
+
+        /**** code thông báo sản phẩm khi gõ từ khóa tìm kiếm */
+        .price-text {
+            color: red;
+            font-weight: bold;
+        }
+
+        #suggestion-list {
+            position: absolute;
+            left: -30%;
+            width: 420px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            margin: 0;
+            list-style: none;
+            z-index: 1000;
+            display: none;
+        }
+
+            #suggestion-list li {
+                padding: 10px;
+                cursor: pointer;
+                border-bottom: 1px solid #eee;
+            }
+
+                #suggestion-list li:hover {
+                    background: #f7f7f7;
+                }
+    </style>
+    <!--- sản phẩm hot -->
+    <!-----Nút liên hệ -->
+    <div class="echbay-sms-messenger style-for-position-br">
+        <div class="phonering-alo-alo">
+            <a href="tel:0384533724" rel="nofollow" class="echbay-phonering-alo-event">.</a>
+        </div>
+        <div class="phonering-alo-zalo">
+            <a href="" target="_blank" rel="nofollow" class="echbay-phonering-zalo-event">.</a>
+        </div>
+        <div class="phonering-alo-messenger">
+            <a href="" target="_blank" rel="nofollow" class="echbay-phonering-messenger-event">.</a>
+        </div>
+    </div>
+
+
+
+    <div class="topbar-kimipet">
+        Giảm đến <strong>50% OFF</strong> cho thành viên Kimipet's ·
+        <a href="@Url.Action("Index", "DangNhapNguoiDung")">Đăng ký ngay!</a>
+    </div>
+
+    <!-- ═══ MAIN HEADER ═══ -->
+    <header class="header-kimipet" id="header-kimipet">
+
+        <!-- ── Top row: Logo · Search · Actions ── -->
+        <div class="header-top-row">
+
+            <!-- LOGO (dùng Url.Action, KHÔNG dùng Html.ActionLink để tránh lỗi linkText rỗng) -->
+            <a href="@Url.Action("Index", "Home", new { area = "" })" class="header-logo">
+                <span class="logo-badge">Kimi<span>pet's</span></span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="header-search">
+                <form id="searchForm" action="/Search/Index" method="GET">
+                    <input type="text"
+                           class="header-search-input"
+                           name="query"
+                           id="searchInput"
+                           placeholder="Tìm thức ăn, phụ kiện thú cưng..."
+                           autocomplete="off" />
+                    <button type="submit" class="header-search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+                <ul id="suggestion-list"></ul>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="header-actions">
+
+                <!-- Hotline -->
+                <div class="header-action-item d-none d-xl-flex" style="flex-direction:row;gap:8px;align-items:center;">
+                    <i class="fa-solid fa-phone-volume" style="font-size:20px;"></i>
+                    <span style="font-size:12px;line-height:1.3;">
+                        Hotline<br>
+                        <strong style="color:var(--primary,#1a7a3c);font-size:13px;">039 4627 246</strong>
+                    </span>
+                </div>
+
+                <a href="@Url.Action("Index","Wishlist")" class="header-action-item">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>
+                        Yêu thích
+                        <span id="wl-nav-count" style="
+                   display:none;
+                   background:#e53935; color:#fff;
+                   font-size:10px; font-weight:800;
+                   min-width:18px; height:18px;
+                   border-radius:10px; padding:0 4px;
+                   margin-left:3px; vertical-align:middle;
+                   align-items:center; justify-content:center;
+               ">0</span>
+                    </span>
+                </a>
+
+
+                <!-- User / Đăng nhập -->
+                @if (Session["User"] != null)
+                {
+                    var user = (A25082.Models.NguoiDung)Session["User"];
+                    <div class="header-action-item dropdown">
+                        <div class="dropdown-toggle"
+                             data-bs-toggle="dropdown"
+                             id="userDropBtn"
+                             style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;">
+                            <i class="fa-solid fa-circle-user" style="font-size:22px;"></i>
+                            <span style="font-size:11.5px;font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                @user.TenDangNhap
+                            </span>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropBtn">
+                            @if (user.MaVaiTro == 1)
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("ManHinhChinhAdmin", "HomeAdmin", new { area = "" })">
+                                        <i class="fas fa-tools me-2"></i>Quản trị Admin
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                            }
+                            <li>
+                                <a class="dropdown-item text-danger" href="@Url.Action("DangXuat", "DangNhapNguoiDung", new { area = "" })">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "DangNhapNguoiDung", new { area = "" })" class="header-action-item">
+                        <i class="fa-regular fa-user"></i>
+                        <span>Đăng nhập</span>
+                    </a>
+                }
+
+                <!-- Giỏ hàng -->
+                @{
+                    var cart = Session["Cart"] as List<A25082.Models.GioHang> ?? new List<A25082.Models.GioHang>();
+                    int totalQuantity = cart.Sum(c => c.SoLuong);
+                }
+                <div class="header-action-item" onclick="SidebarRight(true)" style="cursor:pointer;position:relative;">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Giỏ hàng</span>
+                    <span class="badge"
+                          id="cart-count-main"
+                          style="@(totalQuantity > 0 ? "" : "display:none")">
+                        @totalQuantity
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── NAV CATEGORIES ── -->
+        <nav class="header-nav">
+            <ul class="nav-categories">
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("Index", "Home", new { area = "" })" class="nav-cat-link">
+                        <i class="fa-solid fa-house"></i> Trang Chủ
+                    </a>
+                </li>
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 2 })" class="nav-cat-link">
+                        <i class="fa-solid fa-dog"></i> Chó
+                    </a>
+                    <div class="mega-menu">
+                        <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 2 })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-bone" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Thức ăn cho chó
+                        </a>
+                        <div class="mega-menu-divider"></div>
+                        <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 6 })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-cookie-bite" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Snack cho chó
+                        </a>
+                    </div>
+                </li>
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 1 })" class="nav-cat-link">
+                        <i class="fa-solid fa-cat"></i> Mèo
+                    </a>
+                    <div class="mega-menu">
+                        <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 1 })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-fish" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Thức ăn cho mèo
+                        </a>
+                        <div class="mega-menu-divider"></div>
+                        <a href="@Url.Action("AllProductsByCategoryPET", "SanPham", new { categoryId = 7 })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-cookie" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Snack cho mèo
+                        </a>
+                    </div>
+                </li>
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("AllProduct", "SanPham", new { area = "" })" class="nav-cat-link">
+                        <i class="fa-solid fa-border-all"></i> Tất cả sản phẩm
+                    </a>
+                </li>
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("AllDiscountProducts", "SanPham", new { area = "" })" class="nav-cat-link">
+                        <i class="fa-solid fa-tags"></i> Khuyến mãi
+                    </a>
+                </li>
+
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("DanhGia", "DangNhapNguoiDung", new { area = "" })" class="nav-cat-link">
+                        <i class="fa-solid fa-star"></i> Đánh giá
+                    </a>
+                </li>
+                <li class="nav-cat-item">
+                    <a href="@Url.Action("DatLich", "Spa", new { area = "" })" class="nav-cat-link">
+                        <i class="fa-solid fa-scissors"></i> Spa thú cưng
+                    </a>
+                    <div class="mega-menu">
+                        <a href="@Url.Action("DatLich", "Spa", new { area = "" })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-calendar-plus" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Đặt lịch ngay
+                        </a>
+                        <div class="mega-menu-divider"></div>
+                        <a href="@Url.Action("DichVu", "Spa", new { area = "" })" class="mega-menu-item">
+                            <div class="cat-icon"><i class="fa-solid fa-list-check" style="color:var(--primary,#1a7a3c)"></i></div>
+                            Dịch vụ & Bảng giá
+                        </a>
+                        <div class="mega-menu-divider"></div>
+                        @if (Session["User"] != null)
+                        {
+                            <a href="@Url.Action("LichSuDatLich", "Spa", new { area = "" })" class="mega-menu-item">
+                                <div class="cat-icon"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary,#1a7a3c)"></i></div>
+                                Lịch hẹn của tôi
+                            </a>
+                        }
+                    </div>
+                </li>
+
+            </ul>
+        </nav>
+
+    </header>
+
+
+
+    <!-- Sidebar - right  - Lagre  -->
+    <!--------------------------------------- side bar hiển thị sản phẩm khi thêm vào giỏ hàng ----------------------------------------------->
+    <div class="sidebar_right" id="sidebar_right">
+        <span class="close-btn_right" onclick="SidebarRight(false)">&times;</span>
+        <div class="body_sidebar_right">
+
+            <div class="body_title_sidebar_r">
+                <h4 class="title_ten">GIỎ HÀNG</h4>
+                <p class="title_small_ten">Bạn đang có <span id="cart_count">@ViewBag.TotalItems</span> sản phẩm trong giỏ hàng.</p>
+            </div>
+
+            <div class="body_pr_sidebar_r">
+                @Html.Partial("_CartSidebarPartial", Session["Cart"] as List<A25082.Models.GioHang> ?? new List<A25082.Models.GioHang>())
+
+            </div>
+
+
+            <div class="body_pr_pay">
+                <div class="link_cart">
+                    <a href="@Url.Action("Index", "GioHang", new { area = "" })" class="btn_pay_r">
+                        <i class="fas fa-shopping-cart" style="margin-right:8px;"></i> XEM GIỎ HÀNG
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+
+    <!----------------------------------------------------------------------------------------------------------------------------------------->
+    <!--------- Main body ---------->
+
+
+    @RenderBody()
+    <!------------------------------->
+    <!-------------------------------------  FOOTER ---------------------------------------------------->
+    <!-------- body part ten -->
+    <section class="body_all_ten">
+        <div class="product_sv">
+            <div class="row">
+
+                <div class="col-xl-4 product_sm_six">
+                    <div class="body_title_sm_ten">
+                        <h4 class="title_ten">GỌI ĐẶT HÀNG ONLINE (08:00 - 23: 00 mỗi ngày)</h4>
+                        <h3 class="title_big_ten">039 4627 246</h3>
+                        <h6 class="title_small_ten">Tất cả các ngày trong tuần (Trừ tết Âm Lịch) </h6>
+                    </div>
+
+                    <div class="body_title_sm_ten" style="margin-top: 2rem;">
+                        <h4 class="title_ten">GÓP Ý & KHIẾU NẠI (08:30 - 20:30)</h4>
+                        <h3 class="title_big_ten">039 4627 246</h3>
+                        <h6 class="title_small_ten">Tất cả các ngày trong tuần (Trừ tết Âm Lịch) </h6>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 product_sm_six product_ten_phone">
+                    <h4 class="title_ten">HỆ THỐNG CỬA HÀNG</h4>
+                    <div class="img_six">
+                        <img src="~/Assets/img/cuahang.jpg" />
+                    </div>
+
+                </div>
+
+                <div class="col-xl-4 product_sm_six product_ten_phone">
+                    <h4 class="title_ten">FANPAGE CỦA CHÚNG TÔI</h4>
+                    <div class="img_six">
+                        <img src="~/Assets/img/banner2.jpg" />
+                    </div>
+                    <div class="ten_social_sm">
+                        <i class="fa-brands fa-tiktok"></i>
+                        <i class="fa-brands fa-facebook"></i>
+                        <i class="fa-brands fa-instagram"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+
+
+    <!---------------->
+
+
+    <section class="body_all_ten">
+        <div class="body_all_finally" style="padding:2rem 0;">
+            <h4 class="title_ten title_final_phone" style="font-size: 14px;">CÔNG TY CỔ PHẦN KINH DOANH KIMIPET'S'</h4>
+        </div>
+    </section>
+
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">THÔNG TIN KHUYẾN MÃI </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="~/Assets/img/anh2.jpg" alt="Banner" class="img-fluid" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating AI Chatbot---------------------------------------------------------------------------------------- -->
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/8943/8943377.png" alt="AI" />
+            <div class="chatbot-header-info">
+                <div class="bot-name">Trợ lý Kimipet's 🐾</div>
+                <div class="bot-status">
+                    <span class="status-dot"></span> Đang hoạt động
+                </div>
+            </div>
+            <button id="chatbot-close">&times;</button>
+        </div>
+
+        <div id="chatbot-quick-suggestions">
+            <span class="quick-chip" onclick="sendQuick(this)">🐶 Thức ăn chó</span>
+            <span class="quick-chip" onclick="sendQuick(this)">🐱 Thức ăn mèo</span>
+            <span class="quick-chip" onclick="sendQuick(this)">🏷️ Khuyến mãi</span>
+            <span class="quick-chip" onclick="sendQuick(this)">📦 Sản phẩm mới</span>
+        </div>
+
+        <div id="chatbot-messages"></div>
+
+        <div id="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Nhập tin nhắn..." autocomplete="off" />
+            <button id="chatbot-send">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="chatbot-toggle">
+        <img src="~/Assets/img/robot.gif" alt="AI" class="ai-avatar" />
+    </div>
+    <div class="hotline-phone-ring-wrap">
+        <div class="hotline-phone-ring">
+            <div class="hotline-phone-ring-circle"></div>
+            <div class="hotline-phone-ring-circle-fill"></div>
+            <div class="hotline-phone-ring-img-circle">
+                <a href="tel:0987654321" class="pps-btn-img">
+                    <img src="https://wiki.minhduy.vn/wp-content/uploads/2022/07/icon-call-nh.png" alt="Gọi điện thoại" width="50">
+                </a>
+            </div>
+        </div>
+        <div class="hotline-bar">
+            <a href="tel:0987654321">
+                <span class="text-hotline">0123456789</span>
+            </a>
+        </div>
+    </div>
+    <!----------------------------------------------------------------------------------------->
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/js")
+    @RenderSection("scripts", required: false)
+    @RenderSection("ScriptsHome", required: false)
+    @RenderSection("ScriptsProducts", required: false)
+    @RenderSection("ScriptsProduct", required: false)
+    @RenderSection("ScriptDetails", required: false)
+    @RenderSection("ScriptShowRoom", required: false)
+    @RenderSection("ScriptClothers", required: false)
+
+    @RenderSection("ScriptsCart", required: false)
+
+    @RenderSection("ScriptLogicCart", required: false)
+    @RenderSection("Wish", required: false)
+    <script src="~/Assets/js/MainJS.js"></script>
+    <script src="~/Assets/js/wishlist.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+<script>
+    // AI chat box ------------
+    // KEY GROQ : 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
+    const chatbotToggle = document.getElementById("chatbot-toggle");
+    const chatbotContainer = document.getElementById("chatbot-container");
+    const chatbotClose = document.getElementById("chatbot-close");
+    const chatbotMessages = document.getElementById("chatbot-messages");
+    const chatbotInput = document.getElementById("chatbot-input");
+    const chatbotSend = document.getElementById("chatbot-send");
+
+    chatbotToggle.onclick = () => {
+        chatbotContainer.classList.add("open");
+        if (!chatbotMessages.dataset.initialized) {
+            appendMessage("Xin chào 👋! Mình là trợ lý AI của Kimipet's. Bạn muốn tìm thức ăn hay phụ kiện cho thú cưng không? 🐾", "ai");
+            chatbotMessages.dataset.initialized = "true";
+        }
+        chatbotInput.focus();
+    };
+
+    chatbotClose.onclick = () => chatbotContainer.classList.remove("open");
+
+    chatbotSend.onclick = () => sendMessage();
+    chatbotInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+
+    function sendQuick(el) {
+        chatbotInput.value = el.textContent.replace(/^[^\s]+\s/, ''); // bỏ emoji đầu
+        sendMessage();
+    }
+
+    function appendMessage(text, sender) {
+        const div = document.createElement("div");
+        div.className = "message " + sender;
+
+        const avatar = document.createElement("img");
+        avatar.className = "avatar";
+        avatar.src = sender === "ai"
+            ? "https://cdn-icons-png.flaticon.com/512/8943/8943377.png"
+            : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = text;
+
+        if (sender === "ai") {
+            div.appendChild(avatar);
+            div.appendChild(bubble);
+        } else {
+            div.appendChild(bubble);
+            div.appendChild(avatar);
+        }
+
+        chatbotMessages.appendChild(div);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function showTyping() {
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "message ai";
+        typingDiv.id = "typing-indicator";
+        typingDiv.innerHTML = `
+        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/8943/8943377.png" />
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>`;
+        chatbotMessages.appendChild(typingDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+        const t = document.getElementById("typing-indicator");
+        if (t) t.remove();
+    }
+
+    function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (!message) return;
+
+        appendMessage(message, "user");
+        chatbotInput.value = "";
+        showTyping();
+
+        fetch("/SanPham/ChatBot", {
+
+
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message })
+        })
+            .then(res => res.json())
+            .then(data => {
+                hideTyping();
+                appendMessage(data.reply, "ai");
+            })
+            .catch(err => {
+                hideTyping();
+                appendMessage("😔 Xin lỗi, có lỗi kết nối. Vui lòng thử lại!", "ai");
+                console.error(err);
+            });
+    }
+
+
+    //------------------------------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", function () {
+        // Kiểm tra xem đã hiển thị modal chưa
+        if (!sessionStorage.getItem("welcomeModalShown")) {
+            var welcomeModal = new bootstrap.Modal(document.getElementById("welcomeModal"));
+            welcomeModal.show();
+
+            // Đánh dấu là đã hiển thị
+            sessionStorage.setItem("welcomeModalShown", "true");
+        }
+    });
+
+    
+    //----------------------------------------
+    // Sidebar  - right - Lagre
+    // Sidebar - mở sidebar
+    function SidebarRight(open = true) {
+        const sidebar = document.getElementById("sidebar_right");
+        const overlay = document.getElementById("overlay");
+
+        if (open) {
+            sidebar.classList.add("open");
+            overlay.classList.add("active");
+        } else {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("active");
+        }
+    }
+
+    // Đóng sidebar khi nhấn overlay
+    document.getElementById("overlay").addEventListener("click", function () {
+        SidebarRight(false);
+    });
+
+    // Thêm sản phẩm vào giỏ hàng và cập nhật sidebar -----------------------------------------------------------------------------------------------
+    function addToCart(productId, color, size, quantity) {
+        $.ajax({
+            url: "/GioHang/AddToCart", // Sửa URL này
+            type: "POST",
+            data: { productId, color, size, quantity },
+            success: function (response) {
+                if (response.success) {
+                    // Cập nhật nội dung sidebar
+                    $(".body_pr_sidebar_r").html(response.cartHtml);
+                    $("#cart_count").text(response.totalItems);
+
+                    // Cập nhật số lượng trên icon cart
+                    updateCartCount();
+
+                    // Hiển thị thông báo thành công
+                    Swal.fire({
+                        icon: "success",
+                        title: response.message,
+                        toast: true,
+                        position: "top-start",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'custom-swal'
+                        }
+                    });
+
+                    // Mở sidebar
+                    SidebarRight(true);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra!");
+            }
+        });
+    }
+
+    // Xóa sản phẩm khỏi giỏ hàng (AJAX) -----------------------------------------------------------------------------------------------
+    $(document).on("click", ".remove-from-cart", function () {
+        let productId = $(this).data("id");
+        let color = $(this).data("color");
+        let size = $(this).data("size");
+
+        $.ajax({
+            url: '/GioHang/RemoveFromCartSideBar',
+            type: 'POST',
+            data: { productId, color, size },
+            success: function (response) {
+                if (response.success) {
+                    $(".body_pr_sidebar_r").html(response.cartHtml);
+                    $("#cart_count").text(response.totalItems);
+
+                    // Cập nhật số lượng trên icon cart
+                    updateCartCount();
+
+                    Swal.fire({
+                        icon: "success",
+                        title: response.message,
+                        toast: true,
+                        position: "top-start",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'custom-swal'
+                        }
+                    });
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra!");
+            }
+        });
+    });
+
+    // Gọi updateCartCount khi trang load xong
+    $(document).ready(function () {
+        updateCartCount();
+    });
+
+
+    // Code cố định Navbar khi cuộn trang -----------------------------------------------------------------------------------------------
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const section = document.querySelector('.seaction_two');
+        const sectionTop = section.offsetTop;
+        let lastScrollTop = 0;
+        let ticking = false;
+
+        function handleScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (!ticking) {
+                window.requestAnimationFrame(function () {
+                    if (scrollTop > sectionTop) {
+                        section.classList.add('sticky');
+                        if (scrollTop < lastScrollTop) {
+                            // Scrolling up
+                            section.classList.add('show');
+                        } else {
+                            // Scrolling down
+                            section.classList.remove('show');
+                        }
+                    } else {
+                        section.classList.remove('sticky', 'show');
+                    }
+                    lastScrollTop = scrollTop;
+                    ticking = false;
+                });
+
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    });
+    // -----------------------------------------------------------------------------------------------------------------------------------------
+    $(document).ready(function () {
+        $("#searchInput").on("keyup", function () {
+            let keyword = $(this).val();
+            if (keyword.length >= 2) {
+                $.ajax({
+                    url: '/Search/SuggestProducts',
+                    type: 'GET',
+                    data: { query: keyword },
+                    success: function (response) {
+                        $("#suggestion-list").empty().show();
+                        if (response.length > 0) {
+                            response.forEach(product => {
+                                $("#suggestion-list").append(
+                                    `<li data-id="${product.Id}">
+                                   <a href="/SanPham/PageDeTailsProduct/${product.MaKem}" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                                        <img src="${product.ImageUrl ?? '/images/no-image.png'}" width="50" height="60" style="margin-right: 10px;" alt="${product.TenKem}"/> 
+                                        ${product.TenKem} - <span class="price-text">${Number(product.GiaGoc).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+                                    </a>
+                                </li>`
+                                );
+
+                            });
+                        } else {
+                            $("#suggestion-list").append("<li>Không tìm thấy sản phẩm</li>");
+                        }
+                    }
+                });
+            } else {
+                $("#suggestion-list").hide();
+            }
+        });
+
+        $(document).on("click", "#suggestion-list li", function () {
+            let selectedProduct = $(this).text();
+            $("#searchInput").val(selectedProduct);
+            $("#suggestion-list").hide();
+            $("#searchForm").submit();  // Chuyển hướng đến trang tìm kiếm khi chọn gợi ý
+        });
+
+        $(document).click(function (e) {
+            if (!$(e.target).closest(".body_input_find").length) {
+                $("#suggestion-list").hide();
+            }
+        });
+    });
+</script>
+
+</html>
+<style>
+    .dropdown-item {
+        font-size:15px;
+    }
+    .link_a_two {
+        font-size: 14px;
+    }
+    /* ==== KHU VỰC TÀI KHOẢN NGƯỜI DÙNG ==== */
+    .body_info_account {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8f9fa;
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+.body_info_account:hover {
+    background: #e6f2ff;
+    transform: translateY(-1px);
+}
+
+/* Chữ "Xin chào" */
+.body_info_account p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    background: transparent;
+    padding: 0;
+}
+
+/* Nút Thoát */
+.body_info_account a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ff4d4f;
+    border: 1px solid #ff4d4f;
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.body_info_account a:hover {
+    background-color:transparent ;
+    color: white;
+}
+
+
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        margin: auto;
+    }
+
+    /* Input box */
+    .find_input {
+        width: 100%;
+        padding: 0.5rem 2.5rem 0.5rem 1rem;
+        border: 2px solid #e5e5e5;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+        /* Hover/focus effect */
+        .find_input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+        }
+
+    /* Search button inside input */
+    .search-btn {
+        position: absolute;
+        right: 2px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: #28a745;
+        color: #fff;
+        padding: 0.4rem 0.6rem;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .search-btn:hover {
+            background: #218838;
+        }
+
+    /* Suggestion dropdown */
+    #suggestion-list {
+        position: absolute;
+        top: 110%;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 250px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+    }
+
+        #suggestion-list li {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            #suggestion-list li:hover {
+                background-color: #f0f0f0;
+                color: #28a745;
+            }
+
+
+    .logo {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 18px;
+        color: #fff; /* chữ trắng nổi bật trên nền xanh */
+        text-decoration: none;
+        position: relative;
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #28a745, #85e085);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .btn_pay_r {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: #fff;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+        .btn_pay_r:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn_pay_r i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn_pay_r:hover i {
+            transform: translateX(5px);
+        }
+    .btn-user {
+        width: 100%;
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 25px;
+        padding: 8px 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+        .btn-user:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+    /* Dropdown items */
+    .user-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+        .user-dropdown .dropdown-item:hover {
+            background: #f0fdf4;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        /* Đăng xuất nổi bật */
+        .user-dropdown .dropdown-item.text-danger:hover {
+            background: #ffe5e5;
+            color: #c00;
+            font-weight: 600;
+        }
+
+        /*** css phần hiển thị gợi ý món */
+   #chatbot-toggle {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 66px;
+    height: 66px;
+    background: linear-gradient(135deg, #1a7a3c, #34c769);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+    box-shadow: 0 6px 24px rgba(52, 199, 105, 0.45);
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s;
+    animation: pulse-toggle 2.5s infinite;
+}
+
+#chatbot-toggle:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 10px 32px rgba(52, 199, 105, 0.6);
+}
+
+keyframes pulse-toggle {
+    0%, 100% { box-shadow: 0 6px 24px rgba(52,199,105,0.45); }
+    50%       { box-shadow: 0 6px 36px rgba(52,199,105,0.7), 0 0 0 10px rgba(52,199,105,0.08); }
+}
+
+.ai-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Khung chatbot chính */
+#chatbot-container {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    bottom: 108px;
+    right: 28px;
+    width: 650px;
+    height: 580px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(52,199,105,0.12);
+    z-index: 9999;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    animation: chatSlideUp 0.35s cubic-bezier(.34,1.56,.64,1);
+    border: 1.5px solid rgba(52,199,105,0.15);
+}
+
+#chatbot-container.open {
+    display: flex;
+}
+
+keyframes chatSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+#chatbot-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #1a7a3c 0%, #2ecc71 100%);
+    color: #fff;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#chatbot-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #fff3, #fff8, #fff3);
+}
+
+#chatbot-header img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.5);
+    background: #fff;
+    padding: 2px;
+}
+
+.chatbot-header-info {
+    flex: 1;
+}
+
+.chatbot-header-info .bot-name {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+}
+
+.chatbot-header-info .bot-status {
+    font-size: 12px;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    background: #a8ffc8;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink-dot 1.5s infinite;
+}
+
+keyframes blink-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+#chatbot-close {
+    background: rgba(255,255,255,0.18);
+    border: none;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+#chatbot-close:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* Gợi ý nhanh */
+#chatbot-quick-suggestions {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    background: #f8fdf9;
+    border-bottom: 1px solid #e8f5e9;
+    flex-shrink: 0;
+}
+
+.quick-chip {
+    background: #e8f5e9;
+    color: #1a7a3c;
+    border: 1.5px solid #c8e6c9;
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.quick-chip:hover {
+    background: #1a7a3c;
+    color: #fff;
+    border-color: #1a7a3c;
+    transform: translateY(-1px);
+}
+
+/* Vùng messages */
+#chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f7fdf9;
+    scroll-behavior: smooth;
+}
+
+#chatbot-messages::-webkit-scrollbar { width: 5px; }
+#chatbot-messages::-webkit-scrollbar-track { background: transparent; }
+#chatbot-messages::-webkit-scrollbar-thumb { background: #c8e6c9; border-radius: 10px; }
+
+/* Tin nhắn */
+.message {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e0e0e0;
+}
+
+.message.ai .avatar { border-color: #c8e6c9; }
+.message.user .avatar { border-color: #dce8ff; }
+
+.bubble {
+    max-width: 78%;
+    padding: 11px 15px;
+    border-radius: 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+.message.ai .bubble {
+    background: #ffffff;
+    color: #222;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid #e8f5e9;
+}
+
+.message.user .bubble {
+    background: linear-gradient(135deg, #1a7a3c, #34c769);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 3px 12px rgba(52,199,105,0.3);
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    background: #fff;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid #e8f5e9;
+    width: fit-content;
+}
+
+.typing-dot {
+    width: 7px;
+    height: 7px;
+    background: #34c769;
+    border-radius: 50%;
+    animation: typing 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+keyframes typing {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50%       { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Input area */
+#chatbot-input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #fff;
+    border-top: 1px solid #e8f5e9;
+    flex-shrink: 0;
+}
+
+#chatbot-input {
+    flex: 1;
+    border: 1.5px solid #d4edda;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    outline: none;
+    background: #f8fdf9;
+    color: #222;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    font-family: 'Poppins', sans-serif;
+}
+
+#chatbot-input:focus {
+    border-color: #34c769;
+    box-shadow: 0 0 0 3px rgba(52,199,105,0.12);
+    background: #fff;
+}
+
+#chatbot-input::placeholder { color: #aaa; }
+
+#chatbot-send {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a7a3c, #34c769);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 3px 12px rgba(52,199,105,0.35);
+}
+
+#chatbot-send:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 18px rgba(52,199,105,0.5);
+}
+
+/* Product cards trong chat */
+.chat-products-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.chat-product-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1.5px solid #e8f5e9;
+    border-radius: 14px;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chat-product-card:hover {
+    border-color: #34c769;
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(52,199,105,0.18);
+    color: inherit;
+    text-decoration: none;
+}
+
+.chat-product-img-wrap {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+}
+
+.chat-product-img-wrap img {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.no-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.chat-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e53935;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+}
+
+.chat-product-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-product-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.chat-product-price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.price-sale {
+    color: #1a7a3c;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.price-old {
+    color: #aaa;
+    font-size: 11px;
+    text-decoration: line-through;
+}
+
+.price-main {
+    color: #1a7a3c;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.ai-intro {
+    font-size: 13px;
+    color: #555;
+    margin: 0 0 6px 0;
+    font-style: italic;
+}
+
+
+</style>

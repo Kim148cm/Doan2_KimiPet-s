@@ -1,0 +1,38 @@
+﻿@model IEnumerable<A25082.Models.SanPhamKemChongNang>
+
+<div class="product_six">
+    <div class="row row_pr_six">
+        @foreach (var product in Model)
+        {
+            <div class="col-lg-6 col-xl-3 product_sm_six">
+                <a href='/SanPham/PageDeTailsProduct/@product.MaKem'>
+                    <div class="img_six">
+                        @if (product.AnhKemChongNangs?.Any() == true)
+                        {
+                            var primaryImageUrl = product.AnhKemChongNangs.First().ImageUrl; // Giả sử AnhKemChongNang có trường ImageUrl
+                            if (!string.IsNullOrEmpty(primaryImageUrl))
+                            {
+                                <img src="@Url.Content(primaryImageUrl)" alt="@product.TenKem" />
+                            }
+                            else
+                            {
+                                <img src="/Assets/image/default-image.jpg" alt="Default Image" />
+                            }
+                        }
+                        else
+                        {
+                            <img src="/Assets/image/default-image.jpg" alt="Default Image" />
+                        }
+                    </div>
+                </a>
+                <h5 class="title_pr_six">@product.TenKem</h5>
+                <div class="price_pr_four">
+                    <span class="original-price">@product.GiaGoc.ToString("N0")đ</span>
+                    <span class="current-price">@product.GiaGiam.ToString("N0")đ</span>
+                </div>
+            </div>
+        }
+    </div>
+
+   
+</div>

@@ -1,0 +1,584 @@
+﻿@model A25082.Admin.Controllers.TrackingViewModel
+@{
+    ViewBag.Title = "Xem Quá Trình Vận Chuyển";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/Admin/Assets/css/map.css" rel="stylesheet" />
+
+<!-- ✅ LEAFLET CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+   
+</style>
+
+<div class="container-fluid">
+    <div class="tracking-container">
+        <!-- Map -->
+        <div id="map"></div>
+
+        <!-- Order Info -->
+        <div class="info-section">
+            <div class="order-info">
+                <h6><i class="fas fa-box-open"></i> Thông tin đơn hàng</h6>
+                <p><strong>Mã vận đơn:</strong> @Model.MaVanDonGHN</p>
+                <p><strong>Khách hàng:</strong> @Model.HoTen - @Model.SoDienThoai</p>
+                <p><strong>Sản phẩm:</strong> @Model.Products</p>
+                <p><strong>Tổng tiền:</strong> <span style="color: #06D6A0; font-weight: 800; font-size: 1.2rem;">@Model.SoTien.ToString("N0") ₫</span></p>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="info-row">
+                <div class="info-card">
+                    <h6><i class="fas fa-location-dot"></i> Điểm gửi</h6>
+                    <p>@Model.SenderAddress</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="fas fa-map-pin"></i> Điểm nhận</h6>
+                    <p>@Model.RecipientAddress</p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="fas fa-road"></i> Quãng đường</h6>
+                    <p><span class="distance-badge"><i class="fas fa-ruler"></i> @Model.Distance</span></p>
+                </div>
+                <div class="info-card">
+                    <h6><i class="fas fa-clock"></i> Dự kiến giao</h6>
+                    <p>Khoảng @Model.EstimatedTime</p>
+                </div>
+            </div>
+
+            <!-- Shipper Info -->
+            <div class="shipper-info">
+                <div class="shipper-avatar">
+                    <i class="fas fa-motorcycle fa-bounce" style="font-size: 3.5rem; color: #FF6B35;"></i>
+                    <i class="fas fa-shipping-fast fa-beat-fade" style="font-size: 3.2rem; color: #06D6A0;"></i>
+                </div>
+                <div class="shipper-details">
+                    <h6><i class="fas fa-user-shield"></i> Thông tin tài xế giao hàng</h6>
+                    <p><strong>👤 Họ tên:</strong> @Model.ShipperName</p>
+                    <p><strong>📱 Điện thoại:</strong> @Model.ShipperPhone</p>
+                    <p><strong>🏍️ Phương tiện:</strong> Xe máy - BKS: @Model.ShipperBike</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="status-timeline">
+            <div class="timeline-header">
+                <i class="fas fa-list-check"></i>
+                <h5>Quá trình vận chuyển</h5>
+            </div>
+            <div class="timeline">
+                @foreach (var status in Model.TimelineStatus)
+                {
+                    string statusClass = "pending";
+                    string icon = "";
+
+                    if (status.IsCompleted)
+                    {
+                        statusClass = "completed";
+                        icon = "<i class=\"fas fa-check\"></i>";
+                    }
+                    else if (status.IsCurrent)
+                    {
+                        statusClass = "current";
+                        icon = "<i class=\"fas fa-shipping-fast\"></i>";
+                    }
+                    else
+                    {
+                        icon = "<i class=\"fas fa-circle\"></i>";
+                    }
+
+                    <div class="timeline-item @statusClass">
+                        <div class="timeline-icon">
+                            @Html.Raw(icon)
+                        </div>
+                        <div class="timeline-content">
+                            <h6>@status.Status</h6>
+                            <p class="time">
+                                @if (status.IsCompleted)
+                                {
+                                    <i class="fas fa-check-circle"></i> <text>Hoàn thành lúc @status.Time</text>
+                                }
+                                else if (status.IsCurrent)
+                                {
+                                    <i class="fas fa-spinner fa-spin"></i> <text>Đang xử lý - @status.Time</text>
+                                }
+                                else
+                                {
+                                    <i class="far fa-clock"></i> <text>Dự kiến @status.Time</text>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-section">
+            <div class="btn-group-custom">
+                <button class="btn-custom btn-success-custom" onclick="callShipper()">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>Gọi tài xế</span>
+                </button>
+                <button class="btn-custom btn-info-custom" onclick="sendMessage()">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Nhắn tin</span>
+                </button>
+                <button class="btn-custom btn-back-custom" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JQUERY -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ LEAFLET JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ✅ LEAFLET ROUTING MACHINE -->
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
+<script>
+    const mapData = {
+        senderLat: @Model.SenderLat,
+        senderLng: @Model.SenderLng,
+        recipientLat: @Model.RecipientLat,
+        recipientLng: @Model.RecipientLng,
+        shipperLat: @Model.ShipperLat,
+        shipperLng: @Model.ShipperLng,
+        shipperName: '@Model.ShipperName',
+        shipperPhone: '@Model.ShipperPhone',
+        maThanhToan: @Model.MaThanhToan
+    };
+
+    let map;
+    let shipperMarker;
+    let routeCoordinates = [];
+    let currentRouteIndex = 0;
+    let animationInterval;
+    let pulseCircle;
+    let routingControl;
+
+    function initMap() {
+        console.log('🗺️ Starting map initialization...');
+        console.log('📍 Map data:', mapData);
+
+        try {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.error('❌ Map container not found!');
+                return;
+            }
+
+            console.log('✅ Map container found');
+
+            if (map) {
+                map.remove();
+                console.log('🔄 Removed old map');
+            }
+
+            const centerLat = (mapData.senderLat + mapData.recipientLat) / 2;
+            const centerLng = (mapData.senderLng + mapData.recipientLng) / 2;
+
+            console.log(`📌 Center point: ${centerLat}, ${centerLng}`);
+
+            map = L.map('map', {
+                center: [centerLat, centerLng],
+                zoom: 13,
+                zoomControl: true,
+                scrollWheelZoom: true,
+                dragging: true,
+                touchZoom: true,
+                doubleClickZoom: true,
+                boxZoom: true,
+                keyboard: true,
+                preferCanvas: false
+            });
+
+            console.log('✅ Map object created');
+
+            const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19,
+                minZoom: 3,
+                crossOrigin: true
+            });
+
+            tileLayer.addTo(map);
+            console.log('✅ Tile layer added');
+
+            tileLayer.on('load', function() {
+                console.log('✅ Tiles loaded successfully');
+            });
+
+            tileLayer.on('tileerror', function(error) {
+                console.error('❌ Tile loading error:', error);
+            });
+
+            // Marker icons
+            const senderIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+
+            const recipientIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+
+            const shipperIcon = L.divIcon({
+                html: `
+                    <div class="shipper-marker-custom">
+                        <img src="https://static.vecteezy.com/ti/vetor-gratis/p1/4415965-entregador-de-scooter-gratis-vetor.jpg"
+                             alt="Shipper">
+                    </div>
+                `,
+                className: 'shipper-icon-wrapper',
+                iconSize: [80, 80],
+                iconAnchor: [40, 40],
+                popupAnchor: [0, -40]
+            });
+
+            // Add markers
+            L.marker([mapData.senderLat, mapData.senderLng], { icon: senderIcon })
+                .addTo(map)
+                .bindPopup('<b>📦 Điểm gửi hàng</b><br>@Model.SenderAddress');
+
+            L.marker([mapData.recipientLat, mapData.recipientLng], { icon: recipientIcon })
+                .addTo(map)
+                .bindPopup('<b>🏠 Điểm nhận hàng</b><br>@Model.RecipientAddress');
+
+            // Tạo vòng tròn pulse cho vị trí shipper (bắt đầu từ sender)
+            pulseCircle = L.circle([mapData.senderLat, mapData.senderLng], {
+                color: '#FF6B35',
+                fillColor: '#FF6B35',
+                fillOpacity: 0.3,
+                radius: 50,
+                className: 'shipper-pulse'
+            }).addTo(map);
+
+            // Tạo shipper marker (bắt đầu từ sender)
+            shipperMarker = L.marker([mapData.senderLat, mapData.senderLng], {
+                icon: shipperIcon,
+                zIndexOffset: 1000
+            })
+                .addTo(map)
+                .bindPopup(`
+                                             <div style="
+                                              background: #ffffff;
+                                              border-radius: 20px;
+                                              padding: 24px;
+                                              box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+                                              border: 1px solid #e0e0e0;
+                                              color: #333333;
+                                              font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                              max-width: 360px;
+                                              margin: 0 auto;
+                                            ">
+
+                                              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                                                <div style="
+                                                  width: 68px;
+                                                  height: 68px;
+                                                  border-radius: 50%;
+                                                  overflow: hidden;
+                                                  box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+                                                  border: 2px solid #ffffff;
+                                                ">
+                                                  <img src="https://www.galeriemichael.com/wp-content/uploads/2025/07/hinh-anh-meme-con-khi.jpg"
+                                                       alt="Delivery Rider"
+                                                       style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                </div>
+
+                                                <div>
+                                                  <h4 style="
+                                                    margin: 0;
+                                                    font-size: 1.35rem;
+                                                    font-weight: 700;
+                                                    color: #FF6B35;
+                                                  ">
+                                                    ${mapData.shipperName}
+                                                  </h4>
+                                                  <p style="
+                                                    margin: 6px 0 0;
+                                                    font-size: 0.98rem;
+                                                    color: #666666;
+                                                    font-weight: 500;
+                                                  ">
+                                                    Tài xế giao hàng
+                                                  </p>
+                                                </div>
+                                              </div>
+
+                                              <div style="
+                                                background: #f8f9fa;
+                                                border-radius: 14px;
+                                                padding: 16px;
+                                                font-size: 1.1rem;
+                                                font-weight: 600;
+                                                color: #333333;
+                                                text-align: center;
+                                                border: 1px solid #e0e0e0;
+                                                margin-bottom: 16px;
+                                              ">
+                                                ${mapData.shipperPhone}
+                                              </div>
+
+                                              <div style="
+                                                text-align: center;
+                                                font-size: 1rem;
+                                                font-weight: 700;
+                                                color: #06D6A0;
+                                                letter-spacing: 0.8px;
+                                                text-transform: uppercase;
+                                                padding: 10px 0;
+                                                background: rgba(6,214,160,0.08);
+                                                border-radius: 12px;
+                                                border: 1px solid rgba(6,214,160,0.25);
+                                              ">
+                                                Đang giao hàng
+                                              </div>
+
+                                            </div>
+                `);
+
+            console.log('✅ Markers added');
+
+            // Add routing và lấy coordinates
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(mapData.senderLat, mapData.senderLng),
+                    L.latLng(mapData.recipientLat, mapData.recipientLng)
+                ],
+                routeWhileDragging: false,
+                showAlternatives: false,
+                lineOptions: {
+                    styles: [{ color: '#FF6B35', opacity: 0.8, weight: 6 }]
+                },
+                createMarker: function() { return null; },
+                addWaypoints: false,
+                draggableWaypoints: false,
+                fitSelectedRoutes: true
+            }).addTo(map);
+
+            // Lấy coordinates của route khi được tạo
+            routingControl.on('routesfound', function(e) {
+                const routes = e.routes;
+                routeCoordinates = routes[0].coordinates;
+                console.log('✅ Route coordinates:', routeCoordinates.length);
+
+                // Tìm điểm gần nhất với vị trí shipper hiện tại
+                findNearestPointOnRoute();
+
+                // Bắt đầu animation
+                startShipperAnimation();
+            });
+
+            console.log('✅ Routing added');
+
+            setTimeout(function() {
+                map.invalidateSize();
+                console.log('🔄 Map size invalidated');
+            }, 100);
+
+            console.log('🎉 Map initialization completed!');
+
+        } catch (error) {
+            console.error('❌ Error initializing map:', error);
+        }
+    }
+
+    // Bắt đầu từ điểm xuất phát (sender)
+    function findNearestPointOnRoute() {
+        // Luôn bắt đầu từ điểm đầu tiên (điểm gửi hàng)
+        currentRouteIndex = 0;
+        console.log('📍 Starting from beginning (sender location)');
+    }
+
+    // Animation di chuyển shipper dọc theo route
+    function startShipperAnimation() {
+        if (animationInterval) {
+            clearInterval(animationInterval);
+        }
+
+        // Di chuyển mỗi 500ms (chậm hơn, dễ nhìn)
+        animationInterval = setInterval(function() {
+            if (currentRouteIndex < routeCoordinates.length - 1) {
+                currentRouteIndex++;
+
+                const nextPoint = routeCoordinates[currentRouteIndex];
+                const newLatLng = [nextPoint.lat, nextPoint.lng];
+
+                // Di chuyển marker
+                shipperMarker.setLatLng(newLatLng);
+
+                // Di chuyển pulse circle
+                if (pulseCircle) {
+                    pulseCircle.setLatLng(newLatLng);
+                }
+
+                // Cập nhật vị trí trong data
+                mapData.shipperLat = nextPoint.lat;
+                mapData.shipperLng = nextPoint.lng;
+
+                // Pan map để theo dõi shipper (tùy chọn)
+                // map.panTo(newLatLng);
+
+            } else {
+                // Đã đến đích, quay lại điểm đầu để lặp lại animation
+                console.log('✅ Reached destination, restarting animation');
+                currentRouteIndex = 0;
+            }
+        }, 500); // Tốc độ: 500ms mỗi bước (chậm hơn)
+    }
+
+    // Dừng animation
+    function stopShipperAnimation() {
+        if (animationInterval) {
+            clearInterval(animationInterval);
+            console.log('⏸️ Animation stopped');
+        }
+    }
+
+    function updateShipperLocation() {
+        $.ajax({
+            url: '/Admin/Tracking/GetShipperLocation',
+            type: 'GET',
+            data: { maThanhToan: mapData.maThanhToan },
+            success: function(response) {
+                if (response.success && shipperMarker) {
+                    // Cập nhật vị trí thực từ server
+                    mapData.shipperLat = response.lat;
+                    mapData.shipperLng = response.lng;
+
+                    // Tìm lại điểm gần nhất trên route
+                    findNearestPointOnRoute();
+
+                    console.log('📍 Shipper location updated from server');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ Error updating shipper location:', error);
+            }
+        });
+    }
+
+    function callShipper() {
+        Swal.fire({
+            title: '📞 Gọi cho tài xế',
+            html: `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🏍️</div>
+                    <h4 style="color: #073B4C; margin-bottom: 10px;">${mapData.shipperName}</h4>
+                    <p style="font-size: 1.3rem; color: #FF6B35; font-weight: bold; margin: 15px 0;">
+                        ${mapData.shipperPhone}
+                    </p>
+                    <p style="color: #666; margin-top: 15px;">Bạn có muốn gọi cho tài xế không?</p>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-phone"></i> Gọi ngay',
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: '#06D6A0',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'tel:' + mapData.shipperPhone;
+            }
+        });
+    }
+
+    function sendMessage() {
+        Swal.fire({
+            title: '💬 Nhắn tin cho tài xế',
+            html: `
+                <div style="text-align: left; padding: 10px;">
+                    <div style="margin-bottom: 15px; text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🏍️</div>
+                        <h5 style="color: #073B4C; margin: 0;">${mapData.shipperName}</h5>
+                        <p style="color: #666; font-size: 0.9rem; margin: 5px 0;">${mapData.shipperPhone}</p>
+                    </div>
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">
+                        Nội dung tin nhắn:
+                    </label>
+                    <textarea
+                        id="messageContent"
+                        class="swal2-textarea"
+                        placeholder="Nhập tin nhắn của bạn..."
+                        style="width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                    ></textarea>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-paper-plane"></i> Gửi',
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: '#118AB2',
+            cancelButtonColor: '#6c757d',
+            preConfirm: () => {
+                const message = document.getElementById('messageContent').value;
+                if (!message) {
+                    Swal.showValidationMessage('Vui lòng nhập nội dung tin nhắn');
+                    return false;
+                }
+                return message;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const message = encodeURIComponent(result.value);
+                window.location.href = `sms:${mapData.shipperPhone}?body=${message}`;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Đang mở ứng dụng nhắn tin...',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+    window.addEventListener('load', function() {
+        console.log('🚀 Page loaded, initializing map...');
+        setTimeout(function() {
+            initMap();
+        }, 500);
+    });
+
+    // Auto-update shipper location từ server mỗi 30 giây
+    setInterval(updateShipperLocation, 30000);
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (map) {
+            setTimeout(function() {
+                map.invalidateSize();
+                console.log('🔄 Map resized');
+            }, 200);
+        }
+    });
+
+    // Cleanup khi rời trang
+    window.addEventListener('beforeunload', function() {
+        stopShipperAnimation();
+    });
+</script>

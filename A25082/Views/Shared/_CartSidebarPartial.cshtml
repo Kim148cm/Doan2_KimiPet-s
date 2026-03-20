@@ -1,0 +1,95 @@
+﻿@model List<A25082.Models.GioHang>
+
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <div class="row cart-item shadow-sm rounded p-2 mb-3 align-items-center" style="background:#fff;">
+            <div class="col-4 col-md-4">
+                <div class="bg_img_r rounded" style="overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@Url.Content(item.ImageUrl)" alt="@item.TenKem" loading="lazy" class="w-100" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Content("~/images/default-image.jpg")" alt="Default Image" class="w-100" loading="lazy" />
+                    }
+                </div>
+            </div>
+            <div class="col-8 col-md-8">
+                <h5 class="title_pr_right mb-1">@item.TenKem</h5>
+                <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.5rem;">
+                    @if (item.GiaGiam > 0 && item.GiaGiam < item.GiaGoc)
+
+                    {
+                        <h5 class="current_price_new" style="background: linear-gradient(135deg, #56ab2f, #a8e063); -webkit-background-clip: text; color: transparent;">
+                            @item.GiaGoc.ToString("N0")đ
+                        </h5>
+                        <h6 class="original-price text-muted" style="text-decoration:line-through; font-weight:400;">
+                            @item.GiaGiam.ToString("N0")đ
+                        </h6>
+                    }
+                    else
+                    {
+                        <h5 class="current_price_new" style="background: linear-gradient(135deg, #56ab2f, #a8e063); -webkit-background-clip: text; color: transparent;">
+                            @item.GiaGoc.ToString("N0")đ
+                        </h5>
+                    }
+
+                </div>
+
+                <button class="btn_pr_right remove-from-cart" data-id="@item.MaKem">
+                    <i class="fas fa-trash-alt" style="margin-right:5px;"></i> Xóa
+                </button>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p class="text-center text-muted">Giỏ hàng trống.</p>
+}
+
+<style>
+    .cart-item {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .cart-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    .btn_pr_right {
+        background: linear-gradient(135deg, #56ab2f, #a8e063);
+        color: #fff;
+        font-weight: 600;
+        padding: 5px 12px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn_pr_right:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+    .original-price {
+        font-size: 0.85rem;
+    }
+
+    .bg_img_r img {
+        display: block;
+        object-fit: cover;
+        height: 100%;
+    }
+
+    .title_pr_right {
+        font-weight: 600;
+    }
+</style>

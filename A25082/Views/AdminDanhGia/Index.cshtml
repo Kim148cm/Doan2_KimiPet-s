@@ -1,0 +1,83 @@
+﻿@model IEnumerable<A25082.Models.DanhGia>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h5 class="text-black mb-4"><i class="fas fa-comments"></i> Danh sách phản hồi / đánh giá</h5>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Người dùng</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số sao</th>
+                    <th>Bình luận</th>
+                    <th>Ngày</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dg in Model)
+                {
+                    <tr>
+                        <td>@(dg.NguoiDung?.TenDangNhap ?? "N/A")</td>
+                        <td>@(dg.SanPhamKemChongNang?.TenKem ?? "N/A")</td>
+
+                        <td>
+                            @for (int i = 0; i < dg.Diem; i++)
+                            {
+                                <i class="fa-solid fa-star text-warning"></i>
+                            }
+                        </td>
+                        <td>@dg.BinhLuan</td>
+                        <td>@dg.NgayDanhGia.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteDanhGia(@dg.MaDanhGia)">Xóa</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function deleteDanhGia(id) {
+        Swal.fire({
+            title: 'Bạn có chắc muốn xóa?',
+            text: "Hành động này sẽ không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "AdminDanhGia")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function(res) {
+                        if(res.success){
+                            Swal.fire('Đã xóa!', res.message, 'success').then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi!', res.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Lỗi!', 'Không thể xóa đánh giá', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
+

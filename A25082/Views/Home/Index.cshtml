@@ -1,0 +1,376 @@
+﻿@model A25082.Controllers.HomeController.HomeViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section ScriptsHome {
+    <script src="~/Assets/js/ImageSlider.js"></script>
+}
+@section ScriptsProduct{
+    <script src="~/Assets/js/ProductDetail.js"></script>
+}
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "@TempData["SuccessMessage"]",
+                showConfirmButton: false,
+                timer: 2500
+            });
+        });
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Thông báo giỏ hàng',
+            html: '@TempData["ErrorMessage"]',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}
+<!---------------------- three - slider -------------------------->
+@Html.Action("Index", "ImageSlider")
+<!----------------------------------------------------------------------->
+<marquee class="marquee" scrollamount="10" behavior="scroll" direction="left">
+     Chương trình ưu đãi các sản phẩm mới HOT đến hết tháng 3 ! 
+</marquee>
+
+<div class="body_four_container">
+
+    <div class="service-container">
+        <div class="service-item">
+            <img src="https://img.icons8.com/ios-filled/50/000000/delivery.png" alt="Freeship">
+            <div class="service-text">
+                <h4>FREESHIP</h4>
+                <p>Miễn phí vận chuyển</p>
+            </div>
+        </div>
+        <div class="service-item">
+            <img src="https://img.icons8.com/ios-filled/50/000000/return-purchase.png" alt="Hoàn trả">
+            <div class="service-text">
+                <h4>ƯU ĐÃI GIẢM GIÁ</h4>
+                <p>Khi mua số lượng lớn</p>
+            </div>
+        </div>
+        <div class="service-item">
+            <img src="https://img.icons8.com/ios-filled/50/000000/visa.png" alt="Thanh toán">
+            <div class="service-text">
+                <h4>THANH TOÁN</h4>
+                <p>Hỗ trợ nhiều hình thức</p>
+            </div>
+        </div>
+        <div class="service-item">
+            <img src="https://img.icons8.com/ios-filled/50/000000/headset.png" alt="Hỗ trợ">
+            <div class="service-text">
+                <h4>HỖ TRỢ</h4>
+                <p>24/7</p>
+            </div>
+        </div>
+    </div>
+    <!----------------------------------------------------------------------->
+    @Html.Action("ProductHot", "SanPham")
+
+</div>
+
+<div class="body_part_five">
+    @Html.ActionLink("XEM TẤT CẢ", "AllProduct", "SanPham", new { area = "" }, new { @class = "title_five", @style = "text-decoration: none;color:black;" })
+</div>
+
+
+
+
+
+<!---------------------------------------------------------------------------->
+
+<section class="body_all_six">
+    <h4 class="title_ele_six">DANH SÁCH CÁC LOẠI MỚI</h4>
+    <!---- sản phẩm theo loại -->
+    <div class="category-tabs" style="display:flex;justify-content:space-between;align-items:center;margin-top:4rem;">
+        <ul class="nav nav-tabs" id="categoryTab">
+            @if (Model.LoaiKemChongNangs != null && Model.LoaiKemChongNangs.Any())
+            {
+                var firstCatId = Model.LoaiKemChongNangs.First().MaLoai;
+                foreach (var cat in Model.LoaiKemChongNangs)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link category-tab @(firstCatId == cat.MaLoai ? "active" : "")"
+                           data-id="@cat.MaLoai"
+                           href="javascript:void(0);"
+                           style="font-size:14px;">
+                            @cat.TenLoai
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="nav-item">
+                    <span class="nav-link text-muted">Không có loại sản phẩm nào</span>
+                </li>
+            }
+
+
+        </ul>
+        <div class="view-all-btn">
+            <a id="viewAllLink"
+               href="@Url.Action("AllProductsByCategory", "SanPham", new { categoryId = Model.LoaiKemChongNangs.First().MaLoai })"
+               class="btn-view-all">
+                XEM TẤT CẢ <i class="fas fa-arrow-right" style="margin-left:8px;"></i>
+            </a>
+        </div>
+    </div>
+
+    <div id="category-products" style="margin-top:20px;">
+        <!-- Sản phẩm load qua AJAX -->
+    </div>
+
+</section>
+
+<!---------------------------------------------------------------------------->
+<section class="body_all_six"
+         data-aos="fade-up"
+         data-aos-anchor-placement="bottom-bottom"
+         data-aos-duration="900"
+         data-aos-offset="200"
+         data-aos-delay="0">
+
+    <div class="body_title_all" style="padding-bottom:2rem;">
+        <h4 class="title_ele_six">Gợi ý loại HOT cho bạn</h4>
+    </div>
+
+
+    @Html.Action("ProductHot", "SanPham")
+
+</section>
+<!---------------------------------------------------------------------------->
+
+<section class="body_all_six">
+    <div class="body_title_social">
+        <div class="body_sm_title_nine">
+            <div class="line_nine"></div>
+            <h4 class="title_ele_six">instagram</h4>
+            <div class="line_nine"></div>
+        </div>
+        <p class="title_nine_social">"#Kimipet's'"</p>
+    </div>
+
+    <div class="product_six" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 3rem;">
+        <div class="row">
+
+            <div class="col-xl-3 product_sm_six" data-aos="fade-left" data-aos-offset="200" data-aos-duration="600" data-aos-delay="0">
+                <div class="img_six">
+                    <img src="~/Assets/img/anh1.png" />
+                </div>
+            </div>
+
+            <div class="col-xl-3 product_sm_six" data-aos="fade-left" data-aos-offset="200" data-aos-duration="600" data-aos-delay="100">
+                <div class="img_six">
+                    <img src="~/Assets/img/anh2.jpg" />
+                </div>
+            </div>
+
+            <div class="col-xl-3 product_sm_six" data-aos="fade-left" data-aos-offset="200" data-aos-duration="600" data-aos-delay="200">
+                <div class="img_six">
+                    <img src="~/Assets/img/anh3.jpg" />
+                </div>
+            </div>
+
+            <div class="col-xl-3 product_sm_six" data-aos="fade-left" data-aos-offset="200" data-aos-duration="600" data-aos-delay="300">
+                <div class="img_six">
+                    <img src="~/Assets/img/anh4.jpg" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+
+
+
+<script>
+    AOS.init({
+        once: false,
+        duration: 600,
+        offset: 200,
+        mirror: true
+    });
+
+    $(document).ready(function () {
+        var firstCatId = $("#categoryTab .nav-link.active").data("id");
+        if (firstCatId !== undefined) {
+            loadProducts(firstCatId);
+        }
+
+        $("#categoryTab").on("click", ".nav-link", function (e) {
+            e.preventDefault();
+            $("#categoryTab .nav-link").removeClass("active");
+            $(this).addClass("active");
+            var catId = $(this).data("id");
+            loadProducts(catId);
+        });
+
+        function loadProducts(categoryId) {
+            $.get("/CategoryProduct/ProductsByCategory", { categoryId: categoryId }, function (data) {
+                $("#category-products").html(data);
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewAllLink = document.getElementById("viewAllLink");
+        const categoryTabs = document.querySelectorAll(".category-tab");
+
+        categoryTabs.forEach(tab => {
+            tab.addEventListener("click", function () {
+                const categoryId = this.getAttribute("data-id");
+
+                // Cập nhật nút XEM TẤT CẢ
+                viewAllLink.href = `/SanPham/AllProductsByCategory?categoryId=${categoryId}`;
+
+                // Cập nhật trạng thái active
+                categoryTabs.forEach(t => t.classList.remove("active"));
+                this.classList.add("active");
+
+                // TODO: Nếu muốn load sản phẩm theo tab khi click
+                // gọi Ajax hoặc reload nội dung sản phẩm ở đây
+            });
+        });
+    });
+
+   
+
+</script>
+<style>
+    .product_six .img_six {
+        width: 100%;
+        height: 180px; 
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+        .product_six .img_six img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+        }
+
+    .marquee {
+        font-size: 25px;
+        font-weight: bold;
+        color: #fff;
+        background: linear-gradient(90deg, #a8e6cf, #dcedc1);
+        padding: 10px 0;
+        text-align: center;
+        text-shadow: 1px 1px 3px #4caf50;
+        border: 1px solid #4caf50;
+    }
+
+    .service-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 50px auto;
+        background-color: white;
+    }
+
+    .service-item {
+        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .service-item img {
+            width: 32px;
+            height: 32px;
+        }
+
+    .service-text {
+        text-align: left;
+    }
+
+        .service-text h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #3d3d3d;
+        }
+
+        .service-text p {
+            margin: 0;
+            font-size: 12px;
+            color: #777;
+        }
+    /***---------------------------------- css tab các sản phẩm */
+    .category-tabs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+        .category-tabs .nav-tabs {
+            border-bottom: none;
+            gap: 10px;
+        }
+
+        .category-tabs .nav-link {
+            font-weight: 600;
+            color: #333;
+            padding: 8px 18px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+            .category-tabs .nav-link:hover {
+                background-color: #f1f1f1;
+                color: #00916E;
+            }
+
+            .category-tabs .nav-link.active {
+                background-color: #00916E;
+                color: #fff;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            }
+
+    .view-all-btn .btn-view-all {
+        background-color: #00916E;
+        color: #fff;
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .view-all-btn .btn-view-all:hover {
+            background-color: #007d5c;
+            transform: translateY(-2px);
+        }
+
+   
+</style>

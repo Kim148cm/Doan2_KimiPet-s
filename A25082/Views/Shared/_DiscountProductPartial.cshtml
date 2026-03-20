@@ -1,0 +1,131 @@
+﻿@model IEnumerable<A25082.Models.SanPhamKemChongNang>
+
+@foreach (var product in Model)
+{
+
+    var imgs = product.AnhKemChongNangs?
+        .Where(a => !string.IsNullOrWhiteSpace(a.ImageUrl))
+        .ToList() ?? new List<A25082.Models.AnhKemChongNang>();
+
+    var hasHoverImage = imgs.Count > 1;
+    var primaryImageUrl = imgs.FirstOrDefault()?.ImageUrl ?? "/Assets/image/default-image.jpg";
+
+    var hoverImageUrl = hasHoverImage ? imgs[1].ImageUrl : null;
+
+    <div class="col-6 col-sm-6 col-xl-3 col-md-3">
+        <div class="product-card" style="margin-top:3rem;">
+            @if (product.GiaGiam > 0)
+            {
+                <span class="product-badge badge-sale">
+                    <i class="bi bi-tags-fill me-1"></i> SALE
+                </span>
+            }
+            else
+            {
+                <span class="product-badge badge-new">
+                    <i class="bi bi-star-fill me-1"></i> MỚI
+                </span>
+            }
+            <a href='/SanPham/PageDeTailsProduct/@product.MaKem'>
+                <div class="image-container image_card_sm @(hasHoverImage ? "has-hover" : "")">
+                    <img src="@Url.Content(primaryImageUrl)" alt="@product.TenKem" class="primary-image" loading="lazy" />
+
+                    @if (hasHoverImage && !string.IsNullOrEmpty(hoverImageUrl))
+                    {
+                        <img src="@Url.Content(hoverImageUrl)"
+                             alt="@product.TenKem - Hover"
+                             class="hover-image"
+                             loading="lazy"
+                             onerror="this.closest('.image-container').classList.remove('has-hover'); this.remove();" />
+                    }
+                </div>
+            </a>
+            <h3 class="title_pr_four">@product.TenKem</h3>
+            <div class="price_pr_four">
+                <span class="current-price">@product.GiaGoc.ToString("N0")đ</span>
+                <span class="original-price" style="text-decoration: line-through; color: gray;">@product.GiaGiam.ToString("N0")đ</span>
+            </div>
+            <button class="flash-sale-button">MUA NGAY</button>
+        </div>
+    </div>
+}
+
+<style>
+    /* --------------*/
+    .image-container {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        aspect-ratio: 1/1;
+        background: #f7f7f7;
+    }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+
+        .image-container .primary-image {
+            position: relative;
+            z-index: 1;
+            transition: opacity .25s;
+        }
+
+        .image-container .hover-image {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .25s;
+            pointer-events: none;
+        }
+
+
+        .image-container.has-hover:hover .hover-image {
+            opacity: 1;
+        }
+
+        .image-container.has-hover:hover .primary-image {
+            opacity: 0;
+        }
+
+
+        .image-container:not(.has-hover):hover .primary-image {
+            opacity: 1 !important;
+        }
+
+
+
+
+    .product-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        z-index: 5;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: none;
+    }
+
+    .badge-sale {
+        background: linear-gradient(45deg, #ff4e50, #f9d423);
+    }
+
+    .badge-new {
+        background: linear-gradient(45deg, #00b09b, #96c93d);
+    }
+
+    .product-badge i {
+        font-size: 14px;
+    }
+</style>

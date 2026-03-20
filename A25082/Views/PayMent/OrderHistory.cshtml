@@ -1,0 +1,518 @@
+﻿@model List<A25082.Models.ThanhToan>
+
+@if (TempData["OrderSuccess"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            title: "Đơn hàng đã được xác nhận thành công!",
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#059669"
+        });
+    </script>
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<section class="order-history-section">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-container">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="fa-solid fa-house"></i> Trang chủ
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "GioHang")">
+                            <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">Lịch sử đơn hàng</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container mt-4 mb-5">
+        <!-- Header -->
+        <div class="page-header mb-4">
+            <h2 class="page-title">Lịch sử đơn hàng</h2>
+            <p class="page-subtitle">Quản lý và theo dõi đơn hàng của bạn</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-inbox"></i>
+                </div>
+                <h3 class="empty-title">Chưa có đơn hàng nào</h3>
+                <p class="empty-text">Bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm của chúng tôi!</p>
+                <a href="@Url.Action("Index", "Home")" class="btn-primary-custom">
+                    <i class="fa-solid fa-store"></i> Khám phá sản phẩm
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Orders List -->
+            <div class="orders-list">
+                @foreach (var payment in Model)
+                {
+                    <div class="order-item">
+                        <!-- Order Header -->
+                        <div class="order-item-header">
+                            <div class="order-info-left">
+                                <span class="order-id">Đơn hàng #@payment.MaThanhToan</span>
+                                <span class="order-date">@payment.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="order-status">
+                                @if (payment.TrangThai == "Đã xác nhận")
+                                {
+                                    <span class="badge-status badge-success">
+                                        <i class="fa-solid fa-circle-check"></i> Đã xác nhận
+                                    </span>
+                                }
+                                else if (payment.TrangThai == "Chờ xác nhận")
+                                {
+                                    <span class="badge-status badge-pending">
+                                        <i class="fa-solid fa-clock"></i> Chờ xác nhận
+                                    </span>
+                                }
+                                else if (payment.TrangThai == "Đang xử lý")
+                                {
+                                    <span class="badge-status badge-processing">
+                                        <i class="fa-solid fa-spinner"></i> Đang xử lý
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status badge-default">@payment.TrangThai</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Order Body -->
+                        <div class="order-item-body">
+                            <!-- Customer Info -->
+                            <div class="customer-section">
+                                <h4 class="section-label">Thông tin người nhận</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>@payment.HoTen</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>@payment.SoDienThoai</span>
+                                    </div>
+                                    <div class="info-item full-width">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>@payment.DiaChi, @payment.Phuong, @payment.Huyen, @payment.Tinh</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products List -->
+                            <div class="products-section">
+                                <h4 class="section-label">Sản phẩm</h4>
+                                @if (payment.ChiTietThanhToans != null && payment.ChiTietThanhToans.Any())
+                                {
+                                    <div class="products-list">
+                                        @foreach (var item in payment.ChiTietThanhToans)
+                                        {
+                                            <div class="product-row">
+                                                <span class="product-name">@item.TenKem</span>
+                                                <span class="product-quantity">SL: @item.SoLuong</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Không có sản phẩm</p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Order Footer -->
+                        <div class="order-item-footer">
+                            <div class="payment-info">
+                                <span class="payment-method">
+                                    <i class="fa-solid fa-credit-card"></i> @payment.PhuongThucThanhToan
+                                </span>
+                                <span class="total-items">Tổng: @payment.SoLuong món</span>
+                            </div>
+                            <div class="total-amount">
+                                <span class="amount-label">Tổng tiền:</span>
+                                <span class="amount-value">@payment.SoTienThanhToan.ToString("N0")₫</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    :root {
+        --primary-color: #059669;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+        --bg-gray: #f9fafb;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: var(--text-primary);
+        background-color: #fff;
+    }
+
+    .order-history-section {
+        background-color: var(--bg-gray);
+        min-height: 100vh;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-container {
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+    }
+
+    .breadcrumb {
+        margin: 0;
+        background: transparent;
+        padding: 0;
+        font-size: 14px;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        color: var(--text-secondary);
+    }
+
+    .breadcrumb-item a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-color);
+        }
+
+    .breadcrumb-item.active {
+        color: var(--text-primary);
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: left;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        color: var(--text-secondary);
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .btn-primary-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+        .btn-primary-custom:hover {
+            background-color: #047857;
+            color: white;
+        }
+
+    /* Orders List */
+    .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .order-item {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Order Header */
+    .order-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--bg-gray);
+    }
+
+    .order-info-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .order-id {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--text-primary);
+    }
+
+    .order-date {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-processing {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-default {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+
+    /* Order Body */
+    .order-item-body {
+        padding: 1.5rem;
+    }
+
+    .customer-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .section-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-item i {
+            color: var(--text-secondary);
+            width: 16px;
+            font-size: 14px;
+        }
+
+    /* Products Section */
+    .products-section {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+    }
+
+    .products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .product-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        font-size: 14px;
+    }
+
+    .product-name {
+        color: var(--text-primary);
+    }
+
+    .product-quantity {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Order Footer */
+    .order-item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background-color: var(--bg-gray);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .payment-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .total-amount {
+        text-align: right;
+    }
+
+    .amount-label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .amount-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .text-muted {
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .info-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .order-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .order-item-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .total-amount {
+        text-align: left;
+        width: 100%;
+    }
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Auto refresh when tab is focused
+    window.addEventListener('focus', function () {
+        location.reload();
+    });
+
+    // Refresh when coming back via back button
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            location.reload();
+        }
+    });
+</script>

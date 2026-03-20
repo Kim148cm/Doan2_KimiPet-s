@@ -1,0 +1,919 @@
+﻿@model WebCafe.Models.SpaBookingViewModel
+@{
+    ViewBag.Title = "Quản lý Lịch Spa";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --green: #1a7a3c;
+        --green-lt: #f0faf4;
+        --green-md: #e0f2e9;
+        --border: #e5e5e5;
+        --text: #1a1a1a;
+        --text2: #555;
+        --text3: #999;
+        --white: #fff;
+        --bg: #f7f9f7;
+        --r: 10px;
+        --font: 'Nunito',sans-serif;
+    }
+
+    * {
+        font-family: var(--font);
+    }
+
+    .adm-spa {
+        padding: 24px;
+        background: var(--bg);
+        min-height: 80vh;
+    }
+
+    .stat-row {
+        display: grid;
+        grid-template-columns: repeat(5,1fr);
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 18px 16px;
+        text-align: center;
+        transition: all .2s;
+        cursor: pointer;
+    }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.active {
+            border-color: var(--green);
+            background: var(--green-lt);
+        }
+
+    .stat-num {
+        font-size: 30px;
+        font-weight: 900;
+        color: var(--green);
+        line-height: 1;
+    }
+
+    .stat-lbl {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text3);
+        margin-top: 5px;
+    }
+
+    .stat-card:nth-child(2) .stat-num {
+        color: #f59e0b;
+    }
+
+    .stat-card:nth-child(3) .stat-num {
+        color: #3b82f6;
+    }
+
+    .stat-card:nth-child(4) .stat-num {
+        color: #10b981;
+    }
+
+    .stat-card:nth-child(5) .stat-num {
+        color: #ef4444;
+    }
+
+    .adm-toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .adm-search {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+
+        .adm-search input {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 38px 9px 14px;
+            font-size: 13.5px;
+            outline: none;
+            font-family: var(--font);
+        }
+
+            .adm-search input:focus {
+                border-color: var(--green);
+            }
+
+        .adm-search i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 13px;
+        }
+
+    .adm-filter-select {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 32px 9px 12px;
+        font-size: 13.5px;
+        outline: none;
+        background: #fff;
+        font-family: var(--font);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+
+        .adm-filter-select:focus {
+            border-color: var(--green);
+        }
+
+    .adm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font);
+        transition: all .2s;
+        text-decoration: none;
+    }
+
+    .adm-btn-green {
+        background: var(--green);
+        color: #fff;
+    }
+
+        .adm-btn-green:hover {
+            background: #145f2e;
+        }
+
+    .adm-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+    }
+
+    .adm-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .adm-table th {
+            background: #f8f9f8;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .adm-table td {
+            padding: 13px 14px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 13.5px;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        .adm-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .adm-table tr:hover td {
+            background: #fafcfa;
+        }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .b-wait {
+        background: #fff8e1;
+        color: #d97706;
+    }
+
+    .b-confirm {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .b-doing {
+        background: #fae8ff;
+        color: #9333ea;
+    }
+
+    .b-done {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .b-cancel {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font);
+        transition: all .15s;
+        white-space: nowrap;
+    }
+
+    .act-view {
+        background: #f0faf4;
+        color: var(--green);
+        border: 1px solid var(--green-md);
+    }
+
+        .act-view:hover {
+            background: var(--green);
+            color: #fff;
+        }
+
+    .act-ok {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+
+        .act-ok:hover {
+            background: #1e40af;
+            color: #fff;
+        }
+
+    .act-done {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+
+        .act-done:hover {
+            background: #15803d;
+            color: #fff;
+        }
+
+    .act-cancel {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+        .act-cancel:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+    .act-mail {
+        background: #f0f4ff;
+        color: #4f46e5;
+        border: 1px solid #c7d2fe;
+    }
+
+        .act-mail:hover {
+            background: #4f46e5;
+            color: #fff;
+        }
+
+        .act-mail:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+    .pet-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .pet-name {
+        font-weight: 800;
+        font-size: 13.5px;
+    }
+
+    .pet-type {
+        font-size: 11.5px;
+        color: var(--text3);
+    }
+
+    .cust-name {
+        font-weight: 700;
+    }
+
+    .cust-phone {
+        font-size: 12px;
+        color: var(--text3);
+    }
+
+    .adm-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text3);
+    }
+
+        .adm-empty i {
+            font-size: 40px;
+            opacity: .2;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+    .modal-content {
+        border-radius: var(--r);
+        border: none;
+        font-family: var(--font);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg,#1a7a3c,#34c769);
+        color: #fff;
+        border-radius: var(--r) var(--r) 0 0;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .modal-title {
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+    .detail-row {
+        display: flex;
+        gap: 8px;
+        padding: 9px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 13.5px;
+    }
+
+        .detail-row:last-child {
+            border: none;
+        }
+
+        .detail-row span {
+            color: var(--text3);
+            width: 150px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .detail-row strong {
+            color: var(--text);
+            flex: 1;
+        }
+
+    .modal-action-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 16px 0 0;
+        border-top: 1px solid #f0f0f0;
+        margin-top: 8px;
+    }
+
+    .modal-txt {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 13.5px;
+        font-family: var(--font);
+        outline: none;
+        margin-bottom: 10px;
+    }
+
+        .modal-txt:focus {
+            border-color: var(--green);
+        }
+
+    .modal-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text2);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .mail-select {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-family: var(--font);
+        outline: none;
+        background: #fff;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 28px;
+    }
+
+        .mail-select:focus {
+            border-color: #4f46e5;
+        }
+
+    @@media(max-width:900px) {
+        .stat-row {
+            grid-template-columns: repeat(3,1fr);
+        }
+    }
+
+    @@media(max-width:600px) {
+        .stat-row {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .adm-table th:nth-child(n+5), .adm-table td:nth-child(n+5) {
+            display: none;
+        }
+    }
+</style>
+
+<div class="adm-spa">
+    <div style="margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h2 style="font-size:20px;font-weight:900;color:var(--text);margin:0 0 4px;">Quản lý Lịch Spa</h2>
+            <p style="font-size:13px;color:var(--text3);margin:0;">Xem, xác nhận và quản lý tất cả lịch hẹn spa thú cưng.</p>
+        </div>
+        <a href="@Url.Action("DichVu","AdminSpa")" class="adm-btn adm-btn-green">
+            <i class="fa-solid fa-scissors"></i> Quản lý dịch vụ
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-row">
+        <div class="stat-card @(string.IsNullOrEmpty(Model.FilterStatus) ? "active" : "")" onclick="filterStatus('')">
+            <div class="stat-num">@Model.TongLich</div>
+            <div class="stat-lbl">Tất cả</div>
+        </div>
+        <div class="stat-card @(Model.FilterStatus == "Chờ xác nhận" ? "active" : "")" onclick="filterStatus('Chờ xác nhận')">
+            <div class="stat-num">@Model.ChoXacNhan</div>
+            <div class="stat-lbl">Chờ xác nhận</div>
+        </div>
+        <div class="stat-card @(Model.FilterStatus == "Đã xác nhận" ? "active" : "")" onclick="filterStatus('Đã xác nhận')">
+            <div class="stat-num">@Model.DaXacNhan</div>
+            <div class="stat-lbl">Đã xác nhận</div>
+        </div>
+        <div class="stat-card @(Model.FilterStatus == "Hoàn thành" ? "active" : "")" onclick="filterStatus('Hoàn thành')">
+            <div class="stat-num">@Model.HoanThanh</div>
+            <div class="stat-lbl">Hoàn thành</div>
+        </div>
+        <div class="stat-card @(Model.FilterStatus == "Đã hủy" ? "active" : "")" onclick="filterStatus('Đã hủy')">
+            <div class="stat-num">@Model.DaHuy</div>
+            <div class="stat-lbl">Đã hủy</div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <form method="get" action="@Url.Action("Index","AdminSpa")" id="filterForm">
+        <div class="adm-toolbar">
+            <div class="adm-search">
+                <input type="text" name="keyword" placeholder="Tìm tên, SĐT, thú cưng..."
+                       value="@ViewBag.Keyword" id="kwInput" />
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <input type="date" name="date" class="adm-filter-select"
+                   value="@Model.FilterDate" style="padding:9px 12px;" />
+            <input type="hidden" name="status" id="hiddenStatus" value="@Model.FilterStatus" />
+            <button type="submit" class="adm-btn adm-btn-green">
+                <i class="fa-solid fa-filter"></i> Lọc
+            </button>
+            <a href="@Url.Action("Index","AdminSpa")" class="adm-btn" style="background:#f3f4f6;color:var(--text2);border:1px solid var(--border);">
+                <i class="fa-solid fa-rotate"></i> Reset
+            </a>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="adm-table-wrap">
+        @if (Model.DanhSachLich != null && Model.DanhSachLich.Any())
+        {
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Khách hàng</th>
+                        <th>Thú cưng</th>
+                        <th>Dịch vụ</th>
+                        <th>Ngày hẹn</th>
+                        <th>Giờ</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var l in Model.DanhSachLich)
+                    {
+                        string bCls;
+                        if (l.TrangThai == "Chờ xác nhận") { bCls = "b-wait"; }
+                        else if (l.TrangThai == "Đã xác nhận") { bCls = "b-confirm"; }
+                        else if (l.TrangThai == "Đang thực hiện") { bCls = "b-doing"; }
+                        else if (l.TrangThai == "Hoàn thành") { bCls = "b-done"; }
+                        else if (l.TrangThai == "Đã hủy") { bCls = "b-cancel"; }
+                        else { bCls = "b-wait"; }
+
+                        <tr>
+                            <td><strong style="color:var(--text3);">#@l.MaLich</strong></td>
+                            <td>
+                                <div class="cust-name">@l.HoTen</div>
+                                <div class="cust-phone">@l.SoDienThoai</div>
+                                <div style="font-size:11.5px;color:var(--text3);">@l.Email</div>
+                            </td>
+                            <td>
+                                <div class="pet-info">
+                                    <span class="pet-name">@l.TenThuCung</span>
+                                    <span class="pet-type">
+                                        @(l.LoaiThuCung != null ? l.LoaiThuCung.TenLoaiThu : "")
+                                        @(l.Giong != null ? "· " + l.Giong : "")
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight:700;font-size:13px;">@(l.DichVuSpa != null ? l.DichVuSpa.TenDichVu : "—")</div>
+                                <div style="font-size:12px;color:var(--green);font-weight:700;">@(l.DichVuSpa != null ? l.DichVuSpa.GiaTien.ToString("N0") + "đ" : "")</div>
+                            </td>
+                            <td><strong>@l.NgayHen.ToString("dd/MM/yyyy")</strong></td>
+                            <td>
+                                <span style="background:#f0faf4;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;color:var(--green);">
+                                    @l.GioHen.ToString(@"hh\:mm")
+                                </span>
+                            </td>
+                            <td><span class="badge-status @bCls">@l.TrangThai</span></td>
+                            <td style="font-size:12px;color:var(--text3);">@l.NgayTao.ToString("dd/MM HH:mm")</td>
+                            <td>
+                                <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                                    <!-- Xem chi tiết -->
+                                    <button class="act-btn act-view" onclick="viewDetail(@l.MaLich)" title="Xem chi tiết">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                    <!-- Xác nhận -->
+                                    @if (l.TrangThai == "Chờ xác nhận")
+                                    {
+                                        <button class="act-btn act-ok" onclick="updateStatus(@l.MaLich,'Đã xác nhận')" title="Xác nhận lịch">
+                                            <i class="fa-solid fa-check"></i> Xác nhận
+                                        </button>
+                                    }
+                                    <!-- Hoàn thành -->
+                                    @if (l.TrangThai == "Đã xác nhận")
+                                    {
+                                        <button class="act-btn act-done" onclick="updateStatus(@l.MaLich,'Hoàn thành')" title="Đánh dấu hoàn thành">
+                                            <i class="fa-solid fa-flag-checkered"></i>
+                                        </button>
+                                    }
+                                    <!-- Gửi mail thủ công -->
+                                    <button class="act-btn act-mail" id="mailBtn_@l.MaLich"
+                                            onclick="promptSendMail(@l.MaLich, '@l.TrangThai')"
+                                            title="Gửi email thông báo cho khách">
+                                        <i class="fa-solid fa-envelope"></i> Mail
+                                    </button>
+                                    <!-- Hủy -->
+                                    @if (l.TrangThai != "Hoàn thành" && l.TrangThai != "Đã hủy")
+                                    {
+                                        <button class="act-btn act-cancel" onclick="promptCancel(@l.MaLich)" title="Hủy lịch">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="adm-empty">
+                <i class="fa-solid fa-calendar-xmark"></i>
+                <p style="font-weight:700;color:var(--text2);">Không có lịch hẹn nào</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết lịch hẹn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailBody" style="padding:20px 24px;">
+                <div class="text-center py-4"><div class="spinner-border text-success"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+ var lichData = {
+@foreach (var l in Model.DanhSachLich)
+{
+    @:@l.MaLich: {
+    @:maLich: @l.MaLich,
+    @:hoTen: '@Html.Raw(l.HoTen.Replace("'", "\\'"))',
+    @:email: '@l.Email',
+    @:sdt: '@l.SoDienThoai',
+    @:tenThuCung: '@Html.Raw(l.TenThuCung.Replace("'", "\\'"))',
+    @:loai: '@(l.LoaiThuCung != null ? l.LoaiThuCung.TenLoaiThu : "")',
+    @:giong: '@(l.Giong ?? "")',
+    @:canNang: '@(l.CanNang ?? "")',
+    @:dichVu: '@Html.Raw((l.DichVuSpa != null ? l.DichVuSpa.TenDichVu : "").Replace("'", "\\'"))',
+    @:giaTien: '@(l.DichVuSpa != null ? l.DichVuSpa.GiaTien.ToString("N0") : "0")',
+    @:ngayHen: '@l.NgayHen.ToString("dd/MM/yyyy")',
+    @:gioHen: '@l.GioHen.ToString(@"hh\:mm")',
+    @:trangThai: '@l.TrangThai',
+    @:ghiChu: '@Html.Raw((l.GhiChu ?? "").Replace("'", "\\'"))',
+    @:ghiChuAdmin: '@Html.Raw((l.GhiChuAdmin ?? "").Replace("'", "\\'"))',
+    @:lyDoHuy: '@Html.Raw((l.LyDoHuy ?? "").Replace("'", "\\'"))',
+    @:},
+}
+ };
+    </script>
+=
+    <script>
+
+
+        // ── Xem chi tiết ──────────────────────────────────────────────────
+        function viewDetail(id) {
+            var d = lichData[id];
+            if (!d) return;
+            var bmap = { 'Chờ xác nhận': 'b-wait', 'Đã xác nhận': 'b-confirm', 'Đang thực hiện': 'b-doing', 'Hoàn thành': 'b-done', 'Đã hủy': 'b-cancel' };
+
+            var mailOptions = '<option value="' + d.trangThai + '">Trạng thái hiện tại: ' + d.trangThai + '</option>' +
+                '<option value="Chờ xác nhận">Chờ xác nhận</option>' +
+                '<option value="Đã xác nhận">Đã xác nhận</option>' +
+                '<option value="Hoàn thành">Hoàn thành</option>' +
+                '<option value="Đã hủy">Đã hủy</option>';
+
+            document.getElementById('detailBody').innerHTML =
+                '<div class="detail-row"><span>M�� lịch</span><strong>#' + d.maLich + '</strong></div>' +
+                '<div class="detail-row"><span>Họ tên</span><strong>' + d.hoTen + '</strong></div>' +
+                '<div class="detail-row"><span>Email</span><strong>' + d.email + '</strong></div>' +
+                '<div class="detail-row"><span>SĐT</span><strong>' + d.sdt + '</strong></div>' +
+                '<div class="detail-row"><span>Thú cưng</span><strong>' + d.tenThuCung + (d.loai ? ' (' + d.loai + ')' : '') + '</strong></div>' +
+                '<div class="detail-row"><span>Giống / Cân nặng</span><strong>' + (d.giong || '—') + ' / ' + (d.canNang || '—') + '</strong></div>' +
+                '<div class="detail-row"><span>Dịch vụ</span><strong>' + d.dichVu + ' &mdash; <span style="color:#1a7a3c;font-weight:800;">' + d.giaTien + 'đ</span></strong></div>' +
+                '<div class="detail-row"><span>Ngày hẹn</span><strong>' + d.ngayHen + ' lúc ' + d.gioHen + '</strong></div>' +
+                '<div class="detail-row"><span>Trạng thái</span><strong><span class="badge-status ' + (bmap[d.trangThai] || 'b-wait') + '">' + d.trangThai + '</span></strong></div>' +
+                '<div class="detail-row"><span>Ghi chú KH</span><strong>' + (d.ghiChu || 'Không có') + '</strong></div>' +
+                (d.lyDoHuy ? '<div class="detail-row"><span>Lý do hủy</span><strong style="color:#dc2626;">' + d.lyDoHuy + '</strong></div>' : '') +
+                '<div class="modal-action-group">' +
+                '<div style="width:100%;">' +
+                '<label class="modal-label">Ghi chú gửi kèm email:</label>' +
+                '<textarea class="modal-txt" id="adminNote_' + id + '" rows="2" placeholder="Ví dụ: Vui lòng đến đúng giờ...">' + (d.ghiChuAdmin || '') + '</textarea>' +
+                '</div>' +
+                (d.trangThai === 'Chờ xác nhận' ?
+                    '<button class="adm-btn adm-btn-green" onclick="updateStatusWithNote(' + id + ',\'Đã xác nhận\')">' +
+                    '<i class="fa-solid fa-check"></i> Xác nhận lịch</button>' : '') +
+                (d.trangThai === 'Đã xác nhận' ?
+                    '<button class="adm-btn" style="background:#dcfce7;color:#15803d;border:none;" onclick="updateStatusWithNote(' + id + ',\'Hoàn thành\')">' +
+                    '<i class="fa-solid fa-flag-checkered"></i> Hoàn thành</button>' : '') +
+                (d.trangThai !== 'Hoàn thành' && d.trangThai !== 'Đã hủy' ?
+                    '<button class="adm-btn" style="background:#fee2e2;color:#dc2626;border:none;" onclick="promptCancelModal(' + id + ')">' +
+                    '<i class="fa-solid fa-xmark"></i> Hủy lịch</button>' : '') +
+                '<div style="width:100%;margin-top:12px;padding-top:12px;border-top:1px dashed #e5e5e5;">' +
+                '<label class="modal-label">Gửi email thông báo đến khách:</label>' +
+                '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+                '<select class="mail-select" id="mailStatusSelect_' + id + '">' + mailOptions + '</select>' +
+                '<button class="adm-btn" style="background:#4f46e5;color:#fff;border:none;" ' +
+                'id="modalMailBtn_' + id + '" onclick="sendMailFromModal(' + id + ')">' +
+                '<i class="fa-solid fa-paper-plane"></i> Gửi email</button>' +
+                '</div>' +
+                '<div style="font-size:11.5px;color:var(--text3);margin-top:6px;">Email sẽ gửi đến: <strong>' + d.email + '</strong></div>' +
+                '</div>' +
+                '</div>';
+
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        // ── Cập nhật trạng thái từ bảng ──────────────────────────────────
+        function updateStatus(id, status) {
+            Swal.fire({
+                title: 'Xác nhận thao tác?',
+                html: 'Cập nhật lịch <b>#' + id + '</b> thành <b>"' + status + '"</b>?<br>' +
+                    '<span style="font-size:13px;color:#888;">Email thông báo sẽ tự động gửi đến khách.</span>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1a7a3c',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then(function (r) {
+                if (r.isConfirmed) doUpdate(id, status, '');
+            });
+        }
+
+        function updateStatusWithNote(id, status) {
+            var noteEl = document.getElementById('adminNote_' + id);
+            var note = noteEl ? noteEl.value : '';
+            doUpdate(id, status, note);
+        }
+
+        function doUpdate(id, status, note) {
+            Swal.fire({
+                title: 'Đang cập nhật...',
+                allowOutsideClick: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
+
+            $.post('/AdminSpa/CapNhatTrangThai', { id: id, trangThai: status, ghiChu: note }, function (res) {
+                Swal.close();
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập nhật thành công!',
+                        html: 'Lịch <b>#' + id + '</b> đã chuyển sang trạng thái <b>"' + status + '"</b>.<br>' +
+                            '<span style="font-size:13px;color:#888;">Email thông báo đã được gửi đến khách.</span>',
+                        confirmButtonColor: '#1a7a3c',
+                        confirmButtonText: 'OK',
+                        timer: 3500,
+                        timerProgressBar: true
+                    }).then(function () { location.reload(); });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cập nhật thất bại',
+                        text: res.message || 'Có lỗi xảy ra, vui lòng thử lại.',
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+            }).fail(function () {
+                Swal.close();
+                Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối server.', confirmButtonColor: '#dc2626' });
+            });
+        }
+
+        // ── Gửi mail thủ công từ bảng ────────────────────────────────────
+        function promptSendMail(id, trangThai) {
+            var d = lichData[id];
+            if (!d) return;
+
+            Swal.fire({
+                title: 'Gửi email cho khách',
+                html:
+                    '<div style="text-align:left;font-size:14px;font-family:Nunito,sans-serif;">' +
+                    '<p style="margin:0 0 14px;">Gửi đến: <strong>' + d.email + '</strong></p>' +
+                    '<label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:7px;">Nội dung email (chọn trạng thái):</label>' +
+                    '<select id="swalMailStatus" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:9px 12px;font-size:13.5px;font-family:Nunito,sans-serif;outline:none;margin-bottom:12px;">' +
+                    '<option value="' + trangThai + '" selected>Trạng thái hiện tại: ' + trangThai + '</option>' +
+                    '<option value="Chờ xác nhận">Chờ xác nhận</option>' +
+                    '<option value="Đã xác nhận">Đã xác nhận</option>' +
+                    '<option value="Hoàn thành">Hoàn thành</option>' +
+                    '<option value="Đã hủy">Đã hủy</option>' +
+                    '</select>' +
+                    '<label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:7px;">Ghi chú kèm theo (tùy chọn):</label>' +
+                    '<textarea id="swalMailNote" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:9px 12px;font-size:13.5px;font-family:Nunito,sans-serif;outline:none;resize:none;" rows="2" placeholder="Ví dụ: Vui lòng đến đúng giờ..."></textarea>' +
+                    '</div>',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                confirmButtonText: '<i class="fa-solid fa-paper-plane"></i> Gửi email',
+                cancelButtonText: 'Hủy',
+                width: 480,
+                preConfirm: function () {
+                    return {
+                        status: document.getElementById('swalMailStatus').value,
+                        note: document.getElementById('swalMailNote').value
+                    };
+                }
+            }).then(function (r) {
+                if (!r.isConfirmed) return;
+                doSendMail(id, r.value.status, r.value.note, document.getElementById('mailBtn_' + id));
+            });
+        }
+
+        function sendMailFromModal(id) {
+            var statusEl = document.getElementById('mailStatusSelect_' + id);
+            var noteEl = document.getElementById('adminNote_' + id);
+            var status = statusEl ? statusEl.value : '';
+            var note = noteEl ? noteEl.value : '';
+            var btn = document.getElementById('modalMailBtn_' + id);
+            doSendMail(id, status, note, btn);
+        }
+
+        function doSendMail(id, status, note, btn) {
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...'; }
+
+            Swal.fire({
+                title: 'Đang gửi email...',
+                allowOutsideClick: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
+
+            $.post('/AdminSpa/GuiEmail', { id: id, trangThai: status, ghiChu: note }, function (res) {
+                Swal.close();
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Gửi email thành công!',
+                        html: '<div style="font-family:Nunito,sans-serif;font-size:14px;line-height:1.8;">' +
+                            'Email đã gửi đến:<br><strong style="color:#1a7a3c;">' + lichData[id].email + '</strong><br>' +
+                            '<span style="font-size:13px;color:#888;">Nội dung: thông báo trạng thái <b>"' + status + '"</b></span>' +
+                            '</div>',
+                        confirmButtonColor: '#1a7a3c',
+                        confirmButtonText: 'OK',
+                        timer: 4000,
+                        timerProgressBar: true
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gửi email thất bại!',
+                        html: '<div style="font-family:Nunito,sans-serif;font-size:14px;">' +
+                            (res.message || 'Không thể gửi email.') + '<br><br>' +
+                            '<span style="font-size:12.5px;color:#888;">Kiểm tra lại cấu hình Gmail App Password trong <code>EmailHelper.cs</code></span>' +
+                            '</div>',
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Mail'; }
+            }).fail(function () {
+                Swal.close();
+                Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối server.', confirmButtonColor: '#dc2626' });
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Mail'; }
+            });
+        }
+
+        function promptCancel(id) {
+            Swal.fire({
+                title: 'Hủy lịch #' + id + '?',
+                input: 'textarea',
+                inputLabel: 'Lý do hủy (sẽ gửi kèm email thông báo)',
+                inputPlaceholder: 'Nhập lý do hủy...',
+                inputAttributes: { maxlength: 500 },
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'Xác nhận hủy',
+                cancelButtonText: 'Giữ lịch',
+                inputValidator: function (v) { if (!v) return 'Vui lòng nhập lý do hủy.'; }
+            }).then(function (r) {
+                if (!r.isConfirmed) return;
+                Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+                $.post('/AdminSpa/CapNhatTrangThai', { id: id, trangThai: 'Đã hủy', lyDoHuy: r.value }, function (res) {
+                    Swal.close();
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã hủy lịch #' + id,
+                            html: 'Email thông báo hủy đã gửi đến khách.<br>' +
+                                '<span style="font-size:13px;color:#888;">Lý do: ' + r.value + '</span>',
+                            confirmButtonColor: '#1a7a3c',
+                            timer: 3500, timerProgressBar: true
+                        }).then(function () { location.reload(); });
+                    } else {
+                        Swal.fire('Lỗi', res.message || 'Có lỗi xảy ra.', 'error');
+                    }
+                });
+            });
+        }
+
+        function promptCancelModal(id) {
+            var m = bootstrap.Modal.getInstance(document.getElementById('detailModal'));
+            if (m) m.hide();
+            setTimeout(function () { promptCancel(id); }, 300);
+        }
+
+        function filterStatus(status) {
+            document.getElementById('hiddenStatus').value = status;
+            document.getElementById('filterForm').submit();
+        }
+</script>
