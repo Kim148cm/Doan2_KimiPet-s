@@ -70,7 +70,7 @@ Chạy project
 
 6. Triển khai
 
-Hệ thống có thể được triển khai trên nền tảng Microsoft Azure thông qua dịch vụ App Service kết hợp với Azure SQL Database.
+Hệ thống có thể được triển khai trên nền tảng Somee thông qua dịch vụ App Service kết hợp với  SQL Database.
 
 7. Định hướng phát triển
 
