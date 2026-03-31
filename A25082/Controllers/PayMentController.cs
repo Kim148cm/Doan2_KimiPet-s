@@ -361,8 +361,8 @@ namespace A25082.Controllers
                 // ✅ GỬI EMAIL
                 try
                 {
-                    string fromEmail = "luuvythuan1204@gmail.com";
-                    string fromPassword = "gbzpuajntfjudczn";
+                    string fromEmail = "thaithienkim365@gmail.com";
+                    string fromPassword = "vbfxtnjnlurdcuzm";
                     string subject = "✅ Thanh toán thành công - Kimipet's";
 
                     string productList = string.Join("",
